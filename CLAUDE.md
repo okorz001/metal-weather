@@ -4,16 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-A Next.js site that shows a weather forecast for a location and plays a heavy metal song appropriate for the current conditions (e.g. *Raining Blood* by Slayer for rain).
+A Next.js site that shows a weather forecast for a location and plays a heavy metal song appropriate for the current conditions (e.g. _Raining Blood_ by Slayer for rain).
 
 ## Commands
 
 ```sh
-npm run dev     # start the development server
-npm run build   # type-check and compile for production
-npm run lint    # lint src/ with ESLint
-npm test        # run tests with Vitest (uses esbuild, does not type-check)
-npm run verify  # run all checks in sequence (lint + test + build)
+npm run dev           # start the development server
+npm run build         # type-check and compile for production
+npm run format        # format with Prettier
+npm run format:check  # check formatting without writing
+npm run lint          # lint src/ with ESLint
+npm test              # run tests with Vitest (uses esbuild, does not type-check)
+npm run verify        # run all checks in sequence (format:check + lint + test + build)
 ```
 
 Always verify `npm run verify` passes before proposing a code change.
