@@ -134,20 +134,26 @@ Initial condition-to-song mapping (WMO groups). Use web search during implementa
 
 **`.gitignore`** — Append `/out` so the static export directory is not committed.
 
-**`src/app/page.tsx`** — Rewrite as `"use client"`:
+**`src/app/page.tsx`** — Thin shell (no `"use client"`) that wraps `<HomeContent>` in a `<Suspense>` boundary. This is required by Next.js static export when a child uses `useSearchParams`.
+
+**`src/components/HomeContent.tsx`** — `"use client"` component that owns all app logic:
+- Reads `?q=` search param via `useSearchParams()`; auto-triggers search on mount when param is present
 - State: `result: WeatherResult | null`, `loading: boolean`
-- `handleSearch`: calls `geocodeLocation` → `fetchWeather` → `pickSong`, sets result; catches errors and sets error result with `pickErrorSong`
+- `handleSearch(location)`: calls `geocodeLocation` → `fetchWeather` → `pickSong`, then calls `router.push('/?q=<location>')` to update the URL (enables back/forward and bookmarking); catches errors and sets error result with `pickErrorSong`
+- Browser back/forward navigation re-triggers the search via the `useSearchParams` effect
 - Renders `<LocationSearch>` always, then loading indicator / `<WeatherCard>` / `<ErrorCard>`
 
 **`src/app/page.test.tsx`** — Update tests:
 - Location search input renders on initial load
 - Mocked fetch: success path renders weather + song, error path renders ErrorCard
+- URL param `?q=Seattle` on initial render triggers an automatic search
 
 ---
 
 ## Testing
 
 New test files:
+- `src/components/HomeContent.test.tsx` — `?q=` param auto-triggers search on mount; `handleSearch` updates URL; back navigation re-fetches
 - `src/lib/songs.test.ts` — `pickSong` (correct match, unknown code falls back to error song), `pickErrorSong`
 - `src/lib/geocode.test.ts` — mocked `fetch`: success path, no-results path, network error
 - `src/lib/weather.test.ts` — mocked `fetch`: success path, API error
