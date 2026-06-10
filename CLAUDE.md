@@ -12,7 +12,8 @@ A Next.js site that shows a weather forecast for a location and plays a heavy me
 npm run dev     # start the development server
 npm run build   # type-check and compile for production
 npm run lint    # lint src/ with ESLint
-npm run verify  # run all checks in sequence (lint + build)
+npm test        # run tests with Vitest (uses esbuild, does not type-check)
+npm run verify  # run all checks in sequence (lint + test + build)
 ```
 
 Always verify `npm run verify` passes before proposing a code change.
