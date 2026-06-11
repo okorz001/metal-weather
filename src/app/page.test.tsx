@@ -20,8 +20,8 @@ describe("Home", () => {
     );
   });
 
-  it("renders the location search input on initial load", () => {
+  it("renders the location search tabs on initial load", () => {
     render(<Home />);
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "City" })).toBeInTheDocument();
   });
 });

@@ -51,9 +51,9 @@ beforeEach(() => {
 });
 
 describe("HomeContent", () => {
-  it("renders the search input on initial load with no result", () => {
+  it("renders the location tabs on initial load with no result", () => {
     render(<HomeContent />);
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "City" })).toBeInTheDocument();
     expect(screen.queryByText("Raining Blood")).not.toBeInTheDocument();
     expect(screen.queryByText("The Wicker Man")).not.toBeInTheDocument();
   });
@@ -69,12 +69,17 @@ describe("HomeContent", () => {
     expect(geocodeModule.geocodeLocation).toHaveBeenCalledWith("Seattle");
   });
 
+  function switchToCityTab() {
+    fireEvent.click(screen.getByRole("button", { name: "City" }));
+  }
+
   it("searches and renders WeatherCard on manual submit", async () => {
     render(<HomeContent />);
-    fireEvent.change(screen.getByRole("textbox"), {
+    switchToCityTab();
+    fireEvent.change(screen.getByPlaceholderText("City name"), {
       target: { value: "Tokyo" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /search/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
     await waitFor(() =>
       expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
     );
@@ -86,10 +91,11 @@ describe("HomeContent", () => {
       new Error("Location not found"),
     );
     render(<HomeContent />);
-    fireEvent.change(screen.getByRole("textbox"), {
+    switchToCityTab();
+    fireEvent.change(screen.getByPlaceholderText("City name"), {
       target: { value: "?????" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /search/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
     await waitFor(() =>
       expect(screen.getByText("Location not found")).toBeInTheDocument(),
     );
@@ -105,10 +111,11 @@ describe("HomeContent", () => {
       }),
     );
     render(<HomeContent />);
-    fireEvent.change(screen.getByRole("textbox"), {
+    switchToCityTab();
+    fireEvent.change(screen.getByPlaceholderText("City name"), {
       target: { value: "Seattle" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /search/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
     expect(screen.getByText("Loading…")).toBeInTheDocument();
     resolve();
     await waitFor(() =>
