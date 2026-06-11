@@ -39,9 +39,23 @@ export default function HomeContent() {
   // Tracks the currently active search so stale responses are discarded.
   const searchIdRef = useRef(0);
 
+  async function resolve(
+    location: string,
+  ): Promise<{ lat: number; lon: number; displayName: string }> {
+    const coords = location.match(/^\s*(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)\s*$/);
+    if (coords) {
+      return {
+        lat: Number(coords[1]),
+        lon: Number(coords[2]),
+        displayName: location,
+      };
+    }
+    return geocodeLocation(location);
+  }
+
   async function runSearch(location: string, id: number) {
     try {
-      const { lat, lon, displayName } = await geocodeLocation(location);
+      const { lat, lon, displayName } = await resolve(location);
       if (searchIdRef.current !== id) return;
       const weather = await fetchWeather(lat, lon, displayName);
       if (searchIdRef.current !== id) return;
@@ -71,7 +85,7 @@ export default function HomeContent() {
     if (!q) return;
     const id = ++searchIdRef.current;
     void runSearch(q, id);
-  }, [q]);
+  }, [q]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="w-full max-w-lg space-y-6">
