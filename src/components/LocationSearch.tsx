@@ -149,7 +149,7 @@ export default function LocationSearch({
               onKeyDown={(e) => e.key === "Enter" && handleCoordsSubmit()}
               disabled={disabled}
               placeholder="Latitude"
-              className="flex-1 rounded-lg bg-zinc-700 px-4 py-2 text-white placeholder-zinc-500 focus:ring-2 focus:ring-zinc-500 focus:outline-none disabled:opacity-50"
+              className="min-w-0 flex-1 rounded-lg bg-zinc-700 px-4 py-2 text-white placeholder-zinc-500 focus:ring-2 focus:ring-zinc-500 focus:outline-none disabled:opacity-50"
             />
             <input
               type="number"
@@ -158,7 +158,7 @@ export default function LocationSearch({
               onKeyDown={(e) => e.key === "Enter" && handleCoordsSubmit()}
               disabled={disabled}
               placeholder="Longitude"
-              className="flex-1 rounded-lg bg-zinc-700 px-4 py-2 text-white placeholder-zinc-500 focus:ring-2 focus:ring-zinc-500 focus:outline-none disabled:opacity-50"
+              className="min-w-0 flex-1 rounded-lg bg-zinc-700 px-4 py-2 text-white placeholder-zinc-500 focus:ring-2 focus:ring-zinc-500 focus:outline-none disabled:opacity-50"
             />
             <button
               onClick={handleCoordsSubmit}
