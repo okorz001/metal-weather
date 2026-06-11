@@ -39,7 +39,18 @@ Files: `src/components/LocationSearch.tsx`, `src/components/WeatherCard.tsx`, `s
 
 ---
 
-### Phase 3: API Clients
+### Phase 3: Page & URL Routing
+
+Files: `src/app/page.tsx` (rewrite), `src/components/HomeContent.tsx` (new), `src/app/page.test.tsx` (update), `src/components/HomeContent.test.tsx` (new)
+
+- `page.tsx`: thin shell wrapping `<HomeContent>` in `<Suspense>`
+- `HomeContent`: reads `?q=` param, auto-searches on mount, calls `router.push('/?q=<location>')` on each search so URL stays in sync
+- `geocodeLocation`, `fetchWeather`, and `pickSong` are stubbed/mocked in tests — real implementations come in later phases
+- Tests: initial render, URL-param auto-search, error path
+
+---
+
+### Phase 4: API Clients
 
 Files: `src/lib/geocode.ts`, `src/lib/geocode.test.ts`, `src/lib/weather.ts`, `src/lib/weather.test.ts`
 
@@ -49,23 +60,13 @@ Files: `src/lib/geocode.ts`, `src/lib/geocode.test.ts`, `src/lib/weather.ts`, `s
 
 ---
 
-### Phase 4: Song Catalog
+### Phase 5: Song Catalog
 
 Files: `src/data/songs.json`, `src/lib/songs.ts`, `src/lib/songs.test.ts`
 
 - Create `src/data/songs.json` with all 8 weather conditions + error entry (with verified YouTube IDs)
 - Create `src/lib/songs.ts` with `pickSong` and `pickErrorSong`
 - Test: correct condition match, unknown WMO code falls back to error song, `pickErrorSong` returns first error song
-
----
-
-### Phase 5: Page & URL Routing
-
-Files: `src/app/page.tsx` (rewrite), `src/components/HomeContent.tsx` (new), `src/app/page.test.tsx` (update), `src/components/HomeContent.test.tsx` (new)
-
-- `page.tsx`: thin shell wrapping `<HomeContent>` in `<Suspense>`
-- `HomeContent`: reads `?q=` param, auto-searches on mount, calls `router.push('/?q=<location>')` on each search so URL stays in sync
-- Tests: initial render, URL-param auto-search, error path
 
 ---
 
