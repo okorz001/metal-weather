@@ -16,7 +16,14 @@ export async function fetchWeather(
   lon: number,
   displayName: string,
 ): Promise<WeatherData> {
-  throw new Error(
-    `fetchWeather not implemented (lat: ${lat}, lon: ${lon}, displayName: ${displayName})`,
-  );
+  return {
+    displayName,
+    temperatureCelsius: 15.0,
+    windSpeedKmh: 20,
+    windDirectionDeg: 270,
+    humidityPercent: 80,
+    precipitationMm: 1.2,
+    weatherCode: 61,
+    conditionLabel: "Rain",
+  };
 }

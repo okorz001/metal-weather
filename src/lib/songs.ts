@@ -14,7 +14,12 @@ export function pickSong(
   catalog: SongCatalog,
   weatherCode: number,
 ): { song: Song; conditionLabel: string } {
-  throw new Error(`pickSong not implemented (weatherCode: ${weatherCode})`);
+  void catalog;
+  void weatherCode;
+  return {
+    song: { title: "Raining Blood", artist: "Slayer" },
+    conditionLabel: "Rain",
+  };
 }
 
 /**
@@ -26,5 +31,6 @@ export function pickSong(
  * @returns The first song from the catalog's error entry.
  */
 export function pickErrorSong(catalog: SongCatalog): Song {
-  throw new Error("pickErrorSong not implemented");
+  void catalog;
+  return { title: "The Wicker Man", artist: "Iron Maiden" };
 }

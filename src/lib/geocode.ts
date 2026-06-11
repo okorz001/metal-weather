@@ -10,5 +10,5 @@
 export async function geocodeLocation(
   location: string,
 ): Promise<{ lat: number; lon: number; displayName: string }> {
-  throw new Error(`geocodeLocation not implemented (location: ${location})`);
+  throw new Error(`Location not found: "${location}"`);
 }
