@@ -14,6 +14,60 @@ Key requirements:
 
 ---
 
+## Phases
+
+### Phase 1: Project Setup & Types
+
+Files: `next.config.ts`, `.gitignore`, `src/lib/types.ts`
+
+- Add `output: 'export'` to `next.config.ts`
+- Append `/out` to `.gitignore`
+- Create `src/lib/types.ts` with all shared interfaces (`Song`, `SongCondition`, `SongCatalog`, `WeatherData`, `WeatherResult`)
+
+No tests needed (types only). `npm run verify` must pass.
+
+---
+
+### Phase 2: Song Catalog
+
+Files: `src/data/songs.json`, `src/lib/songs.ts`, `src/lib/songs.test.ts`
+
+- Create `src/data/songs.json` with all 8 weather conditions + error entry (with verified YouTube IDs)
+- Create `src/lib/songs.ts` with `pickSong` and `pickErrorSong`
+- Test: correct condition match, unknown WMO code falls back to error song, `pickErrorSong` returns first error song
+
+---
+
+### Phase 3: API Clients
+
+Files: `src/lib/geocode.ts`, `src/lib/geocode.test.ts`, `src/lib/weather.ts`, `src/lib/weather.test.ts`
+
+- `geocodeLocation`: Open-Meteo geocoding, throws on no results
+- `fetchWeather`: Open-Meteo forecast, maps response to `WeatherData`
+- Tests use mocked `fetch`; cover success path, no-results/error path
+
+---
+
+### Phase 4: UI Components
+
+Files: `src/components/LocationSearch.tsx`, `src/components/WeatherCard.tsx`, `src/components/ErrorCard.tsx` (plus `.test.tsx` for each)
+
+- `LocationSearch`: input + submit button (Enter or click)
+- `WeatherCard`: all weather fields, C/F toggle, Now Playing section, conditional YouTube iframe
+- `ErrorCard`: error message + song + YouTube iframe
+
+---
+
+### Phase 5: Page & URL Routing
+
+Files: `src/app/page.tsx` (rewrite), `src/components/HomeContent.tsx` (new), `src/app/page.test.tsx` (update), `src/components/HomeContent.test.tsx` (new)
+
+- `page.tsx`: thin shell wrapping `<HomeContent>` in `<Suspense>`
+- `HomeContent`: reads `?q=` param, auto-searches on mount, calls `router.push('/?q=<location>')` on each search so URL stays in sync
+- Tests: initial render, URL-param auto-search, error path
+
+---
+
 ## Architecture
 
 ### External APIs (both free, no API key)
