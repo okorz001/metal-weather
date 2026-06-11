@@ -28,17 +28,7 @@ No tests needed (types only). `npm run verify` must pass.
 
 ---
 
-### Phase 2: Song Catalog
-
-Files: `src/data/songs.json`, `src/lib/songs.ts`, `src/lib/songs.test.ts`
-
-- Create `src/data/songs.json` with all 8 weather conditions + error entry (with verified YouTube IDs)
-- Create `src/lib/songs.ts` with `pickSong` and `pickErrorSong`
-- Test: correct condition match, unknown WMO code falls back to error song, `pickErrorSong` returns first error song
-
----
-
-### Phase 3: API Clients
+### Phase 2: API Clients
 
 Files: `src/lib/geocode.ts`, `src/lib/geocode.test.ts`, `src/lib/weather.ts`, `src/lib/weather.test.ts`
 
@@ -48,13 +38,23 @@ Files: `src/lib/geocode.ts`, `src/lib/geocode.test.ts`, `src/lib/weather.ts`, `s
 
 ---
 
-### Phase 4: UI Components
+### Phase 3: UI Components
 
 Files: `src/components/LocationSearch.tsx`, `src/components/WeatherCard.tsx`, `src/components/ErrorCard.tsx` (plus `.test.tsx` for each)
 
 - `LocationSearch`: input + submit button (Enter or click)
 - `WeatherCard`: all weather fields, C/F toggle, Now Playing section, conditional YouTube iframe
 - `ErrorCard`: error message + song + YouTube iframe
+
+---
+
+### Phase 4: Song Catalog
+
+Files: `src/data/songs.json`, `src/lib/songs.ts`, `src/lib/songs.test.ts`
+
+- Create `src/data/songs.json` with all 8 weather conditions + error entry (with verified YouTube IDs)
+- Create `src/lib/songs.ts` with `pickSong` and `pickErrorSong`
+- Test: correct condition match, unknown WMO code falls back to error song, `pickErrorSong` returns first error song
 
 ---
 
