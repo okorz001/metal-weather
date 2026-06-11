@@ -1,18 +1,24 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import LocationSearch, { type Tab } from "./LocationSearch";
 
-function renderTab(tab: Tab, onSearch = vi.fn(), onTabChange = vi.fn()) {
+function renderTab(
+  tab: Tab,
+  onSearch = vi.fn(),
+  onGeoSearch = vi.fn(),
+  onTabChange = vi.fn(),
+) {
   render(
     <LocationSearch
       tab={tab}
       onTabChange={onTabChange}
       onSearch={onSearch}
+      onGeoSearch={onGeoSearch}
       disabled={false}
     />,
   );
-  return { onSearch, onTabChange };
+  return { onSearch, onGeoSearch, onTabChange };
 }
 
 describe("LocationSearch", () => {
@@ -34,43 +40,45 @@ describe("LocationSearch", () => {
   });
 
   describe("Current Location tab", () => {
-    it("shows Use My Location button", () => {
-      renderTab("location");
-      expect(
-        screen.getByRole("button", { name: "Use My Location" }),
-      ).toBeInTheDocument();
-    });
-
-    it("shows error when geolocation is not supported", () => {
-      const originalGeo = navigator.geolocation;
-      Object.defineProperty(navigator, "geolocation", {
-        value: undefined,
-        configurable: true,
-      });
-      renderTab("location");
-      fireEvent.click(screen.getByRole("button", { name: "Use My Location" }));
-      expect(
-        screen.getByText("Geolocation is not supported by this browser."),
-      ).toBeInTheDocument();
-      Object.defineProperty(navigator, "geolocation", {
-        value: originalGeo,
-        configurable: true,
-      });
-    });
-
-    it("calls onSearch with lat,lon on success", () => {
+    it("shows Locating… and calls onGeoSearch on success", () => {
       const mockGeo = {
-        getCurrentPosition: vi.fn((success) =>
-          success({ coords: { latitude: 47.6, longitude: -122.3 } }),
-        ),
+        getCurrentPosition: vi.fn((success) => {
+          success({ coords: { latitude: 47.6, longitude: -122.3 } });
+        }),
       };
       Object.defineProperty(navigator, "geolocation", {
         value: mockGeo,
         configurable: true,
       });
-      const { onSearch } = renderTab("location");
-      fireEvent.click(screen.getByRole("button", { name: "Use My Location" }));
-      expect(onSearch).toHaveBeenCalledWith("47.6,-122.3");
+      const { onGeoSearch } = renderTab("location");
+      expect(onGeoSearch).toHaveBeenCalledWith(47.6, -122.3);
+    });
+
+    it("shows error when geolocation is not supported", async () => {
+      Object.defineProperty(navigator, "geolocation", {
+        value: undefined,
+        configurable: true,
+      });
+      renderTab("location");
+      await waitFor(() =>
+        expect(
+          screen.getByText("Geolocation is not supported by this browser."),
+        ).toBeInTheDocument(),
+      );
+    });
+
+    it("shows error message on geolocation failure", () => {
+      const mockGeo = {
+        getCurrentPosition: vi.fn((_, error) => {
+          error({ message: "Permission denied" });
+        }),
+      };
+      Object.defineProperty(navigator, "geolocation", {
+        value: mockGeo,
+        configurable: true,
+      });
+      renderTab("location");
+      expect(screen.getByText("Permission denied")).toBeInTheDocument();
     });
   });
 
@@ -104,6 +112,7 @@ describe("LocationSearch", () => {
           tab="city"
           onTabChange={vi.fn()}
           onSearch={vi.fn()}
+          onGeoSearch={vi.fn()}
           disabled
         />,
       );

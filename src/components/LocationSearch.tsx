@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 /** The three location input modes. */
 export type Tab = "location" | "city" | "coords";
@@ -15,22 +15,58 @@ const TAB_LABELS: Record<Tab, string> = {
 };
 
 /**
+ * Mounts when the Current Location tab is active and immediately requests the
+ * device's GPS position. Unmounts (and resets) when the user switches away,
+ * so returning to the tab re-triggers the request.
+ *
+ * @param onGeoSearch - Called with latitude and longitude on success.
+ * @returns Status text: "Locating…" while pending, or a red error on failure.
+ */
+function LocationTab({
+  onGeoSearch,
+}: {
+  onGeoSearch: (lat: number, lon: number) => void;
+}) {
+  const [geoError, setGeoError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      // Deferred to avoid synchronous setState in effect body.
+      Promise.resolve().then(() =>
+        setGeoError("Geolocation is not supported by this browser."),
+      );
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => onGeoSearch(pos.coords.latitude, pos.coords.longitude),
+      (err) => setGeoError(err.message),
+    );
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (geoError) return <p className="text-sm text-red-400">{geoError}</p>;
+  return <p className="text-zinc-400">Locating…</p>;
+}
+
+/**
  * A tabbed location input component with three modes.
  *
- * - **Current Location**: requests the device's GPS coordinates via the
- *   browser Geolocation API and submits them as `"lat,lon"`.
- * - **City**: accepts a free-text city name and submits it as-is for
+ * - **Current Location**: automatically requests the device's GPS coordinates
+ *   via the browser Geolocation API when the tab becomes active and calls
+ *   `onGeoSearch` with the result. Coordinates are not pushed to the URL.
+ * - **City**: accepts a free-text city name and calls `onSearch` with it for
  *   downstream geocoding.
- * - **Coordinates**: accepts explicit latitude and longitude fields and
- *   submits them as `"lat,lon"`.
+ * - **Coordinates**: accepts explicit latitude and longitude fields and calls
+ *   `onSearch` with a `"lat,lon"` string.
  *
  * The active tab is controlled externally via `tab` and `onTabChange` so the
  * selection can be persisted in the URL.
  *
  * @param tab - The currently active tab.
  * @param onTabChange - Called with the new tab when the user switches tabs.
- * @param onSearch - Callback invoked with a location string on submit. City
- *   tab passes a city name; the other two tabs pass a `"lat,lon"` string.
+ * @param onSearch - Called on submit from the City or Coordinates tab. City
+ *   tab passes a city name; Coordinates tab passes a `"lat,lon"` string.
+ * @param onGeoSearch - Called with latitude and longitude when the Current
+ *   Location tab successfully obtains the device's position.
  * @param disabled - When true, all inputs and buttons are disabled.
  * @returns The rendered tabbed location input.
  */
@@ -38,18 +74,18 @@ export default function LocationSearch({
   tab,
   onTabChange,
   onSearch,
+  onGeoSearch,
   disabled = false,
 }: {
   tab: Tab;
   onTabChange: (tab: Tab) => void;
   onSearch: (location: string) => void;
+  onGeoSearch: (lat: number, lon: number) => void;
   disabled?: boolean;
 }) {
   const [city, setCity] = useState("");
   const [lat, setLat] = useState("");
   const [lon, setLon] = useState("");
-  const [locating, setLocating] = useState(false);
-  const [geoError, setGeoError] = useState<string | null>(null);
 
   function handleCitySubmit() {
     const trimmed = city.trim();
@@ -60,25 +96,6 @@ export default function LocationSearch({
     const trimmedLat = lat.trim();
     const trimmedLon = lon.trim();
     if (trimmedLat && trimmedLon) onSearch(`${trimmedLat},${trimmedLon}`);
-  }
-
-  function handleCurrentLocation() {
-    setGeoError(null);
-    if (!navigator.geolocation) {
-      setGeoError("Geolocation is not supported by this browser.");
-      return;
-    }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocating(false);
-        onSearch(`${pos.coords.latitude},${pos.coords.longitude}`);
-      },
-      (err) => {
-        setLocating(false);
-        setGeoError(err.message);
-      },
-    );
   }
 
   const tabButtonClass = (t: Tab) =>
@@ -102,18 +119,7 @@ export default function LocationSearch({
         ))}
       </div>
       <div className="rounded-tr-lg rounded-b-lg bg-zinc-800 p-4">
-        {tab === "location" && (
-          <div className="space-y-2">
-            <button
-              onClick={handleCurrentLocation}
-              disabled={disabled || locating}
-              className="w-full rounded-lg bg-zinc-700 px-4 py-2 text-white hover:bg-zinc-600 disabled:opacity-50"
-            >
-              {locating ? "Locating…" : "Use My Location"}
-            </button>
-            {geoError && <p className="text-sm text-red-400">{geoError}</p>}
-          </div>
-        )}
+        {tab === "location" && <LocationTab onGeoSearch={onGeoSearch} />}
         {tab === "city" && (
           <div className="flex gap-2">
             <input

@@ -33,6 +33,7 @@ const mockSong: Song = { title: "Raining Blood", artist: "Slayer" };
 const mockErrorSong: Song = { title: "The Wicker Man", artist: "Iron Maiden" };
 
 beforeEach(() => {
+  vi.clearAllMocks();
   vi.mocked(useSearchParams).mockReturnValue(new URLSearchParams());
   vi.mocked(useRouter).mockReturnValue({ push: vi.fn() } as ReturnType<
     typeof useRouter
@@ -67,6 +68,14 @@ describe("HomeContent", () => {
       expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
     );
     expect(geocodeModule.geocodeLocation).toHaveBeenCalledWith("Seattle");
+  });
+
+  it("ignores ?q= when ?tab=location is set", () => {
+    vi.mocked(useSearchParams).mockReturnValue(
+      new URLSearchParams("tab=location&q=47.6,-122.3"),
+    );
+    render(<HomeContent />);
+    expect(weatherModule.fetchWeather).not.toHaveBeenCalled();
   });
 
   it("pushing the City tab button calls router.push with ?tab=city", () => {
