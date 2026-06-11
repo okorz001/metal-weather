@@ -2,15 +2,17 @@
 
 import { useState } from "react";
 
-type Tab = "location" | "city" | "coords";
+/** The three location input modes. */
+export type Tab = "location" | "city" | "coords";
+
+/** Ordered list of all tabs, used for validation and rendering. */
+export const TABS: Tab[] = ["location", "city", "coords"];
 
 const TAB_LABELS: Record<Tab, string> = {
   location: "Current Location",
   city: "City",
   coords: "Coordinates",
 };
-
-const TABS: Tab[] = ["location", "city", "coords"];
 
 /**
  * A tabbed location input component with three modes.
@@ -22,19 +24,27 @@ const TABS: Tab[] = ["location", "city", "coords"];
  * - **Coordinates**: accepts explicit latitude and longitude fields and
  *   submits them as `"lat,lon"`.
  *
+ * The active tab is controlled externally via `tab` and `onTabChange` so the
+ * selection can be persisted in the URL.
+ *
+ * @param tab - The currently active tab.
+ * @param onTabChange - Called with the new tab when the user switches tabs.
  * @param onSearch - Callback invoked with a location string on submit. City
  *   tab passes a city name; the other two tabs pass a `"lat,lon"` string.
  * @param disabled - When true, all inputs and buttons are disabled.
  * @returns The rendered tabbed location input.
  */
 export default function LocationSearch({
+  tab,
+  onTabChange,
   onSearch,
   disabled = false,
 }: {
+  tab: Tab;
+  onTabChange: (tab: Tab) => void;
   onSearch: (location: string) => void;
   disabled?: boolean;
 }) {
-  const [tab, setTab] = useState<Tab>("location");
   const [city, setCity] = useState("");
   const [lat, setLat] = useState("");
   const [lon, setLon] = useState("");
@@ -84,7 +94,7 @@ export default function LocationSearch({
         {TABS.map((t) => (
           <button
             key={t}
-            onClick={() => setTab(t)}
+            onClick={() => onTabChange(t)}
             className={tabButtonClass(t)}
           >
             {TAB_LABELS[t]}

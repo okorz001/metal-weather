@@ -58,9 +58,9 @@ describe("HomeContent", () => {
     expect(screen.queryByText("The Wicker Man")).not.toBeInTheDocument();
   });
 
-  it("auto-searches when ?q= param is present on mount", async () => {
+  it("auto-searches when ?tab=city&q= params are present on mount", async () => {
     vi.mocked(useSearchParams).mockReturnValue(
-      new URLSearchParams("q=Seattle"),
+      new URLSearchParams("tab=city&q=Seattle"),
     );
     render(<HomeContent />);
     await waitFor(() =>
@@ -69,57 +69,68 @@ describe("HomeContent", () => {
     expect(geocodeModule.geocodeLocation).toHaveBeenCalledWith("Seattle");
   });
 
-  function switchToCityTab() {
+  it("pushing the City tab button calls router.push with ?tab=city", () => {
+    const push = vi.fn();
+    vi.mocked(useRouter).mockReturnValue({ push } as ReturnType<
+      typeof useRouter
+    >);
+    render(<HomeContent />);
     fireEvent.click(screen.getByRole("button", { name: "City" }));
-  }
-
-  it("searches and renders WeatherCard on manual submit", async () => {
-    render(<HomeContent />);
-    switchToCityTab();
-    fireEvent.change(screen.getByPlaceholderText("City name"), {
-      target: { value: "Tokyo" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "Search" }));
-    await waitFor(() =>
-      expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
-    );
-    expect(geocodeModule.geocodeLocation).toHaveBeenCalledWith("Tokyo");
+    expect(push).toHaveBeenCalledWith("/?tab=city");
   });
 
-  it("renders ErrorCard when geocoding fails", async () => {
-    vi.mocked(geocodeModule.geocodeLocation).mockRejectedValue(
-      new Error("Location not found"),
-    );
-    render(<HomeContent />);
-    switchToCityTab();
-    fireEvent.change(screen.getByPlaceholderText("City name"), {
-      target: { value: "?????" },
+  describe("with city tab active via URL", () => {
+    beforeEach(() => {
+      vi.mocked(useSearchParams).mockReturnValue(
+        new URLSearchParams("tab=city"),
+      );
     });
-    fireEvent.click(screen.getByRole("button", { name: "Search" }));
-    await waitFor(() =>
-      expect(screen.getByText("Location not found")).toBeInTheDocument(),
-    );
-    expect(screen.getByText("The Wicker Man")).toBeInTheDocument();
-  });
 
-  it("shows loading indicator while fetch is in flight", async () => {
-    let resolve!: () => void;
-    vi.mocked(geocodeModule.geocodeLocation).mockReturnValue(
-      new Promise((r) => {
-        resolve = () =>
-          r({ lat: 47.6, lon: -122.3, displayName: "Seattle, WA, US" });
-      }),
-    );
-    render(<HomeContent />);
-    switchToCityTab();
-    fireEvent.change(screen.getByPlaceholderText("City name"), {
-      target: { value: "Seattle" },
+    it("searches and renders WeatherCard on manual submit", async () => {
+      render(<HomeContent />);
+      fireEvent.change(screen.getByPlaceholderText("City name"), {
+        target: { value: "Tokyo" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: "Search" }));
+      await waitFor(() =>
+        expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
+      );
+      expect(geocodeModule.geocodeLocation).toHaveBeenCalledWith("Tokyo");
     });
-    fireEvent.click(screen.getByRole("button", { name: "Search" }));
-    expect(screen.getByText("Loading…")).toBeInTheDocument();
-    resolve();
-    await waitFor(() =>
-      expect(screen.queryByText("Loading…")).not.toBeInTheDocument(),
-    );
+
+    it("renders ErrorCard when geocoding fails", async () => {
+      vi.mocked(geocodeModule.geocodeLocation).mockRejectedValue(
+        new Error("Location not found"),
+      );
+      render(<HomeContent />);
+      fireEvent.change(screen.getByPlaceholderText("City name"), {
+        target: { value: "?????" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: "Search" }));
+      await waitFor(() =>
+        expect(screen.getByText("Location not found")).toBeInTheDocument(),
+      );
+      expect(screen.getByText("The Wicker Man")).toBeInTheDocument();
+    });
+
+    it("shows loading indicator while fetch is in flight", async () => {
+      let resolve!: () => void;
+      vi.mocked(geocodeModule.geocodeLocation).mockReturnValue(
+        new Promise((r) => {
+          resolve = () =>
+            r({ lat: 47.6, lon: -122.3, displayName: "Seattle, WA, US" });
+        }),
+      );
+      render(<HomeContent />);
+      fireEvent.change(screen.getByPlaceholderText("City name"), {
+        target: { value: "Seattle" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: "Search" }));
+      expect(screen.getByText("Loading…")).toBeInTheDocument();
+      resolve();
+      await waitFor(() =>
+        expect(screen.queryByText("Loading…")).not.toBeInTheDocument(),
+      );
+    });
   });
 });
