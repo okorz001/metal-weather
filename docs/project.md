@@ -28,23 +28,24 @@ No tests needed (types only). `npm run verify` must pass.
 
 ---
 
-### Phase 2: API Clients
-
-Files: `src/lib/geocode.ts`, `src/lib/geocode.test.ts`, `src/lib/weather.ts`, `src/lib/weather.test.ts`
-
-- `geocodeLocation`: Open-Meteo geocoding, throws on no results
-- `fetchWeather`: Open-Meteo forecast, maps response to `WeatherData`
-- Tests use mocked `fetch`; cover success path, no-results/error path
-
----
-
-### Phase 3: UI Components
+### Phase 2: UI Components
 
 Files: `src/components/LocationSearch.tsx`, `src/components/WeatherCard.tsx`, `src/components/ErrorCard.tsx` (plus `.test.tsx` for each)
 
 - `LocationSearch`: input + submit button (Enter or click)
 - `WeatherCard`: all weather fields, C/F toggle, Now Playing section, conditional YouTube iframe
 - `ErrorCard`: error message + song + YouTube iframe
+- Tests use hardcoded mock props — no real API or catalog dependency
+
+---
+
+### Phase 3: API Clients
+
+Files: `src/lib/geocode.ts`, `src/lib/geocode.test.ts`, `src/lib/weather.ts`, `src/lib/weather.test.ts`
+
+- `geocodeLocation`: Open-Meteo geocoding, throws on no results
+- `fetchWeather`: Open-Meteo forecast, maps response to `WeatherData`
+- Tests use mocked `fetch`; cover success path, no-results/error path
 
 ---
 
