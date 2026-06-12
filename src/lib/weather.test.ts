@@ -40,6 +40,25 @@ describe("fetchWeather", () => {
     });
   });
 
+  it("maps an unrecognized weather code to WeatherCode.Unknown", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        current: {
+          temperature_2m: 10.5,
+          wind_speed_10m: 15.2,
+          wind_direction_10m: 180,
+          relative_humidity_2m: 75,
+          precipitation: 0.0,
+          weather_code: 999,
+        },
+      }),
+    } as Response);
+
+    const result = await fetchWeather(47.6, -122.3, "Seattle");
+    expect(result.weatherCode).toBe(WeatherCode.Unknown);
+  });
+
   it("throws when the API returns a non-OK status", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: false,

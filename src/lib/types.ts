@@ -5,6 +5,7 @@
  * describe current conditions. See the WMO GRIB code table for the full specification.
  */
 export enum WeatherCode {
+  Unknown = -1,
   ClearSky = 0,
   MainlyClear = 1,
   PartlyCloudy = 2,
