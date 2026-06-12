@@ -56,7 +56,7 @@ describe("fetchWeather", () => {
     } as Response);
 
     const result = await fetchWeather(47.6, -122.3, "Seattle");
-    expect(result.weatherCode).toBe(WeatherCode.Unknown);
+    expect(result.weatherCode).toBeNull();
   });
 
   it("throws when the API returns a non-OK status", async () => {
