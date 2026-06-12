@@ -43,6 +43,60 @@ describe("geocodeLocation", () => {
     expect(result.displayName).toBe("London");
   });
 
+  it("picks the matching result when a qualifier is provided", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        results: [
+          {
+            latitude: 9.9281,
+            longitude: -84.0907,
+            name: "San José",
+            admin1: "San José Province",
+            country: "Costa Rica",
+            country_code: "CR",
+          },
+          {
+            latitude: 37.3382,
+            longitude: -121.8863,
+            name: "San Jose",
+            admin1: "California",
+            country: "United States",
+            country_code: "US",
+          },
+        ],
+      }),
+    } as Response);
+
+    const result = await geocodeLocation("San Jose, CA");
+    expect(result).toEqual({
+      lat: 37.3382,
+      lon: -121.8863,
+      displayName: "San Jose, California, United States",
+    });
+  });
+
+  it("falls back to first result when qualifier matches nothing", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        results: [
+          {
+            latitude: 47.60621,
+            longitude: -122.33207,
+            name: "Springfield",
+            admin1: "Oregon",
+            country: "United States",
+            country_code: "US",
+          },
+        ],
+      }),
+    } as Response);
+
+    const result = await geocodeLocation("Springfield, ZZ");
+    expect(result.lat).toBe(47.60621);
+  });
+
   it("throws when results array is empty", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
