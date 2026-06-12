@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { WeatherCode } from "./types";
 import { fetchWeather } from "./weather";
 
 beforeEach(() => {
@@ -34,7 +35,7 @@ describe("fetchWeather", () => {
       windDirectionDeg: 180,
       humidityPercent: 75,
       precipitationMm: 0.0,
-      weatherCode: 3,
+      weatherCode: WeatherCode.Overcast,
       conditionLabel: "",
     });
   });

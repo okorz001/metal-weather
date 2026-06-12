@@ -1,3 +1,4 @@
+import { WeatherCode } from "./types";
 import type { WeatherData } from "./types";
 
 const FORECAST_URL = "https://api.open-meteo.com/v1/forecast";
@@ -54,7 +55,7 @@ export async function fetchWeather(
     windDirectionDeg: current.wind_direction_10m,
     humidityPercent: current.relative_humidity_2m,
     precipitationMm: current.precipitation,
-    weatherCode: current.weather_code,
+    weatherCode: current.weather_code as WeatherCode,
     conditionLabel: "",
   };
 }

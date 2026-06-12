@@ -1,4 +1,41 @@
 /**
+ * WMO weather interpretation codes as defined by the World Meteorological Organization.
+ *
+ * These are vendor-agnostic codes used by weather services (e.g. Open-Meteo) to
+ * describe current conditions. See the WMO GRIB code table for the full specification.
+ */
+export enum WeatherCode {
+  ClearSky = 0,
+  MainlyClear = 1,
+  PartlyCloudy = 2,
+  Overcast = 3,
+  Fog = 45,
+  DepositingRimeFog = 48,
+  DrizzleLight = 51,
+  DrizzleModerate = 53,
+  DrizzleDense = 55,
+  FreezingDrizzleLight = 56,
+  FreezingDrizzleHeavy = 57,
+  RainSlight = 61,
+  RainModerate = 63,
+  RainHeavy = 65,
+  FreezingRainLight = 66,
+  FreezingRainHeavy = 67,
+  SnowSlight = 71,
+  SnowModerate = 73,
+  SnowHeavy = 75,
+  SnowGrains = 77,
+  RainShowersSlight = 80,
+  RainShowersModerate = 81,
+  RainShowersViolent = 82,
+  SnowShowersSlight = 85,
+  SnowShowersHeavy = 86,
+  Thunderstorm = 95,
+  ThunderstormWithSlightHail = 96,
+  ThunderstormWithHeavyHail = 99,
+}
+
+/**
  * A single song entry in the catalog.
  *
  * @param title - The song title.
@@ -57,7 +94,7 @@ export interface WeatherData {
   windDirectionDeg: number;
   humidityPercent: number;
   precipitationMm: number;
-  weatherCode: number;
+  weatherCode: WeatherCode;
   conditionLabel: string;
 }
 
