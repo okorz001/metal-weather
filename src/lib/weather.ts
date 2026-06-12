@@ -58,7 +58,7 @@ export async function fetchWeather(
     weatherCode:
       current.weather_code in WeatherCode
         ? (current.weather_code as WeatherCode)
-        : null,
+        : undefined,
     conditionLabel: "",
   };
 }

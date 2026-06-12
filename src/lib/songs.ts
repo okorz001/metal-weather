@@ -13,7 +13,7 @@ import type { Song, SongCatalog } from "./types";
  */
 export function pickSong(
   catalog: SongCatalog,
-  weatherCode: WeatherCode | null,
+  weatherCode: WeatherCode | undefined,
 ): { song: Song; conditionLabel: string } {
   void catalog;
   void weatherCode;

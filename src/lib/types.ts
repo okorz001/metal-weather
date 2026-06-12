@@ -94,7 +94,7 @@ export interface WeatherData {
   windDirectionDeg: number;
   humidityPercent: number;
   precipitationMm: number;
-  weatherCode: WeatherCode | null;
+  weatherCode?: WeatherCode;
   conditionLabel: string;
 }
 
