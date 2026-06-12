@@ -1,5 +1,9 @@
 import type { WeatherData } from "./types";
 
+const FORECAST_URL = "https://api.open-meteo.com/v1/forecast";
+const CURRENT_FIELDS =
+  "temperature_2m,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,weather_code";
+
 /**
  * Fetches current weather conditions for the given coordinates.
  *
@@ -16,14 +20,41 @@ export async function fetchWeather(
   lon: number,
   displayName: string,
 ): Promise<WeatherData> {
+  const url = `${FORECAST_URL}?latitude=${lat}&longitude=${lon}&current=${CURRENT_FIELDS}`;
+
+  let response: Response;
+  try {
+    response = await fetch(url);
+  } catch (e) {
+    throw new Error(
+      `Failed to reach weather service: ${e instanceof Error ? e.message : String(e)}`,
+    );
+  }
+
+  if (!response.ok) {
+    throw new Error(`Weather request failed with status ${response.status}`);
+  }
+
+  const data = (await response.json()) as {
+    current: {
+      temperature_2m: number;
+      wind_speed_10m: number;
+      wind_direction_10m: number;
+      relative_humidity_2m: number;
+      precipitation: number;
+      weather_code: number;
+    };
+  };
+
+  const { current } = data;
   return {
     displayName,
-    temperatureCelsius: 15.0,
-    windSpeedKmh: 20,
-    windDirectionDeg: 270,
-    humidityPercent: 80,
-    precipitationMm: 1.2,
-    weatherCode: 61,
-    conditionLabel: "Rain",
+    temperatureCelsius: current.temperature_2m,
+    windSpeedKmh: current.wind_speed_10m,
+    windDirectionDeg: current.wind_direction_10m,
+    humidityPercent: current.relative_humidity_2m,
+    precipitationMm: current.precipitation,
+    weatherCode: current.weather_code,
+    conditionLabel: "",
   };
 }
