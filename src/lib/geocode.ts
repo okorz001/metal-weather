@@ -70,7 +70,12 @@ export async function geocodeLocation(
     if (match) result = match;
   }
 
-  const displayName = [result.name, result.admin1, result.country]
+  const countryDisplayNames = new Intl.DisplayNames(["en"], { type: "region" });
+  const country = result.country_code
+    ? (countryDisplayNames.of(result.country_code) ?? result.country)
+    : result.country;
+
+  const displayName = [result.name, result.admin1, country]
     .filter(Boolean)
     .join(", ");
 
