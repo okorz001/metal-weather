@@ -53,8 +53,8 @@ while IFS= read -r song; do
   echo "[$title] Processing..."
   mkdir -p "$(dirname "$output_path")"
 
-  if ! ffmpeg -y -i "$tmpfile" \
-    -ss "$start_time" -to "$end_time" \
+  if ! ffmpeg -y -ss "$start_time" -i "$tmpfile" \
+    -to "$out_duration" \
     -af "afade=t=in:d=${fade_in},afade=t=out:st=${fade_out_start}:d=${fade_out}" \
     -vn -acodec libmp3lame -q:a 2 \
     "$output_path"; then
