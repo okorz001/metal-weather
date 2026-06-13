@@ -2,6 +2,8 @@
 
 import type { Song } from "@/lib/types";
 
+import MusicPlayer from "./MusicPlayer";
+
 /**
  * Displays an error message alongside a fallback metal song.
  *
@@ -33,6 +35,7 @@ export default function ErrorCard({
         </div>
         <div className="font-bold">{song.title}</div>
         <div className="text-zinc-300">{song.artist}</div>
+        <MusicPlayer song={song} />
       </div>
     </div>
   );

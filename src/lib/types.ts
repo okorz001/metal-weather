@@ -18,12 +18,12 @@ export type WeatherStatus =
  *
  * @param title - The song title.
  * @param artist - The performing artist or band.
- * @param youtubeId - Optional YouTube video ID for embedding.
+ * @param audioFile - Optional path to the MP3 asset served from public/, e.g. `/audio/raining-blood.mp3`.
  */
 export interface Song {
   title: string;
   artist: string;
-  youtubeId?: string;
+  audioFile?: string;
 }
 
 /**

@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import type { Song, WeatherData } from "@/lib/types";
 
+import MusicPlayer from "./MusicPlayer";
+
 function toCardinal(deg: number): string {
   const dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
   return dirs[Math.round(deg / 45) % 8];
@@ -75,6 +77,7 @@ export default function WeatherCard({
         </div>
         <div className="font-bold">{song.title}</div>
         <div className="text-zinc-300">{song.artist}</div>
+        <MusicPlayer song={song} />
       </div>
     </div>
   );
