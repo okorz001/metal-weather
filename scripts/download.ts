@@ -4,9 +4,9 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { pipeline } from "node:stream/promises";
 import { fileURLToPath } from "node:url";
+import { spawn } from "node:child_process";
 import ytdl from "@distube/ytdl-core";
 import ffmpegStatic from "ffmpeg-static";
-import Ffmpeg from "fluent-ffmpeg";
 
 import rawSongs from "../src/data/songs.json";
 
@@ -67,20 +67,28 @@ async function downloadSong(song: Song, force: boolean): Promise<void> {
     mkdirSync(dirname(outputPath), { recursive: true });
 
     await new Promise<void>((resolve, reject) => {
-      Ffmpeg(tmpFile)
-        .outputOptions("-y")
-        .setStartTime(song.startTime!)
-        .setDuration(outDuration)
-        .audioFilters([
-          `afade=t=in:d=${song.fadeIn}`,
-          `afade=t=out:st=${fadeOutStart}:d=${song.fadeOut}`,
-        ])
-        .noVideo()
-        .audioCodec("libmp3lame")
-        .audioQuality(2)
-        .save(outputPath)
-        .on("end", resolve)
-        .on("error", reject);
+      const proc = spawn(ffmpegStatic!, [
+        "-y",
+        "-i",
+        tmpFile,
+        "-ss",
+        String(song.startTime),
+        "-to",
+        String(song.endTime),
+        "-af",
+        `afade=t=in:d=${song.fadeIn},afade=t=out:st=${fadeOutStart}:d=${song.fadeOut}`,
+        "-vn",
+        "-acodec",
+        "libmp3lame",
+        "-q:a",
+        "2",
+        outputPath,
+      ]);
+      proc.on("close", (code) => {
+        if (code === 0) resolve();
+        else reject(new Error(`ffmpeg exited with code ${code}`));
+      });
+      proc.on("error", reject);
     });
 
     console.log(`[${song.title}] Done — ${outputPath}`);
@@ -117,8 +125,6 @@ if (!ffmpegStatic) {
   console.error("ffmpeg binary not found");
   process.exit(1);
 }
-
-Ffmpeg.setFfmpegPath(ffmpegStatic);
 
 let errors = 0;
 for (const song of targets) {
