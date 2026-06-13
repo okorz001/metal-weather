@@ -47,17 +47,18 @@ function LocationTab({
     );
   }
 
-  if (status === "error")
-    return <p className="text-sm text-red-400">{geoError}</p>;
-  if (status === "loading") return <p className="text-zinc-400">Locating…</p>;
   return (
     <div className="flex justify-center">
-      <button
-        onClick={handleClick}
-        className="rounded-lg bg-zinc-600 px-4 py-2 text-white hover:bg-zinc-500"
-      >
-        Get My Location
-      </button>
+      {status === "error" && <p className="text-sm text-red-400">{geoError}</p>}
+      {status === "loading" && <p className="text-zinc-400">Locating…</p>}
+      {status === "idle" && (
+        <button
+          onClick={handleClick}
+          className="rounded-lg bg-zinc-600 px-4 py-2 text-white hover:bg-zinc-500"
+        >
+          Get My Location
+        </button>
+      )}
     </div>
   );
 }
