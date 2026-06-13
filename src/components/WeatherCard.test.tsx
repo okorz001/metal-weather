@@ -12,8 +12,7 @@ const mockWeather: WeatherData = {
   windDirectionDeg: 270,
   humidityPercent: 80,
   precipitationMm: 1.2,
-  weatherCode: 61,
-  conditionLabel: "Rain",
+  status: "Rain",
 };
 
 const mockSong: Song = {

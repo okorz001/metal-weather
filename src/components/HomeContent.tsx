@@ -57,11 +57,8 @@ export default function HomeContent() {
     try {
       const weather = await fetchWeather(lat, lon, displayName);
       if (searchIdRef.current !== id) return;
-      const { song, conditionLabel } = pickSong(
-        typedCatalog,
-        weather.weatherCode,
-      );
-      setResult({ ok: true, weather: { ...weather, conditionLabel }, song });
+      const song = pickSong(typedCatalog, weather.status);
+      setResult({ ok: true, weather, song });
     } catch (e) {
       if (searchIdRef.current !== id) return;
       const message = e instanceof Error ? e.message : "An error occurred";

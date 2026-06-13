@@ -36,6 +36,61 @@ export enum WeatherCode {
 }
 
 /**
+ * High-level weather status derived from a WMO weather code.
+ *
+ * Groups the fine-grained WMO codes into broad conditions used for
+ * song matching and display. Use `WEATHER_CODE_STATUS` to map a
+ * `WeatherCode` to its corresponding status.
+ */
+export type WeatherStatus =
+  | "Clear"
+  | "Cloudy"
+  | "Foggy"
+  | "Drizzle"
+  | "Rain"
+  | "Snow"
+  | "Thunderstorm";
+
+/**
+ * Maps each `WeatherCode` to its corresponding `WeatherStatus`.
+ *
+ * Codes absent from this map (e.g. unrecognized values returned by an API)
+ * produce `undefined` when indexed, which callers should treat as an unknown
+ * condition and fall back to a default behavior.
+ */
+export const WEATHER_CODE_STATUS: Partial<Record<WeatherCode, WeatherStatus>> =
+  {
+    [WeatherCode.ClearSky]: "Clear",
+    [WeatherCode.MainlyClear]: "Clear",
+    [WeatherCode.PartlyCloudy]: "Cloudy",
+    [WeatherCode.Overcast]: "Cloudy",
+    [WeatherCode.Fog]: "Foggy",
+    [WeatherCode.DepositingRimeFog]: "Foggy",
+    [WeatherCode.DrizzleLight]: "Drizzle",
+    [WeatherCode.DrizzleModerate]: "Drizzle",
+    [WeatherCode.DrizzleDense]: "Drizzle",
+    [WeatherCode.FreezingDrizzleLight]: "Drizzle",
+    [WeatherCode.FreezingDrizzleHeavy]: "Drizzle",
+    [WeatherCode.RainSlight]: "Rain",
+    [WeatherCode.RainModerate]: "Rain",
+    [WeatherCode.RainHeavy]: "Rain",
+    [WeatherCode.FreezingRainLight]: "Rain",
+    [WeatherCode.FreezingRainHeavy]: "Rain",
+    [WeatherCode.SnowSlight]: "Snow",
+    [WeatherCode.SnowModerate]: "Snow",
+    [WeatherCode.SnowHeavy]: "Snow",
+    [WeatherCode.SnowGrains]: "Snow",
+    [WeatherCode.RainShowersSlight]: "Rain",
+    [WeatherCode.RainShowersModerate]: "Rain",
+    [WeatherCode.RainShowersViolent]: "Rain",
+    [WeatherCode.SnowShowersSlight]: "Snow",
+    [WeatherCode.SnowShowersHeavy]: "Snow",
+    [WeatherCode.Thunderstorm]: "Thunderstorm",
+    [WeatherCode.ThunderstormWithSlightHail]: "Thunderstorm",
+    [WeatherCode.ThunderstormWithHeavyHail]: "Thunderstorm",
+  };
+
+/**
  * A single song entry in the catalog.
  *
  * @param title - The song title.
@@ -49,15 +104,13 @@ export interface Song {
 }
 
 /**
- * A weather condition entry mapping WMO codes to a set of songs.
+ * A weather condition entry in the song catalog.
  *
- * @param label - Human-readable condition name (e.g. "Clear Sky").
- * @param codes - WMO weather code numbers that match this condition.
+ * @param status - The weather status this condition matches.
  * @param songs - Songs associated with this condition.
  */
 export interface SongCondition {
-  label: string;
-  codes: number[];
+  status: WeatherStatus;
   songs: Song[];
 }
 
@@ -70,7 +123,6 @@ export interface SongCondition {
 export interface SongCatalog {
   conditions: SongCondition[];
   error: {
-    label: string;
     songs: Song[];
   };
 }
@@ -84,8 +136,8 @@ export interface SongCatalog {
  * @param windDirectionDeg - Wind direction in degrees (0–360).
  * @param humidityPercent - Relative humidity as a percentage (0–100).
  * @param precipitationMm - Current precipitation in millimeters.
- * @param weatherCode - WMO weather interpretation code.
- * @param conditionLabel - Human-readable condition label resolved from the song catalog.
+ * @param status - High-level weather status derived from the WMO code. Absent if
+ *   the API returned an unrecognized code.
  */
 export interface WeatherData {
   displayName: string;
@@ -94,8 +146,7 @@ export interface WeatherData {
   windDirectionDeg: number;
   humidityPercent: number;
   precipitationMm: number;
-  weatherCode?: WeatherCode;
-  conditionLabel: string;
+  status?: WeatherStatus;
 }
 
 /**

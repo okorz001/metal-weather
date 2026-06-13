@@ -37,7 +37,7 @@ export default function WeatherCard({
     <div className="rounded-lg bg-zinc-900 p-6 text-white">
       <div className="mb-4">
         <div className="text-sm font-semibold tracking-wide text-zinc-400 uppercase">
-          {weather.conditionLabel}
+          {weather.status}
         </div>
         <div className="text-xl font-bold">{weather.displayName}</div>
       </div>

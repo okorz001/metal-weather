@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { WeatherCode } from "./types";
 import { fetchWeather } from "./weather";
 
 beforeEach(() => {
@@ -8,7 +7,7 @@ beforeEach(() => {
 });
 
 describe("fetchWeather", () => {
-  it("returns WeatherData on success", async () => {
+  it("returns WeatherData with mapped status on success", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -35,12 +34,11 @@ describe("fetchWeather", () => {
       windDirectionDeg: 180,
       humidityPercent: 75,
       precipitationMm: 0.0,
-      weatherCode: WeatherCode.Overcast,
-      conditionLabel: "",
+      status: "Cloudy",
     });
   });
 
-  it("maps an unrecognized weather code to WeatherCode.Unknown", async () => {
+  it("sets status to undefined for an unrecognized weather code", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -56,7 +54,7 @@ describe("fetchWeather", () => {
     } as Response);
 
     const result = await fetchWeather(47.6, -122.3, "Seattle");
-    expect(result.weatherCode).toBeUndefined();
+    expect(result.status).toBeUndefined();
   });
 
   it("throws when the API returns a non-OK status", async () => {
