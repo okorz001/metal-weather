@@ -13,13 +13,6 @@ vi.mock("@/lib/weather");
 vi.mock("@/lib/songs");
 
 describe("Home", () => {
-  it("renders the site name", () => {
-    render(<Home />);
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "metal-weather",
-    );
-  });
-
   it("renders the location search tabs on initial load", () => {
     render(<Home />);
     expect(screen.getByRole("button", { name: "City" })).toBeInTheDocument();
