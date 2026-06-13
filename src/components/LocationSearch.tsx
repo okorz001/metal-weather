@@ -28,7 +28,9 @@ function LocationTab({
 }: {
   onGeoSearch: (lat: number, lon: number) => void;
 }) {
-  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
   const [geoError, setGeoError] = useState<string | null>(null);
 
   function handleClick() {
@@ -39,7 +41,10 @@ function LocationTab({
     }
     setStatus("loading");
     navigator.geolocation.getCurrentPosition(
-      (pos) => onGeoSearch(pos.coords.latitude, pos.coords.longitude),
+      (pos) => {
+        setStatus("success");
+        onGeoSearch(pos.coords.latitude, pos.coords.longitude);
+      },
       (err) => {
         setGeoError(err.message);
         setStatus("error");
@@ -51,6 +56,9 @@ function LocationTab({
     <div className="flex justify-center">
       {status === "error" && <p className="text-sm text-red-400">{geoError}</p>}
       {status === "loading" && <p className="text-zinc-400">Locating…</p>}
+      {status === "success" && (
+        <p className="text-zinc-400">Using Your Location</p>
+      )}
       {status === "idle" && (
         <button
           onClick={handleClick}

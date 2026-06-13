@@ -47,7 +47,7 @@ describe("LocationSearch", () => {
       ).toBeInTheDocument();
     });
 
-    it("calls onGeoSearch after clicking the button", () => {
+    it("calls onGeoSearch and shows Using Your Location on success", () => {
       const mockGeo = {
         getCurrentPosition: vi.fn((success) => {
           success({ coords: { latitude: 47.6, longitude: -122.3 } });
@@ -61,6 +61,7 @@ describe("LocationSearch", () => {
       expect(onGeoSearch).not.toHaveBeenCalled();
       fireEvent.click(screen.getByRole("button", { name: "Get My Location" }));
       expect(onGeoSearch).toHaveBeenCalledWith(47.6, -122.3);
+      expect(screen.getByText("Using Your Location")).toBeInTheDocument();
     });
 
     it("shows Locating… while waiting for position", () => {
