@@ -51,12 +51,14 @@ function LocationTab({
     return <p className="text-sm text-red-400">{geoError}</p>;
   if (status === "loading") return <p className="text-zinc-400">Locating…</p>;
   return (
-    <button
-      onClick={handleClick}
-      className="rounded-lg bg-zinc-600 px-4 py-2 text-white hover:bg-zinc-500"
-    >
-      Get My Location
-    </button>
+    <div className="flex justify-center">
+      <button
+        onClick={handleClick}
+        className="rounded-lg bg-zinc-600 px-4 py-2 text-white hover:bg-zinc-500"
+      >
+        Get My Location
+      </button>
+    </div>
   );
 }
 
