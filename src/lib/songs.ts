@@ -1,25 +1,19 @@
-import type { Song, SongCatalog } from "./types";
+import type { Song, SongCatalog, WeatherStatus } from "./types";
 
 /**
- * Picks a song from the catalog that matches the given WMO weather code.
+ * Picks a song from the catalog that matches the given weather status.
  *
  * Returns the first song of the matching condition. Falls back to the error
- * song if no condition matches the code.
+ * song if no condition matches or if status is undefined.
  *
  * @param catalog - The full song catalog.
- * @param weatherCode - The WMO weather interpretation code.
- * @returns The matched song and the human-readable condition label.
+ * @param status - The weather status to match against catalog conditions.
+ * @returns The matched or fallback song.
  */
-export function pickSong(
-  catalog: SongCatalog,
-  weatherCode: number,
-): { song: Song; conditionLabel: string } {
+export function pickSong(catalog: SongCatalog, status?: WeatherStatus): Song {
   void catalog;
-  void weatherCode;
-  return {
-    song: { title: "Raining Blood", artist: "Slayer" },
-    conditionLabel: "Rain",
-  };
+  void status;
+  return { title: "Raining Blood", artist: "Slayer" };
 }
 
 /**

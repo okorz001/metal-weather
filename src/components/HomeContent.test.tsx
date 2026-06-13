@@ -25,8 +25,7 @@ const mockWeather: WeatherData = {
   windDirectionDeg: 270,
   humidityPercent: 80,
   precipitationMm: 1.2,
-  weatherCode: 61,
-  conditionLabel: "Rain",
+  status: "Rain",
 };
 
 const mockSong: Song = { title: "Raining Blood", artist: "Slayer" };
@@ -44,10 +43,7 @@ beforeEach(() => {
     displayName: "Seattle, WA, US",
   });
   vi.mocked(weatherModule.fetchWeather).mockResolvedValue(mockWeather);
-  vi.mocked(songsModule.pickSong).mockReturnValue({
-    song: mockSong,
-    conditionLabel: "Rain",
-  });
+  vi.mocked(songsModule.pickSong).mockReturnValue(mockSong);
   vi.mocked(songsModule.pickErrorSong).mockReturnValue(mockErrorSong);
 });
 

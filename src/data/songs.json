@@ -1,13 +1,11 @@
 {
   "conditions": [
     {
-      "label": "Clear Sky",
-      "codes": [0, 1],
+      "status": "Clear",
       "songs": [{ "title": "Highway to Hell", "artist": "AC/DC" }]
     }
   ],
   "error": {
-    "label": "System Error",
     "songs": [{ "title": "The Wicker Man", "artist": "Iron Maiden" }]
   }
 }

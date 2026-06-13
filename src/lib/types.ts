@@ -1,4 +1,19 @@
 /**
+ * High-level weather status derived from a WMO weather code.
+ *
+ * Groups the fine-grained WMO codes into broad conditions used for
+ * song matching and display.
+ */
+export type WeatherStatus =
+  | "Clear"
+  | "Cloudy"
+  | "Foggy"
+  | "Drizzle"
+  | "Rain"
+  | "Snow"
+  | "Thunderstorm";
+
+/**
  * A single song entry in the catalog.
  *
  * @param title - The song title.
@@ -12,15 +27,13 @@ export interface Song {
 }
 
 /**
- * A weather condition entry mapping WMO codes to a set of songs.
+ * A weather condition entry in the song catalog.
  *
- * @param label - Human-readable condition name (e.g. "Clear Sky").
- * @param codes - WMO weather code numbers that match this condition.
+ * @param status - The weather status this condition matches.
  * @param songs - Songs associated with this condition.
  */
 export interface SongCondition {
-  label: string;
-  codes: number[];
+  status: WeatherStatus;
   songs: Song[];
 }
 
@@ -33,7 +46,6 @@ export interface SongCondition {
 export interface SongCatalog {
   conditions: SongCondition[];
   error: {
-    label: string;
     songs: Song[];
   };
 }
@@ -47,8 +59,8 @@ export interface SongCatalog {
  * @param windDirectionDeg - Wind direction in degrees (0–360).
  * @param humidityPercent - Relative humidity as a percentage (0–100).
  * @param precipitationMm - Current precipitation in millimeters.
- * @param weatherCode - WMO weather interpretation code.
- * @param conditionLabel - Human-readable condition label resolved from the song catalog.
+ * @param status - High-level weather status derived from the WMO code. Absent if
+ *   the API returned an unrecognized code.
  */
 export interface WeatherData {
   displayName: string;
@@ -57,8 +69,7 @@ export interface WeatherData {
   windDirectionDeg: number;
   humidityPercent: number;
   precipitationMm: number;
-  weatherCode: number;
-  conditionLabel: string;
+  status?: WeatherStatus;
 }
 
 /**
