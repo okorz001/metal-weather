@@ -8,25 +8,11 @@ import { spawn } from "node:child_process";
 import ytdl from "@distube/ytdl-core";
 import ffmpegStatic from "ffmpeg-static";
 
+import type { Song, SongCatalog } from "../src/lib/types";
+
 import rawSongs from "../src/data/songs.json";
 
-interface Song {
-  title: string;
-  artist: string;
-  audioFile: string;
-  youtubeId: string;
-  startTime: number | null;
-  endTime: number | null;
-  fadeIn: number;
-  fadeOut: number;
-}
-
-interface SongsData {
-  conditions: Array<{ status: string; songs: Song[] }>;
-  error: { songs: Song[] };
-}
-
-const songsData = rawSongs as unknown as SongsData;
+const songsData = rawSongs as unknown as SongCatalog;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -36,33 +22,31 @@ function resolveOutputPath(audioFile: string): string {
 }
 
 async function downloadSong(song: Song, force: boolean): Promise<void> {
-  if (song.startTime === null || song.endTime === null) {
-    console.log(`[${song.title}] Skipping — startTime/endTime not configured`);
-    return;
-  }
+  const { title, audioFile, youtubeId, startTime, endTime, fadeIn, fadeOut } =
+    song;
 
-  const outputPath = resolveOutputPath(song.audioFile);
+  const outputPath = resolveOutputPath(audioFile);
 
   if (!force && existsSync(outputPath)) {
     console.log(
-      `[${song.title}] Already exists, skipping (use --force to re-download)`,
+      `[${title}] Already exists, skipping (use --force to re-download)`,
     );
     return;
   }
 
-  const tmpFile = join(tmpdir(), `metal-weather-${song.youtubeId}.webm`);
+  const tmpFile = join(tmpdir(), `metal-weather-${youtubeId}.webm`);
 
   try {
-    console.log(`[${song.title}] Downloading...`);
-    const stream = ytdl(`https://www.youtube.com/watch?v=${song.youtubeId}`, {
+    console.log(`[${title}] Downloading...`);
+    const stream = ytdl(`https://www.youtube.com/watch?v=${youtubeId}`, {
       filter: "audioonly",
     });
     await pipeline(stream, createWriteStream(tmpFile));
 
-    console.log(`[${song.title}] Processing...`);
+    console.log(`[${title}] Processing...`);
 
-    const outDuration = song.endTime - song.startTime;
-    const fadeOutStart = outDuration - song.fadeOut;
+    const outDuration = endTime - startTime;
+    const fadeOutStart = outDuration - fadeOut;
 
     mkdirSync(dirname(outputPath), { recursive: true });
 
@@ -72,11 +56,11 @@ async function downloadSong(song: Song, force: boolean): Promise<void> {
         "-i",
         tmpFile,
         "-ss",
-        String(song.startTime),
+        String(startTime),
         "-to",
-        String(song.endTime),
+        String(endTime),
         "-af",
-        `afade=t=in:d=${song.fadeIn},afade=t=out:st=${fadeOutStart}:d=${song.fadeOut}`,
+        `afade=t=in:d=${fadeIn},afade=t=out:st=${fadeOutStart}:d=${fadeOut}`,
         "-vn",
         "-acodec",
         "libmp3lame",
@@ -91,7 +75,7 @@ async function downloadSong(song: Song, force: boolean): Promise<void> {
       proc.on("error", reject);
     });
 
-    console.log(`[${song.title}] Done — ${outputPath}`);
+    console.log(`[${title}] Done — ${outputPath}`);
   } finally {
     try {
       await unlink(tmpFile);
@@ -107,10 +91,10 @@ const force = args.includes("--force");
 const titleFilter = args.find((a) => !a.startsWith("--"));
 
 // Flatten all songs from conditions + error
-const allSongs: Song[] = [
+const allSongs = [
   ...songsData.conditions.flatMap((c) => c.songs),
   ...songsData.error.songs,
-];
+] as Song[];
 
 const targets = titleFilter
   ? allSongs.filter((s) => s.title.toLowerCase() === titleFilter.toLowerCase())

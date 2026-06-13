@@ -18,14 +18,22 @@ export type WeatherStatus =
  *
  * @param title - The song title.
  * @param artist - The performing artist or band.
- * @param audioFile - Optional path to the MP3 asset served from public/, e.g. `/assets/raining-blood.mp3`.
- * @param youtubeId - Optional YouTube video ID.
+ * @param audioFile - Path to the MP3 asset served from public/, e.g. `/assets/raining-blood.mp3`.
+ * @param youtubeId - YouTube video ID.
+ * @param startTime - Start time in seconds for the cropped audio clip.
+ * @param endTime - End time in seconds for the cropped audio clip.
+ * @param fadeIn - Fade-in duration in seconds for the audio clip.
+ * @param fadeOut - Fade-out duration in seconds for the audio clip.
  */
 export interface Song {
   title: string;
   artist: string;
-  audioFile?: string;
-  youtubeId?: string;
+  audioFile: string;
+  youtubeId: string;
+  startTime: number;
+  endTime: number;
+  fadeIn: number;
+  fadeOut: number;
 }
 
 /**

@@ -8,8 +8,8 @@
           "artist": "AC/DC",
           "audioFile": "/assets/highway-to-hell.mp3",
           "youtubeId": "l482T0yNkeo",
-          "startTime": null,
-          "endTime": null,
+          "startTime": 0,
+          "endTime": 30,
           "fadeIn": 2,
           "fadeOut": 2
         }
@@ -23,8 +23,8 @@
           "artist": "Metallica",
           "audioFile": "/assets/fade-to-black.mp3",
           "youtubeId": "lpy0El2YV9Q",
-          "startTime": null,
-          "endTime": null,
+          "startTime": 0,
+          "endTime": 30,
           "fadeIn": 2,
           "fadeOut": 2
         }
@@ -38,8 +38,8 @@
           "artist": "Black Sabbath",
           "audioFile": "/assets/war-pigs.mp3",
           "youtubeId": "PrZFscfJxXc",
-          "startTime": null,
-          "endTime": null,
+          "startTime": 0,
+          "endTime": 30,
           "fadeIn": 2,
           "fadeOut": 2
         }
@@ -53,8 +53,8 @@
           "artist": "Guns N' Roses",
           "audioFile": "/assets/november-rain.mp3",
           "youtubeId": "8SbUC-UaAxE",
-          "startTime": null,
-          "endTime": null,
+          "startTime": 0,
+          "endTime": 30,
           "fadeIn": 2,
           "fadeOut": 2
         }
@@ -68,8 +68,8 @@
           "artist": "Slayer",
           "audioFile": "/assets/raining-blood.mp3",
           "youtubeId": "d3-ITn0e00U",
-          "startTime": null,
-          "endTime": null,
+          "startTime": 0,
+          "endTime": 30,
           "fadeIn": 2,
           "fadeOut": 2
         }
@@ -83,8 +83,8 @@
           "artist": "Black Sabbath",
           "audioFile": "/assets/snowblind.mp3",
           "youtubeId": "WU4eUByUBqE",
-          "startTime": null,
-          "endTime": null,
+          "startTime": 0,
+          "endTime": 30,
           "fadeIn": 2,
           "fadeOut": 2
         }
@@ -98,8 +98,8 @@
           "artist": "AC/DC",
           "audioFile": "/assets/thunderstruck.mp3",
           "youtubeId": "v2AC41dglnM",
-          "startTime": null,
-          "endTime": null,
+          "startTime": 0,
+          "endTime": 30,
           "fadeIn": 2,
           "fadeOut": 2
         }
@@ -113,8 +113,8 @@
         "artist": "Iron Maiden",
         "audioFile": "/assets/the-wicker-man.mp3",
         "youtubeId": "-sQ3Af3DpeM",
-        "startTime": null,
-        "endTime": null,
+        "startTime": 0,
+        "endTime": 30,
         "fadeIn": 2,
         "fadeOut": 2
       }
