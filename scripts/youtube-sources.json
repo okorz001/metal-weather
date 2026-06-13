@@ -2,49 +2,49 @@
   {
     "title": "Highway to Hell",
     "artist": "AC/DC",
-    "audioFile": "/audio/highway-to-hell.mp3",
+    "audioFile": "/assets/highway-to-hell.mp3",
     "youtubeId": "l482T0yNkeo"
   },
   {
     "title": "Fade to Black",
     "artist": "Metallica",
-    "audioFile": "/audio/fade-to-black.mp3",
+    "audioFile": "/assets/fade-to-black.mp3",
     "youtubeId": "lpy0El2YV9Q"
   },
   {
     "title": "War Pigs",
     "artist": "Black Sabbath",
-    "audioFile": "/audio/war-pigs.mp3",
+    "audioFile": "/assets/war-pigs.mp3",
     "youtubeId": "PrZFscfJxXc"
   },
   {
     "title": "November Rain",
     "artist": "Guns N' Roses",
-    "audioFile": "/audio/november-rain.mp3",
+    "audioFile": "/assets/november-rain.mp3",
     "youtubeId": "8SbUC-UaAxE"
   },
   {
     "title": "Raining Blood",
     "artist": "Slayer",
-    "audioFile": "/audio/raining-blood.mp3",
+    "audioFile": "/assets/raining-blood.mp3",
     "youtubeId": "d3-ITn0e00U"
   },
   {
     "title": "Snowblind",
     "artist": "Black Sabbath",
-    "audioFile": "/audio/snowblind.mp3",
+    "audioFile": "/assets/snowblind.mp3",
     "youtubeId": "WU4eUByUBqE"
   },
   {
     "title": "Thunderstruck",
     "artist": "AC/DC",
-    "audioFile": "/audio/thunderstruck.mp3",
+    "audioFile": "/assets/thunderstruck.mp3",
     "youtubeId": "v2AC41dglnM"
   },
   {
     "title": "The Wicker Man",
     "artist": "Iron Maiden",
-    "audioFile": "/audio/the-wicker-man.mp3",
+    "audioFile": "/assets/the-wicker-man.mp3",
     "youtubeId": "-sQ3Af3DpeM"
   }
 ]

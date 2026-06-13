@@ -6,7 +6,7 @@
         {
           "title": "Highway to Hell",
           "artist": "AC/DC",
-          "audioFile": "/audio/highway-to-hell.mp3"
+          "audioFile": "/assets/highway-to-hell.mp3"
         }
       ]
     },
@@ -16,7 +16,7 @@
         {
           "title": "Fade to Black",
           "artist": "Metallica",
-          "audioFile": "/audio/fade-to-black.mp3"
+          "audioFile": "/assets/fade-to-black.mp3"
         }
       ]
     },
@@ -26,7 +26,7 @@
         {
           "title": "War Pigs",
           "artist": "Black Sabbath",
-          "audioFile": "/audio/war-pigs.mp3"
+          "audioFile": "/assets/war-pigs.mp3"
         }
       ]
     },
@@ -36,7 +36,7 @@
         {
           "title": "November Rain",
           "artist": "Guns N' Roses",
-          "audioFile": "/audio/november-rain.mp3"
+          "audioFile": "/assets/november-rain.mp3"
         }
       ]
     },
@@ -46,7 +46,7 @@
         {
           "title": "Raining Blood",
           "artist": "Slayer",
-          "audioFile": "/audio/raining-blood.mp3"
+          "audioFile": "/assets/raining-blood.mp3"
         }
       ]
     },
@@ -56,7 +56,7 @@
         {
           "title": "Snowblind",
           "artist": "Black Sabbath",
-          "audioFile": "/audio/snowblind.mp3"
+          "audioFile": "/assets/snowblind.mp3"
         }
       ]
     },
@@ -66,7 +66,7 @@
         {
           "title": "Thunderstruck",
           "artist": "AC/DC",
-          "audioFile": "/audio/thunderstruck.mp3"
+          "audioFile": "/assets/thunderstruck.mp3"
         }
       ]
     }
@@ -76,7 +76,7 @@
       {
         "title": "The Wicker Man",
         "artist": "Iron Maiden",
-        "audioFile": "/audio/the-wicker-man.mp3"
+        "audioFile": "/assets/the-wicker-man.mp3"
       }
     ]
   }
