@@ -4,12 +4,12 @@
       "status": "Clear",
       "songs": [
         {
-          "title": "Highway to Hell",
-          "artist": "AC/DC",
-          "audioFile": "/assets/highway-to-hell.mp3",
-          "youtubeId": "l482T0yNkeo",
-          "startTime": 0,
-          "endTime": 30,
+          "title": "Power of the Sun",
+          "artist": "Bruce Dickinson",
+          "audioFile": "/assets/power-of-the-sun.mp3",
+          "youtubeId": "eJQxBBQsldE",
+          "startTime": 42,
+          "endTime": 64,
           "fadeIn": 2,
           "fadeOut": 2
         }
