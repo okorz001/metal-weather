@@ -11,9 +11,13 @@ import type { Song, SongCatalog, WeatherStatus } from "./types";
  * @returns The matched or fallback song.
  */
 export function pickSong(catalog: SongCatalog, status?: WeatherStatus): Song {
-  void catalog;
-  void status;
-  return { title: "Raining Blood", artist: "Slayer" };
+  if (status !== undefined) {
+    const condition = catalog.conditions.find((c) => c.status === status);
+    if (condition && condition.songs.length > 0) {
+      return condition.songs[0];
+    }
+  }
+  return pickErrorSong(catalog);
 }
 
 /**
@@ -25,6 +29,5 @@ export function pickSong(catalog: SongCatalog, status?: WeatherStatus): Song {
  * @returns The first song from the catalog's error entry.
  */
 export function pickErrorSong(catalog: SongCatalog): Song {
-  void catalog;
-  return { title: "The Wicker Man", artist: "Iron Maiden" };
+  return catalog.error.songs[0];
 }

@@ -2,10 +2,82 @@
   "conditions": [
     {
       "status": "Clear",
-      "songs": [{ "title": "Highway to Hell", "artist": "AC/DC" }]
+      "songs": [
+        {
+          "title": "Highway to Hell",
+          "artist": "AC/DC",
+          "youtubeId": "l482T0yNkeo"
+        }
+      ]
+    },
+    {
+      "status": "Cloudy",
+      "songs": [
+        {
+          "title": "Fade to Black",
+          "artist": "Metallica",
+          "youtubeId": "lpy0El2YV9Q"
+        }
+      ]
+    },
+    {
+      "status": "Foggy",
+      "songs": [
+        {
+          "title": "War Pigs",
+          "artist": "Black Sabbath",
+          "youtubeId": "PrZFscfJxXc"
+        }
+      ]
+    },
+    {
+      "status": "Drizzle",
+      "songs": [
+        {
+          "title": "November Rain",
+          "artist": "Guns N' Roses",
+          "youtubeId": "8SbUC-UaAxE"
+        }
+      ]
+    },
+    {
+      "status": "Rain",
+      "songs": [
+        {
+          "title": "Raining Blood",
+          "artist": "Slayer",
+          "youtubeId": "d3-ITn0e00U"
+        }
+      ]
+    },
+    {
+      "status": "Snow",
+      "songs": [
+        {
+          "title": "Snowblind",
+          "artist": "Black Sabbath",
+          "youtubeId": "WU4eUByUBqE"
+        }
+      ]
+    },
+    {
+      "status": "Thunderstorm",
+      "songs": [
+        {
+          "title": "Thunderstruck",
+          "artist": "AC/DC",
+          "youtubeId": "v2AC41dglnM"
+        }
+      ]
     }
   ],
   "error": {
-    "songs": [{ "title": "The Wicker Man", "artist": "Iron Maiden" }]
+    "songs": [
+      {
+        "title": "The Wicker Man",
+        "artist": "Iron Maiden",
+        "youtubeId": "-sQ3Af3DpeM"
+      }
+    ]
   }
 }
