@@ -1,4 +1,6 @@
 const GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search";
+const REVERSE_GEOCODING_URL =
+  "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
 interface GeocodingResult {
   latitude: number;
@@ -73,4 +75,50 @@ export async function geocodeLocation(
     .join(", ");
 
   return { lat: result.latitude, lon: result.longitude, displayName };
+}
+
+interface ReverseGeocodingResult {
+  city?: string;
+  principalSubdivision?: string;
+  countryName?: string;
+}
+
+/**
+ * Resolves geographic coordinates to a human-readable location name.
+ *
+ * Calls the BigDataCloud reverse geocoding API (no API key required) and
+ * returns a display name built from the city, region, and country. Throws a
+ * descriptive error if the request fails or returns a non-OK status; callers
+ * should fall back to raw coordinate strings on failure.
+ *
+ * @param lat - The latitude in decimal degrees.
+ * @param lon - The longitude in decimal degrees.
+ * @returns A human-readable display name such as "Seattle, Washington, United States of America".
+ */
+export async function reverseGeocode(
+  lat: number,
+  lon: number,
+): Promise<string> {
+  const url = `${REVERSE_GEOCODING_URL}?latitude=${lat}&longitude=${lon}&localityLanguage=en`;
+
+  let response: Response;
+  try {
+    response = await fetch(url);
+  } catch (e) {
+    throw new Error(
+      `Failed to reach reverse geocoding service: ${e instanceof Error ? e.message : String(e)}`,
+    );
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      `Reverse geocoding request failed with status ${response.status}`,
+    );
+  }
+
+  const data = (await response.json()) as ReverseGeocodingResult;
+
+  return [data.city, data.principalSubdivision, data.countryName]
+    .filter(Boolean)
+    .join(", ");
 }

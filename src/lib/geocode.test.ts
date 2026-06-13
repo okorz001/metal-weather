@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { geocodeLocation } from "./geocode";
+import { geocodeLocation, reverseGeocode } from "./geocode";
 
 beforeEach(() => {
   vi.restoreAllMocks();
@@ -135,6 +135,55 @@ describe("geocodeLocation", () => {
 
     await expect(geocodeLocation("Seattle")).rejects.toThrow(
       "Failed to reach geocoding service: Network error",
+    );
+  });
+});
+
+describe("reverseGeocode", () => {
+  it("returns a display name built from city, region, and country", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        city: "Seattle",
+        principalSubdivision: "Washington",
+        countryName: "United States of America",
+      }),
+    } as Response);
+
+    const result = await reverseGeocode(47.60621, -122.33207);
+    expect(result).toBe("Seattle, Washington, United States of America");
+  });
+
+  it("omits empty fields from the display name", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        city: "",
+        principalSubdivision: "Washington",
+        countryName: "United States of America",
+      }),
+    } as Response);
+
+    const result = await reverseGeocode(47.60621, -122.33207);
+    expect(result).toBe("Washington, United States of America");
+  });
+
+  it("throws when the API returns a non-OK status", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: false,
+      status: 500,
+    } as Response);
+
+    await expect(reverseGeocode(0, 0)).rejects.toThrow(
+      "Reverse geocoding request failed with status 500",
+    );
+  });
+
+  it("throws when the network request fails", async () => {
+    vi.spyOn(global, "fetch").mockRejectedValue(new Error("Network error"));
+
+    await expect(reverseGeocode(0, 0)).rejects.toThrow(
+      "Failed to reach reverse geocoding service: Network error",
     );
   });
 });

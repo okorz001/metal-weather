@@ -40,7 +40,14 @@ describe("LocationSearch", () => {
   });
 
   describe("Current Location tab", () => {
-    it("shows Locating… and calls onGeoSearch on success", () => {
+    it("shows Get My Location button initially", () => {
+      renderTab("location");
+      expect(
+        screen.getByRole("button", { name: "Get My Location" }),
+      ).toBeInTheDocument();
+    });
+
+    it("calls onGeoSearch after clicking the button", () => {
       const mockGeo = {
         getCurrentPosition: vi.fn((success) => {
           success({ coords: { latitude: 47.6, longitude: -122.3 } });
@@ -51,20 +58,34 @@ describe("LocationSearch", () => {
         configurable: true,
       });
       const { onGeoSearch } = renderTab("location");
+      expect(onGeoSearch).not.toHaveBeenCalled();
+      fireEvent.click(screen.getByRole("button", { name: "Get My Location" }));
       expect(onGeoSearch).toHaveBeenCalledWith(47.6, -122.3);
     });
 
-    it("shows error when geolocation is not supported", async () => {
+    it("shows Locating… while waiting for position", () => {
+      const mockGeo = {
+        getCurrentPosition: vi.fn(), // never resolves
+      };
+      Object.defineProperty(navigator, "geolocation", {
+        value: mockGeo,
+        configurable: true,
+      });
+      renderTab("location");
+      fireEvent.click(screen.getByRole("button", { name: "Get My Location" }));
+      expect(screen.getByText("Locating…")).toBeInTheDocument();
+    });
+
+    it("shows error when geolocation is not supported", () => {
       Object.defineProperty(navigator, "geolocation", {
         value: undefined,
         configurable: true,
       });
       renderTab("location");
-      await waitFor(() =>
-        expect(
-          screen.getByText("Geolocation is not supported by this browser."),
-        ).toBeInTheDocument(),
-      );
+      fireEvent.click(screen.getByRole("button", { name: "Get My Location" }));
+      expect(
+        screen.getByText("Geolocation is not supported by this browser."),
+      ).toBeInTheDocument();
     });
 
     it("shows error message on geolocation failure", () => {
@@ -78,6 +99,7 @@ describe("LocationSearch", () => {
         configurable: true,
       });
       renderTab("location");
+      fireEvent.click(screen.getByRole("button", { name: "Get My Location" }));
       expect(screen.getByText("Permission denied")).toBeInTheDocument();
     });
   });

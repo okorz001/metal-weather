@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import catalog from "@/data/songs.json";
-import { geocodeLocation } from "@/lib/geocode";
+import { geocodeLocation, reverseGeocode } from "@/lib/geocode";
 import { pickErrorSong, pickSong } from "@/lib/songs";
 import type { SongCatalog, WeatherResult } from "@/lib/types";
 import { fetchWeather } from "@/lib/weather";
@@ -109,11 +109,22 @@ export default function HomeContent() {
     void runSearchFromQuery(location, tab, id);
   }
 
+  async function runGeoSearch(lat: number, lon: number, id: number) {
+    let displayName = `${lat},${lon}`;
+    try {
+      displayName = await reverseGeocode(lat, lon);
+    } catch {
+      // fall back to raw coordinates
+    }
+    if (searchIdRef.current !== id) return;
+    await runSearch(lat, lon, displayName, id);
+  }
+
   function handleGeoSearch(lat: number, lon: number) {
     const id = ++searchIdRef.current;
     setLoading(true);
     setResult(null);
-    void runSearch(lat, lon, `${lat},${lon}`, id);
+    void runGeoSearch(lat, lon, id);
   }
 
   function handleTabChange(newTab: Tab) {

@@ -42,6 +42,9 @@ beforeEach(() => {
     lon: -122.3,
     displayName: "Seattle, WA, US",
   });
+  vi.mocked(geocodeModule.reverseGeocode).mockResolvedValue(
+    "Seattle, Washington, United States of America",
+  );
   vi.mocked(weatherModule.fetchWeather).mockResolvedValue(mockWeather);
   vi.mocked(songsModule.pickSong).mockReturnValue(mockSong);
   vi.mocked(songsModule.pickErrorSong).mockReturnValue(mockErrorSong);
@@ -83,6 +86,56 @@ describe("HomeContent", () => {
     fireEvent.click(screen.getByRole("button", { name: "City" }));
     expect(screen.getByPlaceholderText("City name")).toBeInTheDocument();
     expect(push).not.toHaveBeenCalled();
+  });
+
+  describe("Current Location geo search", () => {
+    it("reverse-geocodes coordinates and renders WeatherCard on success", async () => {
+      render(<HomeContent />);
+      const mockGeo = {
+        getCurrentPosition: vi.fn((success) => {
+          success({ coords: { latitude: 47.6, longitude: -122.3 } });
+        }),
+      };
+      Object.defineProperty(navigator, "geolocation", {
+        value: mockGeo,
+        configurable: true,
+      });
+      fireEvent.click(screen.getByRole("button", { name: "Get My Location" }));
+      await waitFor(() =>
+        expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
+      );
+      expect(geocodeModule.reverseGeocode).toHaveBeenCalledWith(47.6, -122.3);
+      expect(weatherModule.fetchWeather).toHaveBeenCalledWith(
+        47.6,
+        -122.3,
+        "Seattle, Washington, United States of America",
+      );
+    });
+
+    it("falls back to raw coordinates when reverse geocoding fails", async () => {
+      vi.mocked(geocodeModule.reverseGeocode).mockRejectedValue(
+        new Error("Service unavailable"),
+      );
+      render(<HomeContent />);
+      const mockGeo = {
+        getCurrentPosition: vi.fn((success) => {
+          success({ coords: { latitude: 47.6, longitude: -122.3 } });
+        }),
+      };
+      Object.defineProperty(navigator, "geolocation", {
+        value: mockGeo,
+        configurable: true,
+      });
+      fireEvent.click(screen.getByRole("button", { name: "Get My Location" }));
+      await waitFor(() =>
+        expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
+      );
+      expect(weatherModule.fetchWeather).toHaveBeenCalledWith(
+        47.6,
+        -122.3,
+        "47.6,-122.3",
+      );
+    });
   });
 
   describe("with city tab active via URL", () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 /** The three location input modes. */
 export type Tab = "location" | "city" | "coords";
@@ -15,43 +15,56 @@ const TAB_LABELS: Record<Tab, string> = {
 };
 
 /**
- * Mounts when the Current Location tab is active and immediately requests the
- * device's GPS position. Unmounts (and resets) when the user switches away,
- * so returning to the tab re-triggers the request.
+ * Content for the Current Location tab. Shows a button that requests the
+ * device's GPS position when clicked. Unmounts (and resets to idle) when the
+ * user switches away, so returning to the tab shows the button again.
  *
  * @param onGeoSearch - Called with latitude and longitude on success.
- * @returns Status text: "Locating…" while pending, or a red error on failure.
+ * @returns A button in idle state, a "Locating…" message while pending, or a
+ *   red error message on failure.
  */
 function LocationTab({
   onGeoSearch,
 }: {
   onGeoSearch: (lat: number, lon: number) => void;
 }) {
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [geoError, setGeoError] = useState<string | null>(null);
 
-  useEffect(() => {
+  function handleClick() {
     if (!navigator.geolocation) {
-      // Deferred to avoid synchronous setState in effect body.
-      Promise.resolve().then(() =>
-        setGeoError("Geolocation is not supported by this browser."),
-      );
+      setGeoError("Geolocation is not supported by this browser.");
+      setStatus("error");
       return;
     }
+    setStatus("loading");
     navigator.geolocation.getCurrentPosition(
       (pos) => onGeoSearch(pos.coords.latitude, pos.coords.longitude),
-      (err) => setGeoError(err.message),
+      (err) => {
+        setGeoError(err.message);
+        setStatus("error");
+      },
     );
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }
 
-  if (geoError) return <p className="text-sm text-red-400">{geoError}</p>;
-  return <p className="text-zinc-400">Locating…</p>;
+  if (status === "error")
+    return <p className="text-sm text-red-400">{geoError}</p>;
+  if (status === "loading") return <p className="text-zinc-400">Locating…</p>;
+  return (
+    <button
+      onClick={handleClick}
+      className="rounded-lg bg-zinc-600 px-4 py-2 text-white hover:bg-zinc-500"
+    >
+      Get My Location
+    </button>
+  );
 }
 
 /**
  * A tabbed location input component with three modes.
  *
- * - **Current Location**: automatically requests the device's GPS coordinates
- *   via the browser Geolocation API when the tab becomes active and calls
+ * - **Current Location**: shows a "Get My Location" button. On click, requests
+ *   the device's GPS coordinates via the browser Geolocation API and calls
  *   `onGeoSearch` with the result. Coordinates are not pushed to the URL.
  * - **City**: accepts a free-text city name and calls `onSearch` with it for
  *   downstream geocoding.
