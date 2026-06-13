@@ -1,5 +1,67 @@
-import { WeatherCode, WEATHER_CODE_STATUS } from "./types";
-import type { WeatherData } from "./types";
+import type { WeatherData, WeatherStatus } from "./types";
+
+// WMO weather interpretation codes — internal to this module.
+enum WeatherCode {
+  ClearSky = 0,
+  MainlyClear = 1,
+  PartlyCloudy = 2,
+  Overcast = 3,
+  Fog = 45,
+  DepositingRimeFog = 48,
+  DrizzleLight = 51,
+  DrizzleModerate = 53,
+  DrizzleDense = 55,
+  FreezingDrizzleLight = 56,
+  FreezingDrizzleHeavy = 57,
+  RainSlight = 61,
+  RainModerate = 63,
+  RainHeavy = 65,
+  FreezingRainLight = 66,
+  FreezingRainHeavy = 67,
+  SnowSlight = 71,
+  SnowModerate = 73,
+  SnowHeavy = 75,
+  SnowGrains = 77,
+  RainShowersSlight = 80,
+  RainShowersModerate = 81,
+  RainShowersViolent = 82,
+  SnowShowersSlight = 85,
+  SnowShowersHeavy = 86,
+  Thunderstorm = 95,
+  ThunderstormWithSlightHail = 96,
+  ThunderstormWithHeavyHail = 99,
+}
+
+const WEATHER_CODE_STATUS: Partial<Record<WeatherCode, WeatherStatus>> = {
+  [WeatherCode.ClearSky]: "Clear",
+  [WeatherCode.MainlyClear]: "Clear",
+  [WeatherCode.PartlyCloudy]: "Cloudy",
+  [WeatherCode.Overcast]: "Cloudy",
+  [WeatherCode.Fog]: "Foggy",
+  [WeatherCode.DepositingRimeFog]: "Foggy",
+  [WeatherCode.DrizzleLight]: "Drizzle",
+  [WeatherCode.DrizzleModerate]: "Drizzle",
+  [WeatherCode.DrizzleDense]: "Drizzle",
+  [WeatherCode.FreezingDrizzleLight]: "Drizzle",
+  [WeatherCode.FreezingDrizzleHeavy]: "Drizzle",
+  [WeatherCode.RainSlight]: "Rain",
+  [WeatherCode.RainModerate]: "Rain",
+  [WeatherCode.RainHeavy]: "Rain",
+  [WeatherCode.FreezingRainLight]: "Rain",
+  [WeatherCode.FreezingRainHeavy]: "Rain",
+  [WeatherCode.SnowSlight]: "Snow",
+  [WeatherCode.SnowModerate]: "Snow",
+  [WeatherCode.SnowHeavy]: "Snow",
+  [WeatherCode.SnowGrains]: "Snow",
+  [WeatherCode.RainShowersSlight]: "Rain",
+  [WeatherCode.RainShowersModerate]: "Rain",
+  [WeatherCode.RainShowersViolent]: "Rain",
+  [WeatherCode.SnowShowersSlight]: "Snow",
+  [WeatherCode.SnowShowersHeavy]: "Snow",
+  [WeatherCode.Thunderstorm]: "Thunderstorm",
+  [WeatherCode.ThunderstormWithSlightHail]: "Thunderstorm",
+  [WeatherCode.ThunderstormWithHeavyHail]: "Thunderstorm",
+};
 
 const FORECAST_URL = "https://api.open-meteo.com/v1/forecast";
 const CURRENT_FIELDS =

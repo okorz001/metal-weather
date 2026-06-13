@@ -1,46 +1,8 @@
 /**
- * WMO weather interpretation codes as defined by the World Meteorological Organization.
- *
- * These are vendor-agnostic codes used by weather services (e.g. Open-Meteo) to
- * describe current conditions. See the WMO GRIB code table for the full specification.
- */
-export enum WeatherCode {
-  ClearSky = 0,
-  MainlyClear = 1,
-  PartlyCloudy = 2,
-  Overcast = 3,
-  Fog = 45,
-  DepositingRimeFog = 48,
-  DrizzleLight = 51,
-  DrizzleModerate = 53,
-  DrizzleDense = 55,
-  FreezingDrizzleLight = 56,
-  FreezingDrizzleHeavy = 57,
-  RainSlight = 61,
-  RainModerate = 63,
-  RainHeavy = 65,
-  FreezingRainLight = 66,
-  FreezingRainHeavy = 67,
-  SnowSlight = 71,
-  SnowModerate = 73,
-  SnowHeavy = 75,
-  SnowGrains = 77,
-  RainShowersSlight = 80,
-  RainShowersModerate = 81,
-  RainShowersViolent = 82,
-  SnowShowersSlight = 85,
-  SnowShowersHeavy = 86,
-  Thunderstorm = 95,
-  ThunderstormWithSlightHail = 96,
-  ThunderstormWithHeavyHail = 99,
-}
-
-/**
  * High-level weather status derived from a WMO weather code.
  *
  * Groups the fine-grained WMO codes into broad conditions used for
- * song matching and display. Use `WEATHER_CODE_STATUS` to map a
- * `WeatherCode` to its corresponding status.
+ * song matching and display.
  */
 export type WeatherStatus =
   | "Clear"
@@ -50,45 +12,6 @@ export type WeatherStatus =
   | "Rain"
   | "Snow"
   | "Thunderstorm";
-
-/**
- * Maps each `WeatherCode` to its corresponding `WeatherStatus`.
- *
- * Codes absent from this map (e.g. unrecognized values returned by an API)
- * produce `undefined` when indexed, which callers should treat as an unknown
- * condition and fall back to a default behavior.
- */
-export const WEATHER_CODE_STATUS: Partial<Record<WeatherCode, WeatherStatus>> =
-  {
-    [WeatherCode.ClearSky]: "Clear",
-    [WeatherCode.MainlyClear]: "Clear",
-    [WeatherCode.PartlyCloudy]: "Cloudy",
-    [WeatherCode.Overcast]: "Cloudy",
-    [WeatherCode.Fog]: "Foggy",
-    [WeatherCode.DepositingRimeFog]: "Foggy",
-    [WeatherCode.DrizzleLight]: "Drizzle",
-    [WeatherCode.DrizzleModerate]: "Drizzle",
-    [WeatherCode.DrizzleDense]: "Drizzle",
-    [WeatherCode.FreezingDrizzleLight]: "Drizzle",
-    [WeatherCode.FreezingDrizzleHeavy]: "Drizzle",
-    [WeatherCode.RainSlight]: "Rain",
-    [WeatherCode.RainModerate]: "Rain",
-    [WeatherCode.RainHeavy]: "Rain",
-    [WeatherCode.FreezingRainLight]: "Rain",
-    [WeatherCode.FreezingRainHeavy]: "Rain",
-    [WeatherCode.SnowSlight]: "Snow",
-    [WeatherCode.SnowModerate]: "Snow",
-    [WeatherCode.SnowHeavy]: "Snow",
-    [WeatherCode.SnowGrains]: "Snow",
-    [WeatherCode.RainShowersSlight]: "Rain",
-    [WeatherCode.RainShowersModerate]: "Rain",
-    [WeatherCode.RainShowersViolent]: "Rain",
-    [WeatherCode.SnowShowersSlight]: "Snow",
-    [WeatherCode.SnowShowersHeavy]: "Snow",
-    [WeatherCode.Thunderstorm]: "Thunderstorm",
-    [WeatherCode.ThunderstormWithSlightHail]: "Thunderstorm",
-    [WeatherCode.ThunderstormWithHeavyHail]: "Thunderstorm",
-  };
 
 /**
  * A single song entry in the catalog.
