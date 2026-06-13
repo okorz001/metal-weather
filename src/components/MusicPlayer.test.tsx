@@ -58,6 +58,13 @@ describe("MusicPlayer", () => {
     expect(screen.getByRole("button", { name: /play/i })).toBeInTheDocument();
   });
 
+  it("disables controls when audio fails to load", () => {
+    render(<MusicPlayer song={songWithAudio} />);
+    fireEvent.error(document.querySelector("audio")!);
+    expect(screen.getByRole("button", { name: /play/i })).toBeDisabled();
+    expect(screen.getByRole("slider", { name: /seek/i })).toBeDisabled();
+  });
+
   it("updates currentTime when seek slider changes", () => {
     render(<MusicPlayer song={songWithAudio} />);
     const audio = document.querySelector("audio")!;

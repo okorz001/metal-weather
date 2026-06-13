@@ -30,6 +30,7 @@ export default function MusicPlayer({ song }: { song: Song }) {
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [loadError, setLoadError] = useState(false);
 
   // Derived state reset: when the track changes, reset playback state before
   // rendering so the UI reflects the new song immediately (avoids a useEffect
@@ -39,6 +40,7 @@ export default function MusicPlayer({ song }: { song: Song }) {
     setPlaying(false);
     setCurrentTime(0);
     setDuration(0);
+    setLoadError(false);
   }
 
   if (!song.audioFile) return null;
@@ -68,11 +70,13 @@ export default function MusicPlayer({ song }: { song: Song }) {
         onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime ?? 0)}
         onLoadedMetadata={() => setDuration(audioRef.current?.duration ?? 0)}
         onEnded={() => setPlaying(false)}
+        onError={() => setLoadError(true)}
       />
       <button
         onClick={togglePlay}
+        disabled={loadError}
         aria-label={playing ? "Pause" : "Play"}
-        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-zinc-700 text-white hover:bg-zinc-600"
+        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-zinc-700 text-white hover:bg-zinc-600 disabled:cursor-not-allowed disabled:opacity-40"
       >
         {playing ? (
           <svg
@@ -102,8 +106,9 @@ export default function MusicPlayer({ song }: { song: Song }) {
         step={0.1}
         value={currentTime}
         onChange={handleSeek}
+        disabled={loadError}
         aria-label="Seek"
-        className="h-1 flex-1 cursor-pointer accent-zinc-400"
+        className="h-1 flex-1 cursor-pointer accent-zinc-400 disabled:cursor-not-allowed disabled:opacity-40"
       />
       <span className="flex-shrink-0 font-mono text-xs text-zinc-400">
         {`${formatTime(currentTime)} / ${formatTime(duration)}`}
