@@ -67,6 +67,9 @@ export default function MusicPlayer({ song }: { song: Song }) {
       <audio
         ref={audioRef}
         src={song.audioFile}
+        autoPlay
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
         onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime ?? 0)}
         onLoadedMetadata={() => setDuration(audioRef.current?.duration ?? 0)}
         onEnded={() => setPlaying(false)}

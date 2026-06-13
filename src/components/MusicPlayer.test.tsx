@@ -43,6 +43,12 @@ describe("MusicPlayer", () => {
     expect(screen.getByText(/0:00/)).toBeInTheDocument();
   });
 
+  it("shows pause button when audio starts playing via autoplay", () => {
+    render(<MusicPlayer song={songWithAudio} />);
+    fireEvent.play(document.querySelector("audio")!);
+    expect(screen.getByRole("button", { name: /pause/i })).toBeInTheDocument();
+  });
+
   it("calls play and shows pause button when play is clicked", () => {
     render(<MusicPlayer song={songWithAudio} />);
     fireEvent.click(screen.getByRole("button", { name: /play/i }));
