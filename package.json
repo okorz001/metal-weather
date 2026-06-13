@@ -11,7 +11,9 @@
     "format:check": "prettier --check .",
     "lint": "eslint src/",
     "test": "vitest run",
-    "verify": "npm run format:check && npm run lint && npm run test && npm run build"
+    "verify": "npm run format:check && npm run lint && npm run test && npm run build",
+    "tools:build": "docker build -t metal-weather-tools -f tools/Dockerfile .",
+    "tools:download": "docker run --rm -v $(pwd):/app metal-weather-tools"
   },
   "dependencies": {
     "next": "^16.2.9",
