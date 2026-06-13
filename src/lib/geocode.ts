@@ -80,7 +80,7 @@ export async function geocodeLocation(
 interface ReverseGeocodingResult {
   city?: string;
   principalSubdivision?: string;
-  countryName?: string;
+  countryCode?: string;
 }
 
 /**
@@ -93,7 +93,7 @@ interface ReverseGeocodingResult {
  *
  * @param lat - The latitude in decimal degrees.
  * @param lon - The longitude in decimal degrees.
- * @returns A human-readable display name such as "Seattle, Washington, United States of America".
+ * @returns A human-readable display name such as "Seattle, Washington, United States".
  */
 export async function reverseGeocode(
   lat: number,
@@ -118,7 +118,12 @@ export async function reverseGeocode(
 
   const data = (await response.json()) as ReverseGeocodingResult;
 
-  return [data.city, data.principalSubdivision, data.countryName]
+  const countryDisplayNames = new Intl.DisplayNames(["en"], { type: "region" });
+  const country = data.countryCode
+    ? (countryDisplayNames.of(data.countryCode) ?? data.countryCode)
+    : undefined;
+
+  return [data.city, data.principalSubdivision, country]
     .filter(Boolean)
     .join(", ");
 }

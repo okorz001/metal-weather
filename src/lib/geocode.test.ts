@@ -146,12 +146,12 @@ describe("reverseGeocode", () => {
       json: async () => ({
         city: "Seattle",
         principalSubdivision: "Washington",
-        countryName: "United States of America",
+        countryCode: "US",
       }),
     } as Response);
 
     const result = await reverseGeocode(47.60621, -122.33207);
-    expect(result).toBe("Seattle, Washington, United States of America");
+    expect(result).toBe("Seattle, Washington, United States");
   });
 
   it("omits empty fields from the display name", async () => {
@@ -160,12 +160,12 @@ describe("reverseGeocode", () => {
       json: async () => ({
         city: "",
         principalSubdivision: "Washington",
-        countryName: "United States of America",
+        countryCode: "US",
       }),
     } as Response);
 
     const result = await reverseGeocode(47.60621, -122.33207);
-    expect(result).toBe("Washington, United States of America");
+    expect(result).toBe("Washington, United States");
   });
 
   it("throws when the API returns a non-OK status", async () => {

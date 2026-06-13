@@ -43,7 +43,7 @@ beforeEach(() => {
     displayName: "Seattle, WA, US",
   });
   vi.mocked(geocodeModule.reverseGeocode).mockResolvedValue(
-    "Seattle, Washington, United States of America",
+    "Seattle, Washington, United States",
   );
   vi.mocked(weatherModule.fetchWeather).mockResolvedValue(mockWeather);
   vi.mocked(songsModule.pickSong).mockReturnValue(mockSong);
@@ -108,7 +108,7 @@ describe("HomeContent", () => {
       expect(weatherModule.fetchWeather).toHaveBeenCalledWith(
         47.6,
         -122.3,
-        "Seattle, Washington, United States of America",
+        "Seattle, Washington, United States",
       );
     });
 
