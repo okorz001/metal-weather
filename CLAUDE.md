@@ -31,3 +31,5 @@ All Markdown section headers and table headers must use title case.
 ## Code Style
 
 All exported symbols must have a full TSDoc comment describing what the function does, its parameters (`@param`), and its return value (`@returns`). One-line summaries are not sufficient for exported API.
+
+For optional values, prefer `?` shorthand (`field?: T`, `param?: T`) over explicit `| undefined` unions.
