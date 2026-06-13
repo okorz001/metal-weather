@@ -74,14 +74,15 @@ describe("HomeContent", () => {
     expect(weatherModule.fetchWeather).not.toHaveBeenCalled();
   });
 
-  it("pushing the City tab button calls router.push with ?tab=city", () => {
+  it("pushing the City tab button switches to the city input without navigating", () => {
     const push = vi.fn();
     vi.mocked(useRouter).mockReturnValue({ push } as ReturnType<
       typeof useRouter
     >);
     render(<HomeContent />);
     fireEvent.click(screen.getByRole("button", { name: "City" }));
-    expect(push).toHaveBeenCalledWith("/?tab=city");
+    expect(screen.getByPlaceholderText("City name")).toBeInTheDocument();
+    expect(push).not.toHaveBeenCalled();
   });
 
   describe("with city tab active via URL", () => {

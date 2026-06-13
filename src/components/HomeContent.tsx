@@ -23,11 +23,14 @@ function parseTab(value: string | null): Tab {
 /**
  * The main application content component.
  *
- * Reads `?tab=` and `?q=` URL search params. For `city` and `coords` tabs,
- * automatically triggers a weather search on mount and whenever `q` changes.
- * For the `location` tab, geolocation is triggered by `LocationSearch` and
- * the result is passed directly to `handleGeoSearch` without modifying the
- * URL. Manages all search state and renders the appropriate result card.
+ * Reads `?tab=` from the URL to initialize the active tab, and `?q=` to
+ * auto-search on mount. Tab selection is managed as local React state after
+ * the initial render, so switching tabs does not cause a navigation. For
+ * `city` and `coords` tabs, automatically triggers a weather search on mount
+ * and whenever `q` changes. For the `location` tab, geolocation is triggered
+ * by `LocationSearch` and the result is passed directly to `handleGeoSearch`
+ * without modifying the URL. Manages all search state and renders the
+ * appropriate result card.
  *
  * Must be rendered inside a `<Suspense>` boundary because it uses
  * `useSearchParams`.
@@ -38,7 +41,7 @@ export default function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const q = searchParams.get("q") ?? "";
-  const tab = parseTab(searchParams.get("tab"));
+  const [tab, setTab] = useState<Tab>(() => parseTab(searchParams.get("tab")));
 
   const [result, setResult] = useState<WeatherResult | null>(null);
   // Start in loading state when a query is already in the URL (e.g. on initial load
@@ -114,14 +117,15 @@ export default function HomeContent() {
   }
 
   function handleTabChange(newTab: Tab) {
-    router.push(`/?tab=${encodeURIComponent(newTab)}`);
+    setTab(newTab);
+    setResult(null);
   }
 
   useEffect(() => {
     if (!q || tab === "location") return;
     const id = ++searchIdRef.current;
     void runSearchFromQuery(q, tab, id);
-  }, [q, tab]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [q]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="w-full max-w-lg space-y-6">
