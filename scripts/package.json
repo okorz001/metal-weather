@@ -1,0 +1,20 @@
+{
+  "name": "metal-weather-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "download": "tsx download.ts"
+  },
+  "dependencies": {
+    "@distube/ytdl-core": "^4",
+    "ffmpeg-static": "^5",
+    "fluent-ffmpeg": "^2"
+  },
+  "devDependencies": {
+    "@types/fluent-ffmpeg": "^2",
+    "@types/node": "^22",
+    "tsx": "^4",
+    "typescript": "^5"
+  }
+}

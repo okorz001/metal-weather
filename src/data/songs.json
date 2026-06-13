@@ -7,7 +7,11 @@
           "title": "Highway to Hell",
           "artist": "AC/DC",
           "audioFile": "/assets/highway-to-hell.mp3",
-          "youtubeId": "l482T0yNkeo"
+          "youtubeId": "l482T0yNkeo",
+          "startTime": null,
+          "endTime": null,
+          "fadeIn": 2,
+          "fadeOut": 2
         }
       ]
     },
@@ -18,7 +22,11 @@
           "title": "Fade to Black",
           "artist": "Metallica",
           "audioFile": "/assets/fade-to-black.mp3",
-          "youtubeId": "lpy0El2YV9Q"
+          "youtubeId": "lpy0El2YV9Q",
+          "startTime": null,
+          "endTime": null,
+          "fadeIn": 2,
+          "fadeOut": 2
         }
       ]
     },
@@ -29,7 +37,11 @@
           "title": "War Pigs",
           "artist": "Black Sabbath",
           "audioFile": "/assets/war-pigs.mp3",
-          "youtubeId": "PrZFscfJxXc"
+          "youtubeId": "PrZFscfJxXc",
+          "startTime": null,
+          "endTime": null,
+          "fadeIn": 2,
+          "fadeOut": 2
         }
       ]
     },
@@ -40,7 +52,11 @@
           "title": "November Rain",
           "artist": "Guns N' Roses",
           "audioFile": "/assets/november-rain.mp3",
-          "youtubeId": "8SbUC-UaAxE"
+          "youtubeId": "8SbUC-UaAxE",
+          "startTime": null,
+          "endTime": null,
+          "fadeIn": 2,
+          "fadeOut": 2
         }
       ]
     },
@@ -51,7 +67,11 @@
           "title": "Raining Blood",
           "artist": "Slayer",
           "audioFile": "/assets/raining-blood.mp3",
-          "youtubeId": "d3-ITn0e00U"
+          "youtubeId": "d3-ITn0e00U",
+          "startTime": null,
+          "endTime": null,
+          "fadeIn": 2,
+          "fadeOut": 2
         }
       ]
     },
@@ -62,7 +82,11 @@
           "title": "Snowblind",
           "artist": "Black Sabbath",
           "audioFile": "/assets/snowblind.mp3",
-          "youtubeId": "WU4eUByUBqE"
+          "youtubeId": "WU4eUByUBqE",
+          "startTime": null,
+          "endTime": null,
+          "fadeIn": 2,
+          "fadeOut": 2
         }
       ]
     },
@@ -73,7 +97,11 @@
           "title": "Thunderstruck",
           "artist": "AC/DC",
           "audioFile": "/assets/thunderstruck.mp3",
-          "youtubeId": "v2AC41dglnM"
+          "youtubeId": "v2AC41dglnM",
+          "startTime": null,
+          "endTime": null,
+          "fadeIn": 2,
+          "fadeOut": 2
         }
       ]
     }
@@ -84,7 +112,11 @@
         "title": "The Wicker Man",
         "artist": "Iron Maiden",
         "audioFile": "/assets/the-wicker-man.mp3",
-        "youtubeId": "-sQ3Af3DpeM"
+        "youtubeId": "-sQ3Af3DpeM",
+        "startTime": null,
+        "endTime": null,
+        "fadeIn": 2,
+        "fadeOut": 2
       }
     ]
   }
