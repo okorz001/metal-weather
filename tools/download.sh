@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+# Downloads, crops, and fades audio for each song in src/data/songs.json.
+# Intended to be run inside the Docker container defined in tools/Dockerfile.
+#
+# Usage:
+#   download.sh [--force] [title]
+#
+#   --force  Re-download even if the output file already exists.
+#   title    Optional song title to process a single song (case-insensitive).
+#            Without this, all songs are processed.
 set -euo pipefail
 
 force=false
@@ -15,6 +24,8 @@ done
 errors=0
 matched=0
 
+# Flatten all songs from conditions[].songs[] and error.songs[] into a stream
+# of compact JSON objects, one per line.
 while IFS= read -r song; do
   title=$(echo "$song" | jq -r '.title')
   youtube_id=$(echo "$song" | jq -r '.youtubeId')
@@ -24,11 +35,15 @@ while IFS= read -r song; do
   fade_in=$(echo "$song" | jq -r '.fadeIn')
   fade_out=$(echo "$song" | jq -r '.fadeOut')
 
+  # Apply optional title filter (case-insensitive).
   if [[ -n "$title_filter" ]] && [[ "${title,,}" != "${title_filter,,}" ]]; then
     continue
   fi
 
   matched=$((matched + 1))
+
+  # audioFile is a public URL path like /assets/foo.mp3; prepend /app/public
+  # to get the filesystem path inside the container (repo root is mounted at /app).
   output_path="/app/public${audio_file}"
 
   if [[ "$force" == false ]] && [[ -f "$output_path" ]]; then
@@ -38,6 +53,8 @@ while IFS= read -r song; do
 
   tmpdir=$(mktemp -d)
 
+  # -x: extract audio only (no video); yt-dlp picks the best available format.
+  # %(ext)s in the template lets yt-dlp append the actual file extension.
   echo "[$title] Downloading..."
   if ! yt-dlp -x -o "$tmpdir/audio.%(ext)s" "https://www.youtube.com/watch?v=$youtube_id"; then
     echo "[$title] Error: yt-dlp failed" >&2
@@ -48,11 +65,20 @@ while IFS= read -r song; do
 
   tmpfile=$(ls "$tmpdir"/audio.* | head -1)
   out_duration=$(( end_time - start_time ))
+  # Fade-out starts this many seconds into the output clip (i.e. fade_out seconds before the end).
   fade_out_start=$(( out_duration - fade_out ))
 
   echo "[$title] Processing..."
   mkdir -p "$(dirname "$output_path")"
 
+  # -ss before -i: input-side seeking, which resets output timestamps to 0.
+  #   This is required so the afade filter's st= (start time) is relative to
+  #   the clipped output, not the original file. Output-side -ss retains the
+  #   original timestamps and breaks the fade-out timing.
+  # -to out_duration: stop after this many seconds of output (not an absolute time).
+  # -af afade: fade in at the start, fade out near the end.
+  # -vn: drop any video stream.
+  # -q:a 2: VBR MP3 quality ~190 kbps.
   if ! ffmpeg -y -ss "$start_time" -i "$tmpfile" \
     -to "$out_duration" \
     -af "afade=t=in:d=${fade_in},afade=t=out:st=${fade_out_start}:d=${fade_out}" \
