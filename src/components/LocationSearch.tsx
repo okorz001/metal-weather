@@ -58,8 +58,7 @@ function LocationTab({
  * - **Coordinates**: accepts explicit latitude and longitude fields and calls
  *   `onSearch` with a `"lat,lon"` string.
  *
- * The active tab is controlled externally via `tab` and `onTabChange` so the
- * selection can be persisted in the URL.
+ * The active tab is controlled externally via `tab` and `onTabChange`.
  *
  * @param tab - The currently active tab.
  * @param onTabChange - Called with the new tab when the user switches tabs.
