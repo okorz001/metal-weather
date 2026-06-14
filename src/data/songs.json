@@ -19,12 +19,12 @@
       "status": "Cloudy",
       "songs": [
         {
-          "title": "Fade to Black",
-          "artist": "Metallica",
-          "audioFile": "/assets/fade-to-black.mp3",
-          "youtubeId": "lpy0El2YV9Q",
-          "startTime": 0,
-          "endTime": 30,
+          "title": "Under the Grey Clouded Winter Sky",
+          "artist": "Amon Amarth",
+          "audioFile": "/assets/under-the-grey-clouded-winter-sky.mp3",
+          "youtubeId": "KZ6Hoya591w",
+          "startTime": 20,
+          "endTime": 40,
           "fadeIn": 2,
           "fadeOut": 2
         }
@@ -34,14 +34,14 @@
       "status": "Foggy",
       "songs": [
         {
-          "title": "War Pigs",
-          "artist": "Black Sabbath",
-          "audioFile": "/assets/war-pigs.mp3",
-          "youtubeId": "PrZFscfJxXc",
-          "startTime": 0,
-          "endTime": 30,
+          "title": "Her Ghost in the Fog",
+          "artist": "Cradle of Filth",
+          "audioFile": "/assets/her-ghost-in-the-fog.mp3",
+          "youtubeId": "QY8_nKejW-c",
+          "startTime": 320,
+          "endTime": 343,
           "fadeIn": 2,
-          "fadeOut": 2
+          "fadeOut": 3
         }
       ]
     },
@@ -49,14 +49,14 @@
       "status": "Drizzle",
       "songs": [
         {
-          "title": "November Rain",
-          "artist": "Guns N' Roses",
-          "audioFile": "/assets/november-rain.mp3",
-          "youtubeId": "8SbUC-UaAxE",
-          "startTime": 0,
-          "endTime": 30,
+          "title": "Desert Rain",
+          "artist": "Iced Earth",
+          "audioFile": "/assets/desert-rain.mp3",
+          "youtubeId": "XKbq5REyT-8",
+          "startTime": 193,
+          "endTime": 219,
           "fadeIn": 2,
-          "fadeOut": 2
+          "fadeOut": 3
         }
       ]
     },
@@ -67,9 +67,9 @@
           "title": "Raining Blood",
           "artist": "Slayer",
           "audioFile": "/assets/raining-blood.mp3",
-          "youtubeId": "d3-ITn0e00U",
-          "startTime": 0,
-          "endTime": 30,
+          "youtubeId": "hFjoOOPU6Xo",
+          "startTime": 157,
+          "endTime": 180,
           "fadeIn": 2,
           "fadeOut": 2
         }
@@ -79,12 +79,12 @@
       "status": "Snow",
       "songs": [
         {
-          "title": "Snowblind",
-          "artist": "Black Sabbath",
-          "audioFile": "/assets/snowblind.mp3",
-          "youtubeId": "WU4eUByUBqE",
-          "startTime": 0,
-          "endTime": 30,
+          "title": "Across the Snows",
+          "artist": "Kiuas",
+          "audioFile": "/assets/across-the-snows.mp3",
+          "youtubeId": "F4d4cVTA6XY",
+          "startTime": 68,
+          "endTime": 90,
           "fadeIn": 2,
           "fadeOut": 2
         }
@@ -94,14 +94,14 @@
       "status": "Thunderstorm",
       "songs": [
         {
-          "title": "Thunderstruck",
-          "artist": "AC/DC",
-          "audioFile": "/assets/thunderstruck.mp3",
-          "youtubeId": "v2AC41dglnM",
+          "title": "Ride the Lightning",
+          "artist": "Metallica",
+          "audioFile": "/assets/ride-the-lightning.mp3",
+          "youtubeId": "DVOImtJY7po",
           "startTime": 0,
-          "endTime": 30,
-          "fadeIn": 2,
-          "fadeOut": 2
+          "endTime": 20,
+          "fadeIn": 0,
+          "fadeOut": 3
         }
       ]
     }
@@ -109,13 +109,13 @@
   "error": {
     "songs": [
       {
-        "title": "The Wicker Man",
-        "artist": "Iron Maiden",
-        "audioFile": "/assets/the-wicker-man.mp3",
-        "youtubeId": "-sQ3Af3DpeM",
-        "startTime": 0,
-        "endTime": 30,
-        "fadeIn": 2,
+        "title": "The Uninvited Guest",
+        "artist": "Mercyful Fate",
+        "audioFile": "/assets/the-uninvited-guest.mp3",
+        "youtubeId": "_Ck0RGpk1vs",
+        "startTime": 59,
+        "endTime": 77,
+        "fadeIn": 1,
         "fadeOut": 2
       }
     ]
