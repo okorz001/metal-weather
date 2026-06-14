@@ -109,14 +109,14 @@
   "error": {
     "songs": [
       {
-        "title": "The Wicker Man",
-        "artist": "Iron Maiden",
-        "audioFile": "/assets/the-wicker-man.mp3",
-        "youtubeId": "-sQ3Af3DpeM",
-        "startTime": 0,
-        "endTime": 30,
+        "title": "The Uninvited Guest",
+        "artist": "Mercyful Fate",
+        "audioFile": "/assets/the-uninvited-guest.mp3",
+        "youtubeId": "_Ck0RGpk1vs",
+        "startTime": 29,
+        "endTime": 44,
         "fadeIn": 2,
-        "fadeOut": 2
+        "fadeOut": 1
       }
     ]
   }
