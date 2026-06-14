@@ -113,10 +113,10 @@
         "artist": "Mercyful Fate",
         "audioFile": "/assets/the-uninvited-guest.mp3",
         "youtubeId": "_Ck0RGpk1vs",
-        "startTime": 29,
-        "endTime": 44,
-        "fadeIn": 2,
-        "fadeOut": 1
+        "startTime": 59,
+        "endTime": 77,
+        "fadeIn": 1,
+        "fadeOut": 2
       }
     ]
   }
