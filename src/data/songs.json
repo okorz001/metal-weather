@@ -79,12 +79,12 @@
       "status": "Snow",
       "songs": [
         {
-          "title": "Snowblind",
-          "artist": "Black Sabbath",
-          "audioFile": "/assets/snowblind.mp3",
-          "youtubeId": "WU4eUByUBqE",
-          "startTime": 0,
-          "endTime": 30,
+          "title": "Across the Snows",
+          "artist": "Kiuas",
+          "audioFile": "/assets/across-the-snows.mp3",
+          "youtubeId": "F4d4cVTA6XY",
+          "startTime": 68,
+          "endTime": 90,
           "fadeIn": 2,
           "fadeOut": 2
         }
