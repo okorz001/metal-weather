@@ -94,14 +94,14 @@
       "status": "Thunderstorm",
       "songs": [
         {
-          "title": "Thunderstruck",
-          "artist": "AC/DC",
-          "audioFile": "/assets/thunderstruck.mp3",
-          "youtubeId": "v2AC41dglnM",
+          "title": "Ride the Lightning",
+          "artist": "Metallica",
+          "audioFile": "/assets/ride-the-lightning.mp3",
+          "youtubeId": "DVOImtJY7po",
           "startTime": 0,
-          "endTime": 30,
-          "fadeIn": 2,
-          "fadeOut": 2
+          "endTime": 20,
+          "fadeIn": 0,
+          "fadeOut": 3
         }
       ]
     }
