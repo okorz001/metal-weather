@@ -19,12 +19,12 @@
       "status": "Cloudy",
       "songs": [
         {
-          "title": "Fade to Black",
-          "artist": "Metallica",
-          "audioFile": "/assets/fade-to-black.mp3",
-          "youtubeId": "lpy0El2YV9Q",
-          "startTime": 0,
-          "endTime": 30,
+          "title": "Under the Grey Clouded Winter Sky",
+          "artist": "Amon Amarth",
+          "audioFile": "/assets/under-the-grey-clouded-winter-sky.mp3",
+          "youtubeId": "KZ6Hoya591w",
+          "startTime": 20,
+          "endTime": 40,
           "fadeIn": 2,
           "fadeOut": 2
         }
