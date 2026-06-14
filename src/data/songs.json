@@ -34,14 +34,14 @@
       "status": "Foggy",
       "songs": [
         {
-          "title": "War Pigs",
-          "artist": "Black Sabbath",
-          "audioFile": "/assets/war-pigs.mp3",
-          "youtubeId": "PrZFscfJxXc",
-          "startTime": 0,
-          "endTime": 30,
+          "title": "Her Ghost in the Fog",
+          "artist": "Cradle of Filth",
+          "audioFile": "/assets/her-ghost-in-the-fog.mp3",
+          "youtubeId": "QY8_nKejW-c",
+          "startTime": 320,
+          "endTime": 343,
           "fadeIn": 2,
-          "fadeOut": 2
+          "fadeOut": 3
         }
       ]
     },
