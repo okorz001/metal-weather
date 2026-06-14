@@ -49,14 +49,14 @@
       "status": "Drizzle",
       "songs": [
         {
-          "title": "November Rain",
-          "artist": "Guns N' Roses",
-          "audioFile": "/assets/november-rain.mp3",
-          "youtubeId": "8SbUC-UaAxE",
-          "startTime": 0,
-          "endTime": 30,
+          "title": "Desert Rain",
+          "artist": "Iced Earth",
+          "audioFile": "/assets/desert-rain.mp3",
+          "youtubeId": "XKbq5REyT-8",
+          "startTime": 193,
+          "endTime": 219,
           "fadeIn": 2,
-          "fadeOut": 2
+          "fadeOut": 3
         }
       ]
     },
