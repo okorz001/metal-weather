@@ -139,7 +139,7 @@ export default function HomeContent() {
   }, [q]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="w-full max-w-lg space-y-3">
+    <div className="mt-3 w-full max-w-lg space-y-3">
       <LocationSearch
         tab={tab}
         onTabChange={handleTabChange}
