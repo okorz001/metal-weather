@@ -70,18 +70,18 @@ describe("AppBar", () => {
   });
 
   it("switches to light mode when Light is clicked", () => {
-    renderWithSettings();
+    const { container } = renderWithSettings();
     fireEvent.click(screen.getByRole("button", { name: "Open menu" }));
     fireEvent.click(screen.getByRole("button", { name: "Light" }));
-    expect(document.documentElement.classList.contains("dark")).toBe(false);
+    expect(container.firstChild).not.toHaveClass("dark");
   });
 
   it("switches back to dark mode when Dark is clicked", () => {
-    renderWithSettings();
+    const { container } = renderWithSettings();
     fireEvent.click(screen.getByRole("button", { name: "Open menu" }));
     // Switch to light, then dark — menu stays open between clicks.
     fireEvent.click(screen.getByRole("button", { name: "Light" }));
     fireEvent.click(screen.getByRole("button", { name: "Dark" }));
-    expect(document.documentElement.classList.contains("dark")).toBe(true);
+    expect(container.firstChild).toHaveClass("dark");
   });
 });
