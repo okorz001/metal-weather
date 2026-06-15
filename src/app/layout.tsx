@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import AppBar from "@/components/AppBar";
+import { SettingsProvider } from "@/components/SettingsContext";
 
 import "./globals.css";
 
@@ -16,9 +17,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-zinc-950 text-zinc-100">
-        <AppBar />
-        {children}
+      <body>
+        <SettingsProvider>
+          <AppBar />
+          {children}
+        </SettingsProvider>
       </body>
     </html>
   );

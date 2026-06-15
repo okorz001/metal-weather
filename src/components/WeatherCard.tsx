@@ -36,9 +36,9 @@ export default function WeatherCard({
     : `${((weather.temperatureCelsius * 9) / 5 + 32).toFixed(1)} °F`;
 
   return (
-    <div className="rounded-lg bg-zinc-900 p-6 text-white">
+    <div className="rounded-lg bg-zinc-50 p-6 text-zinc-900 dark:bg-zinc-900 dark:text-white">
       <div className="mb-4">
-        <div className="text-sm font-semibold tracking-wide text-zinc-400 uppercase">
+        <div className="text-sm font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-400">
           {weather.status}
         </div>
         <div className="text-xl font-bold">{weather.displayName}</div>
@@ -46,37 +46,43 @@ export default function WeatherCard({
 
       <div className="mb-4 grid grid-cols-2 gap-3">
         <div>
-          <div className="text-sm text-zinc-400">Temperature</div>
+          <div className="text-sm text-zinc-600 dark:text-zinc-400">
+            Temperature
+          </div>
           <div className="font-semibold">{displayTemp}</div>
           <button
             onClick={() => setCelsius((c) => !c)}
-            className="mt-1 text-xs text-zinc-400 underline hover:text-white"
+            className="mt-1 text-xs text-zinc-600 underline hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
           >
             Show in {celsius ? "°F" : "°C"}
           </button>
         </div>
         <div>
-          <div className="text-sm text-zinc-400">Wind</div>
+          <div className="text-sm text-zinc-600 dark:text-zinc-400">Wind</div>
           <div className="font-semibold">
             {weather.windSpeedKmh} km/h {toCardinal(weather.windDirectionDeg)}
           </div>
         </div>
         <div>
-          <div className="text-sm text-zinc-400">Humidity</div>
+          <div className="text-sm text-zinc-600 dark:text-zinc-400">
+            Humidity
+          </div>
           <div className="font-semibold">{weather.humidityPercent}%</div>
         </div>
         <div>
-          <div className="text-sm text-zinc-400">Precipitation</div>
+          <div className="text-sm text-zinc-600 dark:text-zinc-400">
+            Precipitation
+          </div>
           <div className="font-semibold">{weather.precipitationMm} mm</div>
         </div>
       </div>
 
-      <div className="border-t border-zinc-700 pt-4">
-        <div className="text-sm font-semibold tracking-wide text-zinc-400 uppercase">
+      <div className="border-t border-zinc-200 pt-4 dark:border-zinc-700">
+        <div className="text-sm font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-400">
           Now Playing
         </div>
         <div className="font-bold">{song.title}</div>
-        <div className="text-zinc-300">{song.artist}</div>
+        <div className="text-zinc-700 dark:text-zinc-300">{song.artist}</div>
         <MusicPlayer song={song} />
       </div>
     </div>
