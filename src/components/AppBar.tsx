@@ -64,9 +64,9 @@ export default function AppBar() {
         </button>
 
         {isOpen && (
-          <div className="absolute top-full left-0 mt-1 min-w-48 rounded-lg bg-zinc-800 shadow-xl">
+          <div className="absolute top-full left-0 mt-1 min-w-48 rounded-lg bg-white shadow-xl dark:bg-zinc-800">
             <div className="p-3">
-              <p className="mb-2 text-xs font-semibold tracking-wide text-zinc-400 uppercase">
+              <p className="mb-2 text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
                 Theme
               </p>
               <div className="flex gap-1">
@@ -76,8 +76,8 @@ export default function AppBar() {
                   }}
                   className={`flex-1 rounded-md py-1.5 text-sm font-medium transition-colors ${
                     !isDark
-                      ? "bg-zinc-600 text-white"
-                      : "text-zinc-400 hover:text-zinc-200"
+                      ? "bg-zinc-200 text-zinc-900 dark:bg-zinc-600 dark:text-white"
+                      : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
                   }`}
                 >
                   Light
@@ -88,16 +88,16 @@ export default function AppBar() {
                   }}
                   className={`flex-1 rounded-md py-1.5 text-sm font-medium transition-colors ${
                     isDark
-                      ? "bg-zinc-600 text-white"
-                      : "text-zinc-400 hover:text-zinc-200"
+                      ? "bg-zinc-200 text-zinc-900 dark:bg-zinc-600 dark:text-white"
+                      : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
                   }`}
                 >
                   Dark
                 </button>
               </div>
             </div>
-            <div className="border-t border-zinc-700 p-3">
-              <p className="mb-2 text-xs font-semibold tracking-wide text-zinc-400 uppercase">
+            <div className="border-t border-zinc-200 p-3 dark:border-zinc-700">
+              <p className="mb-2 text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
                 Units
               </p>
               <div className="flex gap-1">
@@ -107,8 +107,8 @@ export default function AppBar() {
                   }}
                   className={`flex-1 rounded-md py-1.5 text-sm font-medium transition-colors ${
                     isMetric
-                      ? "bg-zinc-600 text-white"
-                      : "text-zinc-400 hover:text-zinc-200"
+                      ? "bg-zinc-200 text-zinc-900 dark:bg-zinc-600 dark:text-white"
+                      : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
                   }`}
                 >
                   Metric
@@ -119,8 +119,8 @@ export default function AppBar() {
                   }}
                   className={`flex-1 rounded-md py-1.5 text-sm font-medium transition-colors ${
                     !isMetric
-                      ? "bg-zinc-600 text-white"
-                      : "text-zinc-400 hover:text-zinc-200"
+                      ? "bg-zinc-200 text-zinc-900 dark:bg-zinc-600 dark:text-white"
+                      : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
                   }`}
                 >
                   Imperial
