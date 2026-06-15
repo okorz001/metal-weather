@@ -38,6 +38,11 @@ describe("AppBar", () => {
     expect(screen.getByText("Theme")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Dark" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Light" })).toBeInTheDocument();
+    expect(screen.getByText("Units")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Metric" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Imperial" }),
+    ).toBeInTheDocument();
   });
 
   it("closes dropdown when hamburger is clicked again", () => {
@@ -83,5 +88,20 @@ describe("AppBar", () => {
     fireEvent.click(screen.getByRole("button", { name: "Light" }));
     fireEvent.click(screen.getByRole("button", { name: "Dark" }));
     expect(container.firstChild).toHaveClass("dark");
+  });
+
+  it("switches to imperial when Imperial is clicked", () => {
+    renderWithSettings();
+    fireEvent.click(screen.getByRole("button", { name: "Open menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Imperial" }));
+    expect(localStorage.getItem("units")).toBe("imperial");
+  });
+
+  it("switches back to metric when Metric is clicked", () => {
+    renderWithSettings();
+    fireEvent.click(screen.getByRole("button", { name: "Open menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Imperial" }));
+    fireEvent.click(screen.getByRole("button", { name: "Metric" }));
+    expect(localStorage.getItem("units")).toBe("metric");
   });
 });

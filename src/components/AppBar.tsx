@@ -14,7 +14,7 @@ import { useSettings } from "./SettingsContext";
  * @returns The rendered app bar element.
  */
 export default function AppBar() {
-  const { isDark, toggleDark } = useSettings();
+  const { isDark, toggleDark, isMetric, toggleMetric } = useSettings();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -93,6 +93,37 @@ export default function AppBar() {
                   }`}
                 >
                   Dark
+                </button>
+              </div>
+            </div>
+            <div className="border-t border-zinc-700 p-3">
+              <p className="mb-2 text-xs font-semibold tracking-wide text-zinc-400 uppercase">
+                Units
+              </p>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => {
+                    if (!isMetric) toggleMetric();
+                  }}
+                  className={`flex-1 rounded-md py-1.5 text-sm font-medium transition-colors ${
+                    isMetric
+                      ? "bg-zinc-600 text-white"
+                      : "text-zinc-400 hover:text-zinc-200"
+                  }`}
+                >
+                  Metric
+                </button>
+                <button
+                  onClick={() => {
+                    if (isMetric) toggleMetric();
+                  }}
+                  className={`flex-1 rounded-md py-1.5 text-sm font-medium transition-colors ${
+                    !isMetric
+                      ? "bg-zinc-600 text-white"
+                      : "text-zinc-400 hover:text-zinc-200"
+                  }`}
+                >
+                  Imperial
                 </button>
               </div>
             </div>

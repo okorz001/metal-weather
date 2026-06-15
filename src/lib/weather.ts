@@ -110,13 +110,19 @@ export async function fetchWeather(
   };
 
   const { current } = data;
+  const temperatureCelsius = current.temperature_2m;
+  const windSpeedKmh = current.wind_speed_10m;
+  const precipitationMm = current.precipitation;
   return {
     displayName,
-    temperatureCelsius: current.temperature_2m,
-    windSpeedKmh: current.wind_speed_10m,
+    temperatureCelsius,
+    temperatureFahrenheit: (temperatureCelsius * 9) / 5 + 32,
+    windSpeedKmh,
+    windSpeedMph: windSpeedKmh * 0.621371,
     windDirectionDeg: current.wind_direction_10m,
     humidityPercent: current.relative_humidity_2m,
-    precipitationMm: current.precipitation,
+    precipitationMm,
+    precipitationIn: precipitationMm / 25.4,
     status: WEATHER_CODE_STATUS[current.weather_code as WeatherCode],
   };
 }

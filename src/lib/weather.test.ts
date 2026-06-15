@@ -30,10 +30,13 @@ describe("fetchWeather", () => {
     expect(result).toEqual({
       displayName: "Seattle, Washington, United States",
       temperatureCelsius: 10.5,
+      temperatureFahrenheit: (10.5 * 9) / 5 + 32,
       windSpeedKmh: 15.2,
+      windSpeedMph: 15.2 * 0.621371,
       windDirectionDeg: 180,
       humidityPercent: 75,
       precipitationMm: 0.0,
+      precipitationIn: 0.0 / 25.4,
       status: "Cloudy",
     });
   });
