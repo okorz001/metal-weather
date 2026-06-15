@@ -55,14 +55,16 @@ function LocationTab({
   return (
     <div className="flex justify-center">
       {status === "error" && <p className="text-sm text-red-400">{geoError}</p>}
-      {status === "loading" && <p className="text-zinc-400">Locating…</p>}
+      {status === "loading" && (
+        <p className="text-zinc-600 dark:text-zinc-400">Locating…</p>
+      )}
       {status === "success" && (
-        <p className="text-zinc-400">Using Your Location</p>
+        <p className="text-zinc-600 dark:text-zinc-400">Using Your Location</p>
       )}
       {status === "idle" && (
         <button
           onClick={handleClick}
-          className="rounded-lg bg-zinc-600 px-4 py-2 text-white hover:bg-zinc-500"
+          className="rounded-lg bg-zinc-400 px-4 py-2 text-white hover:bg-zinc-500 dark:bg-zinc-600 dark:hover:bg-zinc-500"
         >
           Get My Location
         </button>
@@ -124,8 +126,8 @@ export default function LocationSearch({
   const tabButtonClass = (t: Tab) =>
     `flex-1 rounded-t-lg px-4 py-2 text-sm font-medium transition-colors ${
       tab === t
-        ? "bg-zinc-800 text-white"
-        : "bg-zinc-900 text-zinc-400 hover:text-zinc-200"
+        ? "bg-zinc-300 text-zinc-900 dark:bg-zinc-800 dark:text-white"
+        : "bg-zinc-200 text-zinc-600 hover:text-zinc-900 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
     }`;
 
   return (
@@ -141,7 +143,7 @@ export default function LocationSearch({
           </button>
         ))}
       </div>
-      <div className="rounded-tr-lg rounded-b-lg bg-zinc-800 p-4">
+      <div className="rounded-tr-lg rounded-b-lg bg-zinc-300 p-4 dark:bg-zinc-800">
         {tab === "location" && <LocationTab onGeoSearch={onGeoSearch} />}
         {tab === "city" && (
           <div className="flex gap-2">
@@ -152,12 +154,12 @@ export default function LocationSearch({
               onKeyDown={(e) => e.key === "Enter" && handleCitySubmit()}
               disabled={disabled}
               placeholder="City name"
-              className="flex-1 rounded-lg bg-zinc-700 px-4 py-2 text-white placeholder-zinc-500 focus:ring-2 focus:ring-zinc-500 focus:outline-none disabled:opacity-50"
+              className="flex-1 rounded-lg bg-zinc-200 px-4 py-2 text-zinc-900 placeholder-zinc-500 focus:ring-2 focus:ring-zinc-400 focus:outline-none disabled:opacity-50 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-500 dark:focus:ring-zinc-500"
             />
             <button
               onClick={handleCitySubmit}
               disabled={disabled}
-              className="rounded-lg bg-zinc-600 px-4 py-2 text-white hover:bg-zinc-500 disabled:opacity-50"
+              className="rounded-lg bg-zinc-400 px-4 py-2 text-white hover:bg-zinc-500 disabled:opacity-50 dark:bg-zinc-600 dark:hover:bg-zinc-500"
             >
               Search
             </button>
@@ -172,7 +174,7 @@ export default function LocationSearch({
               onKeyDown={(e) => e.key === "Enter" && handleCoordsSubmit()}
               disabled={disabled}
               placeholder="Latitude"
-              className="min-w-0 flex-1 rounded-lg bg-zinc-700 px-4 py-2 text-white placeholder-zinc-500 focus:ring-2 focus:ring-zinc-500 focus:outline-none disabled:opacity-50"
+              className="min-w-0 flex-1 rounded-lg bg-zinc-200 px-4 py-2 text-zinc-900 placeholder-zinc-500 focus:ring-2 focus:ring-zinc-400 focus:outline-none disabled:opacity-50 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-500 dark:focus:ring-zinc-500"
             />
             <input
               type="number"
@@ -181,12 +183,12 @@ export default function LocationSearch({
               onKeyDown={(e) => e.key === "Enter" && handleCoordsSubmit()}
               disabled={disabled}
               placeholder="Longitude"
-              className="min-w-0 flex-1 rounded-lg bg-zinc-700 px-4 py-2 text-white placeholder-zinc-500 focus:ring-2 focus:ring-zinc-500 focus:outline-none disabled:opacity-50"
+              className="min-w-0 flex-1 rounded-lg bg-zinc-200 px-4 py-2 text-zinc-900 placeholder-zinc-500 focus:ring-2 focus:ring-zinc-400 focus:outline-none disabled:opacity-50 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-500 dark:focus:ring-zinc-500"
             />
             <button
               onClick={handleCoordsSubmit}
               disabled={disabled}
-              className="rounded-lg bg-zinc-600 px-4 py-2 text-white hover:bg-zinc-500 disabled:opacity-50"
+              className="rounded-lg bg-zinc-400 px-4 py-2 text-white hover:bg-zinc-500 disabled:opacity-50 dark:bg-zinc-600 dark:hover:bg-zinc-500"
             >
               Search
             </button>

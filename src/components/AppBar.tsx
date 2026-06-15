@@ -2,16 +2,19 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { useSettings } from "./SettingsContext";
+
 /**
  * Fixed top application bar for Metal Weather.
  *
  * Renders a persistent header with the site name and a hamburger menu button.
- * The hamburger button toggles a dropdown panel that is anchored below it.
+ * The hamburger button toggles a dropdown panel containing display settings.
  * The dropdown closes when the user clicks outside it or presses Escape.
  *
  * @returns The rendered app bar element.
  */
 export default function AppBar() {
+  const { isDark, toggleDark } = useSettings();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -62,9 +65,37 @@ export default function AppBar() {
 
         {isOpen && (
           <div className="absolute top-full left-0 mt-1 min-w-48 rounded-lg bg-zinc-800 shadow-xl">
-            <p className="p-4 text-sm text-zinc-400">
-              More options coming soon
-            </p>
+            <div className="p-3">
+              <p className="mb-2 text-xs font-semibold tracking-wide text-zinc-400 uppercase">
+                Theme
+              </p>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => {
+                    if (isDark) toggleDark();
+                  }}
+                  className={`flex-1 rounded-md py-1.5 text-sm font-medium transition-colors ${
+                    !isDark
+                      ? "bg-zinc-600 text-white"
+                      : "text-zinc-400 hover:text-zinc-200"
+                  }`}
+                >
+                  Light
+                </button>
+                <button
+                  onClick={() => {
+                    if (!isDark) toggleDark();
+                  }}
+                  className={`flex-1 rounded-md py-1.5 text-sm font-medium transition-colors ${
+                    isDark
+                      ? "bg-zinc-600 text-white"
+                      : "text-zinc-400 hover:text-zinc-200"
+                  }`}
+                >
+                  Dark
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

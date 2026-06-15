@@ -79,7 +79,7 @@ export default function MusicPlayer({ song }: { song: Song }) {
         onClick={togglePlay}
         disabled={loadError}
         aria-label={playing ? "Pause" : "Play"}
-        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-zinc-700 text-white hover:bg-zinc-600 disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-zinc-300 text-zinc-900 hover:bg-zinc-400 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
       >
         {playing ? (
           <svg
@@ -111,9 +111,9 @@ export default function MusicPlayer({ song }: { song: Song }) {
         onChange={handleSeek}
         disabled={loadError}
         aria-label="Seek"
-        className="h-1 flex-1 cursor-pointer accent-zinc-400 disabled:cursor-not-allowed disabled:opacity-40"
+        className="h-1 flex-1 cursor-pointer accent-zinc-600 disabled:cursor-not-allowed disabled:opacity-40 dark:accent-zinc-400"
       />
-      <span className="flex-shrink-0 font-mono text-xs text-zinc-400">
+      <span className="flex-shrink-0 font-mono text-xs text-zinc-600 dark:text-zinc-400">
         {`${formatTime(currentTime)} / ${formatTime(duration)}`}
       </span>
     </div>
