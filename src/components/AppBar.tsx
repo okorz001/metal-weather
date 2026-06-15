@@ -103,18 +103,6 @@ export default function AppBar() {
               <div className="flex gap-1">
                 <button
                   onClick={() => {
-                    if (!isMetric) toggleMetric();
-                  }}
-                  className={`flex-1 rounded-md py-1.5 text-sm font-medium transition-colors ${
-                    isMetric
-                      ? "bg-zinc-200 text-zinc-900 dark:bg-zinc-600 dark:text-white"
-                      : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
-                  }`}
-                >
-                  Metric
-                </button>
-                <button
-                  onClick={() => {
                     if (isMetric) toggleMetric();
                   }}
                   className={`flex-1 rounded-md py-1.5 text-sm font-medium transition-colors ${
@@ -124,6 +112,18 @@ export default function AppBar() {
                   }`}
                 >
                   Imperial
+                </button>
+                <button
+                  onClick={() => {
+                    if (!isMetric) toggleMetric();
+                  }}
+                  className={`flex-1 rounded-md py-1.5 text-sm font-medium transition-colors ${
+                    isMetric
+                      ? "bg-zinc-200 text-zinc-900 dark:bg-zinc-600 dark:text-white"
+                      : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
+                  }`}
+                >
+                  Metric
                 </button>
               </div>
             </div>

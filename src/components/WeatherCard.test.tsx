@@ -25,6 +25,7 @@ const mockSong: Song = {
 };
 
 function renderMetric() {
+  localStorage.setItem("units", "metric");
   return render(
     <SettingsProvider>
       <WeatherCard weather={mockWeather} song={mockSong} />

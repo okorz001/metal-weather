@@ -90,18 +90,18 @@ describe("AppBar", () => {
     expect(container.firstChild).toHaveClass("dark");
   });
 
-  it("switches to imperial when Imperial is clicked", () => {
+  it("switches to metric when Metric is clicked", () => {
+    renderWithSettings();
+    fireEvent.click(screen.getByRole("button", { name: "Open menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Metric" }));
+    expect(localStorage.getItem("units")).toBe("metric");
+  });
+
+  it("switches back to imperial when Imperial is clicked", () => {
+    localStorage.setItem("units", "metric");
     renderWithSettings();
     fireEvent.click(screen.getByRole("button", { name: "Open menu" }));
     fireEvent.click(screen.getByRole("button", { name: "Imperial" }));
     expect(localStorage.getItem("units")).toBe("imperial");
-  });
-
-  it("switches back to metric when Metric is clicked", () => {
-    renderWithSettings();
-    fireEvent.click(screen.getByRole("button", { name: "Open menu" }));
-    fireEvent.click(screen.getByRole("button", { name: "Imperial" }));
-    fireEvent.click(screen.getByRole("button", { name: "Metric" }));
-    expect(localStorage.getItem("units")).toBe("metric");
   });
 });
