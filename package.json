@@ -13,7 +13,7 @@
     "test": "vitest run",
     "verify": "npm run format:check && npm run lint && npm run test && npm run build",
     "tools:build": "docker build -t metal-weather-tools -f tools/Dockerfile .",
-    "tools:download": "docker run --rm -v $(pwd):/app metal-weather-tools"
+    "tools:download": "docker run --rm -u $(id -u):$(id -g) -v $(pwd):/app metal-weather-tools"
   },
   "dependencies": {
     "next": "^16.2.9",
