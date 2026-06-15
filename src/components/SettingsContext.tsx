@@ -30,14 +30,14 @@ function getThemeServerSnapshot(): boolean {
   return true;
 }
 
-/** Returns `true` when metric units are active (anything other than `"imperial"`). */
+/** Returns `true` when metric units are active (only when explicitly set to `"metric"`). */
 function getUnitsSnapshot(): boolean {
-  return localStorage.getItem("units") !== "imperial";
+  return localStorage.getItem("units") === "metric";
 }
 
-/** Server snapshot: always metric. */
+/** Server snapshot: always imperial. */
 function getUnitsServerSnapshot(): boolean {
-  return true;
+  return false;
 }
 
 interface SettingsContextValue {
@@ -49,7 +49,7 @@ interface SettingsContextValue {
 
 const SettingsContext = createContext<SettingsContextValue>({
   isDark: true,
-  isMetric: true,
+  isMetric: false,
   toggleDark: () => {},
   toggleMetric: () => {},
 });
@@ -61,7 +61,7 @@ const SettingsContext = createContext<SettingsContextValue>({
  *
  * Both `theme` and `units` preferences are backed by `localStorage` and read
  * via `useSyncExternalStore`. The server snapshots always return the defaults
- * (dark, metric) so SSR and the initial client render agree, avoiding
+ * (dark, imperial) so SSR and the initial client render agree, avoiding
  * hydration mismatches. React re-renders after hydration if the stored
  * preferences differ. Toggle functions write to `localStorage` and dispatch a
  * `StorageEvent` to notify the same-tab subscribers; cross-tab sync is handled

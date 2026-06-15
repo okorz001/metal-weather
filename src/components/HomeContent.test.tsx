@@ -21,10 +21,13 @@ vi.mock("@/lib/songs");
 const mockWeather: WeatherData = {
   displayName: "Seattle, WA, US",
   temperatureCelsius: 15,
+  temperatureFahrenheit: 59,
   windSpeedKmh: 20,
+  windSpeedMph: 12.4,
   windDirectionDeg: 270,
   humidityPercent: 80,
   precipitationMm: 1.2,
+  precipitationIn: 0.05,
   status: "Rain",
 };
 
