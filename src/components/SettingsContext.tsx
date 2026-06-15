@@ -3,10 +3,30 @@
 import {
   createContext,
   useContext,
-  useLayoutEffect,
-  useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
+
+/**
+ * Subscribes to `localStorage` theme changes via the `storage` window event.
+ *
+ * @param callback - Called by React when the store may have changed.
+ * @returns A cleanup function that removes the listener.
+ */
+function subscribe(callback: () => void): () => void {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+}
+
+/** Returns `true` when dark mode is active (anything other than `"light"`). */
+function getSnapshot(): boolean {
+  return localStorage.getItem("theme") !== "light";
+}
+
+/** Server snapshot: always dark so SSR output matches the default client state. */
+function getServerSnapshot(): boolean {
+  return true;
+}
 
 interface SettingsContextValue {
   isDark: boolean;
@@ -23,37 +43,27 @@ const SettingsContext = createContext<SettingsContextValue>({
  * renders a full-page wrapper that carries the `dark` class when dark mode
  * is active.
  *
- * The `dark` class on the wrapper drives all `dark:` Tailwind variants for
- * every descendant. Toggling dark mode is a pure React state update — no
- * imperative DOM manipulation — so the change is immediate and reliable.
- *
- * State is initialized to `true` (dark) so the server render and initial
- * client render always agree, avoiding hydration mismatches. A
- * `useLayoutEffect` then reads `localStorage` and corrects the theme
- * synchronously before the browser paints, so there is no visible flash.
+ * The theme is backed by `localStorage` under the key `"theme"` (`"dark"` or
+ * `"light"`). `useSyncExternalStore` reads it on the client and subscribes to
+ * the `storage` event so changes propagate across tabs. The server snapshot
+ * always returns `true` (dark) so the initial server and client renders agree,
+ * avoiding hydration mismatches; React re-renders after hydration if the
+ * stored preference differs.
  *
  * @param children - The component subtree that can access settings via
  *   {@link useSettings}.
  * @returns The settings provider element wrapping a themed div.
  */
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [isDark, setIsDark] = useState(true);
-
-  useLayoutEffect(() => {
-    const applyTheme = () => {
-      setIsDark(localStorage.getItem("theme") !== "light");
-    };
-    applyTheme();
-    window.addEventListener("storage", applyTheme);
-    return () => window.removeEventListener("storage", applyTheme);
-  }, []);
+  const isDark = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot,
+  );
 
   function toggleDark() {
-    setIsDark((prev) => {
-      const next = !prev;
-      localStorage.setItem("theme", next ? "dark" : "light");
-      return next;
-    });
+    localStorage.setItem("theme", isDark ? "light" : "dark");
+    window.dispatchEvent(new StorageEvent("storage"));
   }
 
   return (
