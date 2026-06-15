@@ -63,22 +63,31 @@ export interface SongCatalog {
 /**
  * Normalized current weather data returned from the forecast API.
  *
+ * Temperature, wind speed, and precipitation are provided in both metric and
+ * imperial units so the rendering layer can select without conversion.
+ *
  * @param displayName - Human-readable location name (city, region, country).
  * @param temperatureCelsius - Current temperature in degrees Celsius.
+ * @param temperatureFahrenheit - Current temperature in degrees Fahrenheit.
  * @param windSpeedKmh - Current wind speed in km/h.
+ * @param windSpeedMph - Current wind speed in mph.
  * @param windDirectionDeg - Wind direction in degrees (0–360).
  * @param humidityPercent - Relative humidity as a percentage (0–100).
  * @param precipitationMm - Current precipitation in millimeters.
+ * @param precipitationIn - Current precipitation in inches.
  * @param status - High-level weather status derived from the WMO code. Absent if
  *   the API returned an unrecognized code.
  */
 export interface WeatherData {
   displayName: string;
   temperatureCelsius: number;
+  temperatureFahrenheit: number;
   windSpeedKmh: number;
+  windSpeedMph: number;
   windDirectionDeg: number;
   humidityPercent: number;
   precipitationMm: number;
+  precipitationIn: number;
   status?: WeatherStatus;
 }
 

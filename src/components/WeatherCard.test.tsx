@@ -9,10 +9,13 @@ import WeatherCard from "./WeatherCard";
 const mockWeather: WeatherData = {
   displayName: "Seattle, WA, US",
   temperatureCelsius: 15,
+  temperatureFahrenheit: 59,
   windSpeedKmh: 20,
+  windSpeedMph: 20 * 0.621371,
   windDirectionDeg: 270,
   humidityPercent: 80,
   precipitationMm: 1.2,
+  precipitationIn: 1.2 / 25.4,
   status: "Rain",
 };
 

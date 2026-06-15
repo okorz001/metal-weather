@@ -33,15 +33,15 @@ export default function WeatherCard({
 
   const displayTemp = isMetric
     ? `${weather.temperatureCelsius.toFixed(1)} °C`
-    : `${((weather.temperatureCelsius * 9) / 5 + 32).toFixed(1)} °F`;
+    : `${weather.temperatureFahrenheit.toFixed(1)} °F`;
 
   const displayWind = isMetric
     ? `${weather.windSpeedKmh} km/h ${toCardinal(weather.windDirectionDeg)}`
-    : `${(weather.windSpeedKmh * 0.621371).toFixed(1)} mph ${toCardinal(weather.windDirectionDeg)}`;
+    : `${weather.windSpeedMph.toFixed(1)} mph ${toCardinal(weather.windDirectionDeg)}`;
 
   const displayPrecip = isMetric
     ? `${weather.precipitationMm} mm`
-    : `${(weather.precipitationMm / 25.4).toFixed(2)} in`;
+    : `${weather.precipitationIn.toFixed(2)} in`;
 
   return (
     <div className="rounded-lg bg-zinc-50 p-6 text-zinc-900 dark:bg-zinc-900 dark:text-white">
