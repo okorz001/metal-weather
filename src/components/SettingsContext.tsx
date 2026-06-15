@@ -8,7 +8,9 @@ import {
 } from "react";
 
 /**
- * Subscribes to `localStorage` theme changes via the `storage` window event.
+ * Subscribes to `localStorage` changes via the `storage` window event.
+ * Shared by all settings stores; any write dispatches a `StorageEvent` so
+ * every store re-reads its own key.
  *
  * @param callback - Called by React when the store may have changed.
  * @returns A cleanup function that removes the listener.
@@ -19,23 +21,37 @@ function subscribe(callback: () => void): () => void {
 }
 
 /** Returns `true` when dark mode is active (anything other than `"light"`). */
-function getSnapshot(): boolean {
+function getThemeSnapshot(): boolean {
   return localStorage.getItem("theme") !== "light";
 }
 
 /** Server snapshot: always dark so SSR output matches the default client state. */
-function getServerSnapshot(): boolean {
+function getThemeServerSnapshot(): boolean {
+  return true;
+}
+
+/** Returns `true` when metric units are active (anything other than `"imperial"`). */
+function getUnitsSnapshot(): boolean {
+  return localStorage.getItem("units") !== "imperial";
+}
+
+/** Server snapshot: always metric. */
+function getUnitsServerSnapshot(): boolean {
   return true;
 }
 
 interface SettingsContextValue {
   isDark: boolean;
+  isMetric: boolean;
   toggleDark: () => void;
+  toggleMetric: () => void;
 }
 
 const SettingsContext = createContext<SettingsContextValue>({
   isDark: true,
+  isMetric: true,
   toggleDark: () => {},
+  toggleMetric: () => {},
 });
 
 /**
@@ -43,12 +59,13 @@ const SettingsContext = createContext<SettingsContextValue>({
  * renders a full-page wrapper that carries the `dark` class when dark mode
  * is active.
  *
- * The theme is backed by `localStorage` under the key `"theme"` (`"dark"` or
- * `"light"`). `useSyncExternalStore` reads it on the client and subscribes to
- * the `storage` event so changes propagate across tabs. The server snapshot
- * always returns `true` (dark) so the initial server and client renders agree,
- * avoiding hydration mismatches; React re-renders after hydration if the
- * stored preference differs.
+ * Both `theme` and `units` preferences are backed by `localStorage` and read
+ * via `useSyncExternalStore`. The server snapshots always return the defaults
+ * (dark, metric) so SSR and the initial client render agree, avoiding
+ * hydration mismatches. React re-renders after hydration if the stored
+ * preferences differ. Toggle functions write to `localStorage` and dispatch a
+ * `StorageEvent` to notify the same-tab subscribers; cross-tab sync is handled
+ * automatically by the browser's native `storage` event.
  *
  * @param children - The component subtree that can access settings via
  *   {@link useSettings}.
@@ -57,8 +74,13 @@ const SettingsContext = createContext<SettingsContextValue>({
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const isDark = useSyncExternalStore(
     subscribe,
-    getSnapshot,
-    getServerSnapshot,
+    getThemeSnapshot,
+    getThemeServerSnapshot,
+  );
+  const isMetric = useSyncExternalStore(
+    subscribe,
+    getUnitsSnapshot,
+    getUnitsServerSnapshot,
   );
 
   function toggleDark() {
@@ -66,8 +88,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     window.dispatchEvent(new StorageEvent("storage"));
   }
 
+  function toggleMetric() {
+    localStorage.setItem("units", isMetric ? "imperial" : "metric");
+    window.dispatchEvent(new StorageEvent("storage"));
+  }
+
   return (
-    <SettingsContext.Provider value={{ isDark, toggleDark }}>
+    <SettingsContext.Provider
+      value={{ isDark, isMetric, toggleDark, toggleMetric }}
+    >
       <div
         className={
           isDark
@@ -85,8 +114,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
  * Returns the current application settings from the nearest
  * {@link SettingsProvider}.
  *
- * Falls back to default values (`isDark: true`, no-op toggle) when rendered
- * outside a provider, which keeps component unit tests simple.
+ * Falls back to default values (`isDark: true`, `isMetric: true`, no-op
+ * toggles) when rendered outside a provider, which keeps component unit
+ * tests simple.
  *
  * @returns The current settings context value.
  */

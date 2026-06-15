@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
-
 import type { Song, WeatherData } from "@/lib/types";
 
 import MusicPlayer from "./MusicPlayer";
+import { useSettings } from "./SettingsContext";
 
 function toCardinal(deg: number): string {
   const dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
@@ -14,9 +13,10 @@ function toCardinal(deg: number): string {
 /**
  * Displays current weather data and the matched metal song.
  *
- * Shows condition label, location, temperature with a Celsius/Fahrenheit toggle,
- * wind speed and cardinal direction, humidity, precipitation, and a "Now Playing"
- * section with the song title and artist.
+ * Shows condition label, location, temperature, wind speed and cardinal
+ * direction, humidity, precipitation, and a "Now Playing" section with the
+ * song title and artist. Unit system (metric vs imperial) is read from
+ * {@link useSettings}.
  *
  * @param weather - Normalized weather data to display.
  * @param song - The metal song matched to the current weather condition.
@@ -29,11 +29,19 @@ export default function WeatherCard({
   weather: WeatherData;
   song: Song;
 }) {
-  const [celsius, setCelsius] = useState(true);
+  const { isMetric } = useSettings();
 
-  const displayTemp = celsius
+  const displayTemp = isMetric
     ? `${weather.temperatureCelsius.toFixed(1)} °C`
     : `${((weather.temperatureCelsius * 9) / 5 + 32).toFixed(1)} °F`;
+
+  const displayWind = isMetric
+    ? `${weather.windSpeedKmh} km/h ${toCardinal(weather.windDirectionDeg)}`
+    : `${(weather.windSpeedKmh * 0.621371).toFixed(1)} mph ${toCardinal(weather.windDirectionDeg)}`;
+
+  const displayPrecip = isMetric
+    ? `${weather.precipitationMm} mm`
+    : `${(weather.precipitationMm / 25.4).toFixed(2)} in`;
 
   return (
     <div className="rounded-lg bg-zinc-50 p-6 text-zinc-900 dark:bg-zinc-900 dark:text-white">
@@ -50,18 +58,10 @@ export default function WeatherCard({
             Temperature
           </div>
           <div className="font-semibold">{displayTemp}</div>
-          <button
-            onClick={() => setCelsius((c) => !c)}
-            className="mt-1 text-xs text-zinc-600 underline hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-          >
-            Show in {celsius ? "°F" : "°C"}
-          </button>
         </div>
         <div>
           <div className="text-sm text-zinc-600 dark:text-zinc-400">Wind</div>
-          <div className="font-semibold">
-            {weather.windSpeedKmh} km/h {toCardinal(weather.windDirectionDeg)}
-          </div>
+          <div className="font-semibold">{displayWind}</div>
         </div>
         <div>
           <div className="text-sm text-zinc-600 dark:text-zinc-400">
@@ -73,7 +73,7 @@ export default function WeatherCard({
           <div className="text-sm text-zinc-600 dark:text-zinc-400">
             Precipitation
           </div>
-          <div className="font-semibold">{weather.precipitationMm} mm</div>
+          <div className="font-semibold">{displayPrecip}</div>
         </div>
       </div>
 
