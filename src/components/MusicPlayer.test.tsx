@@ -43,10 +43,16 @@ describe("MusicPlayer", () => {
     expect(screen.getByText(/0:00/)).toBeInTheDocument();
   });
 
-  it("shows pause button when audio starts playing via autoplay", () => {
+  it("shows pause button when audio starts playing", () => {
     render(<MusicPlayer song={songWithAudio} />);
     fireEvent.play(document.querySelector("audio")!);
     expect(screen.getByRole("button", { name: /pause/i })).toBeInTheDocument();
+  });
+
+  it("starts playing on first document interaction", () => {
+    render(<MusicPlayer song={songWithAudio} />);
+    fireEvent.click(document.body);
+    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalled();
   });
 
   it("calls play and shows pause button when play is clicked", () => {

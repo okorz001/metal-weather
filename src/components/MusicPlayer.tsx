@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { Song } from "@/lib/types";
 
@@ -20,6 +20,10 @@ function formatTime(seconds: number): string {
  * Playback resets to the beginning whenever `song.audioFile` changes (i.e.
  * when a new weather result selects a different track).
  *
+ * Because browsers block autoplay without prior user interaction, playback
+ * begins automatically on the first click, key press, or touch after the
+ * component mounts (or after the track changes).
+ *
  * @param song - The song to play. Must have `audioFile` populated for the
  *   player to render.
  * @returns The rendered player element, or `null` if no audio file is available.
@@ -31,6 +35,7 @@ export default function MusicPlayer({ song }: { song: Song }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [loadError, setLoadError] = useState(false);
+  const autoPlayPending = useRef(true);
 
   // Derived state reset: when the track changes, reset playback state before
   // rendering so the UI reflects the new song immediately (avoids a useEffect
@@ -43,9 +48,37 @@ export default function MusicPlayer({ song }: { song: Song }) {
     setLoadError(false);
   }
 
+  useEffect(() => {
+    if (!song.audioFile) return;
+    autoPlayPending.current = true;
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const removeListeners = () => {
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("keydown", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
+    };
+
+    const handleInteraction = () => {
+      removeListeners();
+      if (autoPlayPending.current) {
+        autoPlayPending.current = false;
+        void audio.play();
+      }
+    };
+
+    document.addEventListener("click", handleInteraction);
+    document.addEventListener("keydown", handleInteraction);
+    document.addEventListener("touchstart", handleInteraction);
+
+    return removeListeners;
+  }, [song.audioFile]);
+
   if (!song.audioFile) return null;
 
   const togglePlay = () => {
+    autoPlayPending.current = false;
     const audio = audioRef.current;
     if (!audio) return;
     if (playing) {
@@ -67,7 +100,6 @@ export default function MusicPlayer({ song }: { song: Song }) {
       <audio
         ref={audioRef}
         src={song.audioFile}
-        autoPlay
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
         onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime ?? 0)}
