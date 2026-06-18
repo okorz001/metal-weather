@@ -29,6 +29,10 @@ const mockWeather: WeatherData = {
   precipitationMm: 1.2,
   precipitationIn: 0.05,
   status: "Rain",
+  highCelsius: 18,
+  highFahrenheit: 64.4,
+  lowCelsius: 10,
+  lowFahrenheit: 50,
 };
 
 const mockSong: Song = { title: "Raining Blood", artist: "Slayer" };

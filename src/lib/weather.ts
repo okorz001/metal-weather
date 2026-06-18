@@ -66,6 +66,7 @@ const WEATHER_CODE_STATUS: Partial<Record<WeatherCode, WeatherStatus>> = {
 const FORECAST_URL = "https://api.open-meteo.com/v1/forecast";
 const CURRENT_FIELDS =
   "temperature_2m,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,weather_code";
+const DAILY_FIELDS = "temperature_2m_max,temperature_2m_min";
 
 /**
  * Fetches current weather conditions for the given coordinates.
@@ -83,7 +84,7 @@ export async function fetchWeather(
   lon: number,
   displayName: string,
 ): Promise<WeatherData> {
-  const url = `${FORECAST_URL}?latitude=${lat}&longitude=${lon}&current=${CURRENT_FIELDS}`;
+  const url = `${FORECAST_URL}?latitude=${lat}&longitude=${lon}&current=${CURRENT_FIELDS}&daily=${DAILY_FIELDS}&timezone=auto`;
 
   let response: Response;
   try {
@@ -107,12 +108,18 @@ export async function fetchWeather(
       precipitation: number;
       weather_code: number;
     };
+    daily: {
+      temperature_2m_max: number[];
+      temperature_2m_min: number[];
+    };
   };
 
-  const { current } = data;
+  const { current, daily } = data;
   const temperatureCelsius = current.temperature_2m;
   const windSpeedKmh = current.wind_speed_10m;
   const precipitationMm = current.precipitation;
+  const highCelsius = daily.temperature_2m_max[0];
+  const lowCelsius = daily.temperature_2m_min[0];
   return {
     displayName,
     temperatureCelsius,
@@ -124,5 +131,9 @@ export async function fetchWeather(
     precipitationMm,
     precipitationIn: precipitationMm / 25.4,
     status: WEATHER_CODE_STATUS[current.weather_code as WeatherCode],
+    highCelsius,
+    highFahrenheit: (highCelsius * 9) / 5 + 32,
+    lowCelsius,
+    lowFahrenheit: (lowCelsius * 9) / 5 + 32,
   };
 }
