@@ -17,6 +17,10 @@ const mockWeather: WeatherData = {
   precipitationMm: 1.2,
   precipitationIn: 1.2 / 25.4,
   status: "Rain",
+  highCelsius: 18,
+  highFahrenheit: 64.4,
+  lowCelsius: 10,
+  lowFahrenheit: 50,
 };
 
 const mockSong: Song = {
@@ -92,5 +96,15 @@ describe("WeatherCard", () => {
     renderMetric();
     expect(screen.getByText("Raining Blood")).toBeInTheDocument();
     expect(screen.getByText("Slayer")).toBeInTheDocument();
+  });
+
+  it("renders high/low in Celsius when metric", () => {
+    renderMetric();
+    expect(screen.getByText("18.0° / 10.0°")).toBeInTheDocument();
+  });
+
+  it("renders high/low in Fahrenheit when imperial", () => {
+    renderImperial();
+    expect(screen.getByText("64.4° / 50.0°")).toBeInTheDocument();
   });
 });

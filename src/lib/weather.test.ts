@@ -19,6 +19,10 @@ describe("fetchWeather", () => {
           precipitation: 0.0,
           weather_code: 3,
         },
+        daily: {
+          temperature_2m_max: [14.0],
+          temperature_2m_min: [7.0],
+        },
       }),
     } as Response);
 
@@ -38,6 +42,10 @@ describe("fetchWeather", () => {
       precipitationMm: 0.0,
       precipitationIn: 0.0 / 25.4,
       status: "Cloudy",
+      highCelsius: 14.0,
+      highFahrenheit: (14.0 * 9) / 5 + 32,
+      lowCelsius: 7.0,
+      lowFahrenheit: (7.0 * 9) / 5 + 32,
     });
   });
 
@@ -52,6 +60,10 @@ describe("fetchWeather", () => {
           relative_humidity_2m: 75,
           precipitation: 0.0,
           weather_code: 999,
+        },
+        daily: {
+          temperature_2m_max: [14.0],
+          temperature_2m_min: [7.0],
         },
       }),
     } as Response);

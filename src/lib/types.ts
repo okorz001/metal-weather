@@ -77,6 +77,10 @@ export interface SongCatalog {
  * @param precipitationIn - Current precipitation in inches.
  * @param status - High-level weather status derived from the WMO code. Absent if
  *   the API returned an unrecognized code.
+ * @param highCelsius - Today's forecast high temperature in degrees Celsius.
+ * @param highFahrenheit - Today's forecast high temperature in degrees Fahrenheit.
+ * @param lowCelsius - Today's forecast low temperature in degrees Celsius.
+ * @param lowFahrenheit - Today's forecast low temperature in degrees Fahrenheit.
  */
 export interface WeatherData {
   displayName: string;
@@ -89,6 +93,10 @@ export interface WeatherData {
   precipitationMm: number;
   precipitationIn: number;
   status?: WeatherStatus;
+  highCelsius: number;
+  highFahrenheit: number;
+  lowCelsius: number;
+  lowFahrenheit: number;
 }
 
 /**

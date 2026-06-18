@@ -35,6 +35,14 @@ export default function WeatherCard({
     ? `${weather.temperatureCelsius.toFixed(1)} °C`
     : `${weather.temperatureFahrenheit.toFixed(1)} °F`;
 
+  const displayHigh = isMetric
+    ? `${weather.highCelsius.toFixed(1)}°`
+    : `${weather.highFahrenheit.toFixed(1)}°`;
+
+  const displayLow = isMetric
+    ? `${weather.lowCelsius.toFixed(1)}°`
+    : `${weather.lowFahrenheit.toFixed(1)}°`;
+
   const displayWind = isMetric
     ? `${weather.windSpeedKmh} km/h ${toCardinal(weather.windDirectionDeg)}`
     : `${weather.windSpeedMph.toFixed(1)} mph ${toCardinal(weather.windDirectionDeg)}`;
@@ -45,19 +53,25 @@ export default function WeatherCard({
 
   return (
     <div className="rounded-lg bg-zinc-50 p-6 text-zinc-900 dark:bg-zinc-900 dark:text-white">
-      <div className="mb-4">
+      <div className="mb-2">
         <div className="text-sm font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-400">
           {weather.status}
         </div>
         <div className="text-xl font-bold">{weather.displayName}</div>
       </div>
 
+      <div className="mb-6 text-7xl leading-none font-bold tracking-tight">
+        {displayTemp}
+      </div>
+
       <div className="mb-4 grid grid-cols-2 gap-3">
         <div>
           <div className="text-sm text-zinc-600 dark:text-zinc-400">
-            Temperature
+            High / Low
           </div>
-          <div className="font-semibold">{displayTemp}</div>
+          <div className="font-semibold">
+            {displayHigh} / {displayLow}
+          </div>
         </div>
         <div>
           <div className="text-sm text-zinc-600 dark:text-zinc-400">Wind</div>
