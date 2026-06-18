@@ -93,7 +93,7 @@ export default function LocationSearch({
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           disabled={disabled}
           placeholder="City name"
-          className="flex-1 rounded-lg bg-zinc-200 px-4 py-2 text-zinc-900 placeholder-zinc-500 focus:ring-2 focus:ring-zinc-400 focus:outline-none disabled:opacity-50 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-500 dark:focus:ring-zinc-500"
+          className="min-w-0 flex-1 rounded-lg bg-zinc-200 px-4 py-2 text-zinc-900 placeholder-zinc-500 focus:ring-2 focus:ring-zinc-400 focus:outline-none disabled:opacity-50 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-500 dark:focus:ring-zinc-500"
         />
         <button onClick={handleSubmit} disabled={disabled} className={btnClass}>
           Go
