@@ -61,15 +61,14 @@ describe("HomeContent", () => {
     expect(screen.queryByText("The Wicker Man")).not.toBeInTheDocument();
   });
 
-  it("auto-searches when ?q= param is present on mount", async () => {
+  it("pre-fills the input from ?q= on mount without auto-searching", () => {
     vi.mocked(useSearchParams).mockReturnValue(
       new URLSearchParams("q=Seattle"),
     );
     render(<HomeContent />);
-    await waitFor(() =>
-      expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
-    );
-    expect(geocodeModule.geocodeLocation).toHaveBeenCalledWith("Seattle");
+    expect(screen.getByPlaceholderText("City name")).toHaveValue("Seattle");
+    expect(geocodeModule.geocodeLocation).not.toHaveBeenCalled();
+    expect(weatherModule.fetchWeather).not.toHaveBeenCalled();
   });
 
   describe("GPS geo search", () => {

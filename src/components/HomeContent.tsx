@@ -18,8 +18,9 @@ const typedCatalog = catalog as SongCatalog;
 /**
  * The main application content component.
  *
- * Reads `?q=` from the URL to initialize the search input and auto-search on
- * mount. The GPS button in `LocationSearch` triggers geolocation; on success,
+ * Reads `?q=` from the URL to pre-fill the search input on mount, but does
+ * not auto-search — the user must click Go. This preserves a user-gesture
+ * before any audio can autoplay. The GPS button in `LocationSearch` triggers geolocation; on success,
  * the coordinates are reverse-geocoded to a city name, the input is populated,
  * the URL is updated to `?q=<city>`, and the weather search runs using the
  * known coordinates (skipping a second geocode call). Manages all search state
@@ -37,13 +38,13 @@ export default function HomeContent() {
 
   const [inputValue, setInputValue] = useState(q);
   const [result, setResult] = useState<WeatherResult | null>(null);
-  // Start in loading state when a query is already in the URL (e.g. on initial
-  // load or back/forward navigation), so no synchronous setState is needed
-  // inside effects.
-  const [loading, setLoading] = useState(!!q);
+  const [loading, setLoading] = useState(false);
 
   // Tracks the currently active search so stale responses are discarded.
   const searchIdRef = useRef(0);
+  // Skips the useEffect on the initial render so that a ?q= URL param only
+  // pre-fills the input without auto-searching (user must click Go).
+  const hasMountedRef = useRef(false);
   // Set before a GPS-triggered router.push to prevent the useEffect from
   // starting a redundant geocode call after the URL update.
   const skipQEffect = useRef(false);
@@ -111,6 +112,10 @@ export default function HomeContent() {
   }
 
   useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      return;
+    }
     if (!q) return;
     if (skipQEffect.current) {
       skipQEffect.current = false;
