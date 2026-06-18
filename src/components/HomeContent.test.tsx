@@ -54,45 +54,29 @@ beforeEach(() => {
 });
 
 describe("HomeContent", () => {
-  it("renders the location tabs on initial load with no result", () => {
+  it("renders the search input on initial load with no result", () => {
     render(<HomeContent />);
-    expect(screen.getByRole("button", { name: "City" })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("City name")).toBeInTheDocument();
     expect(screen.queryByText("Raining Blood")).not.toBeInTheDocument();
     expect(screen.queryByText("The Wicker Man")).not.toBeInTheDocument();
   });
 
-  it("auto-searches when ?tab=city&q= params are present on mount", async () => {
+  it("pre-fills the input from ?q= on mount without auto-searching", () => {
     vi.mocked(useSearchParams).mockReturnValue(
-      new URLSearchParams("tab=city&q=Seattle"),
+      new URLSearchParams("q=Seattle"),
     );
     render(<HomeContent />);
-    await waitFor(() =>
-      expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
-    );
-    expect(geocodeModule.geocodeLocation).toHaveBeenCalledWith("Seattle");
-  });
-
-  it("ignores ?q= when ?tab=location is set", () => {
-    vi.mocked(useSearchParams).mockReturnValue(
-      new URLSearchParams("tab=location&q=47.6,-122.3"),
-    );
-    render(<HomeContent />);
+    expect(screen.getByPlaceholderText("City name")).toHaveValue("Seattle");
+    expect(geocodeModule.geocodeLocation).not.toHaveBeenCalled();
     expect(weatherModule.fetchWeather).not.toHaveBeenCalled();
   });
 
-  it("pushing the City tab button switches to the city input without navigating", () => {
-    const push = vi.fn();
-    vi.mocked(useRouter).mockReturnValue({ push } as ReturnType<
-      typeof useRouter
-    >);
-    render(<HomeContent />);
-    fireEvent.click(screen.getByRole("button", { name: "City" }));
-    expect(screen.getByPlaceholderText("City name")).toBeInTheDocument();
-    expect(push).not.toHaveBeenCalled();
-  });
-
-  describe("Current Location geo search", () => {
-    it("reverse-geocodes coordinates and renders WeatherCard on success", async () => {
+  describe("GPS geo search", () => {
+    it("reverse-geocodes coordinates, populates input, updates URL, and renders WeatherCard", async () => {
+      const push = vi.fn();
+      vi.mocked(useRouter).mockReturnValue({ push } as ReturnType<
+        typeof useRouter
+      >);
       render(<HomeContent />);
       const mockGeo = {
         getCurrentPosition: vi.fn((success) => {
@@ -103,7 +87,7 @@ describe("HomeContent", () => {
         value: mockGeo,
         configurable: true,
       });
-      fireEvent.click(screen.getByRole("button", { name: "Get My Location" }));
+      fireEvent.click(screen.getByRole("button", { name: "Use my location" }));
       await waitFor(() =>
         expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
       );
@@ -111,6 +95,12 @@ describe("HomeContent", () => {
       expect(weatherModule.fetchWeather).toHaveBeenCalledWith(
         47.6,
         -122.3,
+        "Seattle, Washington, United States",
+      );
+      expect(push).toHaveBeenCalledWith(
+        "/?q=Seattle%2C%20Washington%2C%20United%20States",
+      );
+      expect(screen.getByPlaceholderText("City name")).toHaveValue(
         "Seattle, Washington, United States",
       );
     });
@@ -129,7 +119,7 @@ describe("HomeContent", () => {
         value: mockGeo,
         configurable: true,
       });
-      fireEvent.click(screen.getByRole("button", { name: "Get My Location" }));
+      fireEvent.click(screen.getByRole("button", { name: "Use my location" }));
       await waitFor(() =>
         expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
       );
@@ -141,19 +131,13 @@ describe("HomeContent", () => {
     });
   });
 
-  describe("with city tab active via URL", () => {
-    beforeEach(() => {
-      vi.mocked(useSearchParams).mockReturnValue(
-        new URLSearchParams("tab=city"),
-      );
-    });
-
-    it("searches and renders WeatherCard on manual submit", async () => {
+  describe("manual city search", () => {
+    it("searches and renders WeatherCard on submit", async () => {
       render(<HomeContent />);
       fireEvent.change(screen.getByPlaceholderText("City name"), {
         target: { value: "Tokyo" },
       });
-      fireEvent.click(screen.getByRole("button", { name: "Search" }));
+      fireEvent.click(screen.getByRole("button", { name: "Go" }));
       await waitFor(() =>
         expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
       );
@@ -168,7 +152,7 @@ describe("HomeContent", () => {
       fireEvent.change(screen.getByPlaceholderText("City name"), {
         target: { value: "?????" },
       });
-      fireEvent.click(screen.getByRole("button", { name: "Search" }));
+      fireEvent.click(screen.getByRole("button", { name: "Go" }));
       await waitFor(() =>
         expect(screen.getByText("Location not found")).toBeInTheDocument(),
       );
@@ -187,7 +171,7 @@ describe("HomeContent", () => {
       fireEvent.change(screen.getByPlaceholderText("City name"), {
         target: { value: "Seattle" },
       });
-      fireEvent.click(screen.getByRole("button", { name: "Search" }));
+      fireEvent.click(screen.getByRole("button", { name: "Go" }));
       expect(screen.getByText("Loading…")).toBeInTheDocument();
       resolve();
       await waitFor(() =>
