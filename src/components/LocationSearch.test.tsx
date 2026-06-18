@@ -1,53 +1,101 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import LocationSearch, { type Tab } from "./LocationSearch";
+import LocationSearch from "./LocationSearch";
 
-function renderTab(
-  tab: Tab,
+function renderSearch(
+  value = "",
   onSearch = vi.fn(),
   onGeoSearch = vi.fn(),
-  onTabChange = vi.fn(),
+  onChange = vi.fn(),
 ) {
   render(
     <LocationSearch
-      tab={tab}
-      onTabChange={onTabChange}
+      value={value}
+      onChange={onChange}
       onSearch={onSearch}
       onGeoSearch={onGeoSearch}
       disabled={false}
     />,
   );
-  return { onSearch, onGeoSearch, onTabChange };
+  return { onSearch, onGeoSearch, onChange };
 }
 
 describe("LocationSearch", () => {
-  it("renders all three tab buttons", () => {
-    renderTab("location");
+  it("renders the city input, GPS button, and Go button", () => {
+    renderSearch();
+    expect(screen.getByPlaceholderText("City name")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Current Location" }),
+      screen.getByRole("button", { name: "Use my location" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "City" })).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Coordinates" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Go" })).toBeInTheDocument();
   });
 
-  it("calls onTabChange when a tab button is clicked", () => {
-    const { onTabChange } = renderTab("location");
-    fireEvent.click(screen.getByRole("button", { name: "City" }));
-    expect(onTabChange).toHaveBeenCalledWith("city");
-  });
-
-  describe("Current Location tab", () => {
-    it("shows Get My Location button initially", () => {
-      renderTab("location");
-      expect(
-        screen.getByRole("button", { name: "Get My Location" }),
-      ).toBeInTheDocument();
+  it("calls onChange when the input value changes", () => {
+    const { onChange } = renderSearch();
+    fireEvent.change(screen.getByPlaceholderText("City name"), {
+      target: { value: "Seattle" },
     });
+    expect(onChange).toHaveBeenCalledWith("Seattle");
+  });
 
-    it("calls onGeoSearch and shows Using Your Location on success", () => {
+  it("calls onSearch with trimmed value on Go click", () => {
+    const { onSearch } = renderSearch("  Seattle  ");
+    fireEvent.click(screen.getByRole("button", { name: "Go" }));
+    expect(onSearch).toHaveBeenCalledWith("Seattle");
+  });
+
+  it("calls onSearch on Enter keypress", () => {
+    const { onSearch } = renderSearch("Tokyo");
+    fireEvent.keyDown(screen.getByPlaceholderText("City name"), {
+      key: "Enter",
+    });
+    expect(onSearch).toHaveBeenCalledWith("Tokyo");
+  });
+
+  it("does not call onSearch when input is empty", () => {
+    const { onSearch } = renderSearch("");
+    fireEvent.click(screen.getByRole("button", { name: "Go" }));
+    expect(onSearch).not.toHaveBeenCalled();
+  });
+
+  it("does not call onSearch when input is whitespace only", () => {
+    const { onSearch } = renderSearch("   ");
+    fireEvent.click(screen.getByRole("button", { name: "Go" }));
+    expect(onSearch).not.toHaveBeenCalled();
+  });
+
+  it("disables the input and Go button when disabled prop is true", () => {
+    render(
+      <LocationSearch
+        value=""
+        onChange={vi.fn()}
+        onSearch={vi.fn()}
+        onGeoSearch={vi.fn()}
+        disabled
+      />,
+    );
+    expect(screen.getByPlaceholderText("City name")).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Go" })).toBeDisabled();
+  });
+
+  it("does not disable the GPS button when disabled prop is true", () => {
+    render(
+      <LocationSearch
+        value=""
+        onChange={vi.fn()}
+        onSearch={vi.fn()}
+        onGeoSearch={vi.fn()}
+        disabled
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: "Use my location" }),
+    ).not.toBeDisabled();
+  });
+
+  describe("GPS button", () => {
+    it("calls onGeoSearch and returns to idle on success", () => {
       const mockGeo = {
         getCurrentPosition: vi.fn((success) => {
           success({ coords: { latitude: 47.6, longitude: -122.3 } });
@@ -57,14 +105,15 @@ describe("LocationSearch", () => {
         value: mockGeo,
         configurable: true,
       });
-      const { onGeoSearch } = renderTab("location");
-      expect(onGeoSearch).not.toHaveBeenCalled();
-      fireEvent.click(screen.getByRole("button", { name: "Get My Location" }));
+      const { onGeoSearch } = renderSearch();
+      fireEvent.click(screen.getByRole("button", { name: "Use my location" }));
       expect(onGeoSearch).toHaveBeenCalledWith(47.6, -122.3);
-      expect(screen.getByText("Using Your Location")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Use my location" }),
+      ).not.toBeDisabled();
     });
 
-    it("shows Locating… while waiting for position", () => {
+    it("disables the GPS button while locating", () => {
       const mockGeo = {
         getCurrentPosition: vi.fn(), // never resolves
       };
@@ -72,24 +121,26 @@ describe("LocationSearch", () => {
         value: mockGeo,
         configurable: true,
       });
-      renderTab("location");
-      fireEvent.click(screen.getByRole("button", { name: "Get My Location" }));
-      expect(screen.getByText("Locating…")).toBeInTheDocument();
+      renderSearch();
+      fireEvent.click(screen.getByRole("button", { name: "Use my location" }));
+      expect(
+        screen.getByRole("button", { name: "Use my location" }),
+      ).toBeDisabled();
     });
 
-    it("shows error when geolocation is not supported", () => {
+    it("shows an error when geolocation is not supported", () => {
       Object.defineProperty(navigator, "geolocation", {
         value: undefined,
         configurable: true,
       });
-      renderTab("location");
-      fireEvent.click(screen.getByRole("button", { name: "Get My Location" }));
+      renderSearch();
+      fireEvent.click(screen.getByRole("button", { name: "Use my location" }));
       expect(
         screen.getByText("Geolocation is not supported by this browser."),
       ).toBeInTheDocument();
     });
 
-    it("shows error message on geolocation failure", () => {
+    it("shows an error on geolocation failure", () => {
       const mockGeo = {
         getCurrentPosition: vi.fn((_, error) => {
           error({ message: "Permission denied" });
@@ -99,71 +150,9 @@ describe("LocationSearch", () => {
         value: mockGeo,
         configurable: true,
       });
-      renderTab("location");
-      fireEvent.click(screen.getByRole("button", { name: "Get My Location" }));
+      renderSearch();
+      fireEvent.click(screen.getByRole("button", { name: "Use my location" }));
       expect(screen.getByText("Permission denied")).toBeInTheDocument();
-    });
-  });
-
-  describe("City tab", () => {
-    it("submits on button click", () => {
-      const { onSearch } = renderTab("city");
-      fireEvent.change(screen.getByPlaceholderText("City name"), {
-        target: { value: "Seattle" },
-      });
-      fireEvent.click(screen.getByRole("button", { name: "Search" }));
-      expect(onSearch).toHaveBeenCalledWith("Seattle");
-    });
-
-    it("submits on Enter keypress", () => {
-      const { onSearch } = renderTab("city");
-      const input = screen.getByPlaceholderText("City name");
-      fireEvent.change(input, { target: { value: "Tokyo" } });
-      fireEvent.keyDown(input, { key: "Enter" });
-      expect(onSearch).toHaveBeenCalledWith("Tokyo");
-    });
-
-    it("does not submit when input is empty", () => {
-      const { onSearch } = renderTab("city");
-      fireEvent.click(screen.getByRole("button", { name: "Search" }));
-      expect(onSearch).not.toHaveBeenCalled();
-    });
-
-    it("disables input and button when disabled prop is true", () => {
-      render(
-        <LocationSearch
-          tab="city"
-          onTabChange={vi.fn()}
-          onSearch={vi.fn()}
-          onGeoSearch={vi.fn()}
-          disabled
-        />,
-      );
-      expect(screen.getByPlaceholderText("City name")).toBeDisabled();
-      expect(screen.getByRole("button", { name: "Search" })).toBeDisabled();
-    });
-  });
-
-  describe("Coordinates tab", () => {
-    it("submits lat,lon on button click", () => {
-      const { onSearch } = renderTab("coords");
-      fireEvent.change(screen.getByPlaceholderText("Latitude"), {
-        target: { value: "47.6" },
-      });
-      fireEvent.change(screen.getByPlaceholderText("Longitude"), {
-        target: { value: "-122.3" },
-      });
-      fireEvent.click(screen.getByRole("button", { name: "Search" }));
-      expect(onSearch).toHaveBeenCalledWith("47.6,-122.3");
-    });
-
-    it("does not submit when either field is empty", () => {
-      const { onSearch } = renderTab("coords");
-      fireEvent.change(screen.getByPlaceholderText("Latitude"), {
-        target: { value: "47.6" },
-      });
-      fireEvent.click(screen.getByRole("button", { name: "Search" }));
-      expect(onSearch).not.toHaveBeenCalled();
     });
   });
 });

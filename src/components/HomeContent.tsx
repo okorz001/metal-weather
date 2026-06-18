@@ -10,27 +10,20 @@ import type { SongCatalog, WeatherResult } from "@/lib/types";
 import { fetchWeather } from "@/lib/weather";
 
 import ErrorCard from "./ErrorCard";
-import { type Tab, TABS } from "./LocationSearch";
 import LocationSearch from "./LocationSearch";
 import WeatherCard from "./WeatherCard";
 
 const typedCatalog = catalog as SongCatalog;
 
-function parseTab(value: string | null): Tab {
-  return TABS.includes(value as Tab) ? (value as Tab) : "location";
-}
-
 /**
  * The main application content component.
  *
- * Reads `?tab=` from the URL to initialize the active tab, and `?q=` to
- * auto-search on mount. Tab selection is managed as local React state after
- * the initial render, so switching tabs does not cause a navigation. For
- * `city` and `coords` tabs, automatically triggers a weather search on mount
- * and whenever `q` changes. For the `location` tab, geolocation is triggered
- * by `LocationSearch` and the result is passed directly to `handleGeoSearch`
- * without modifying the URL. Manages all search state and renders the
- * appropriate result card.
+ * Reads `?q=` from the URL to initialize the search input and auto-search on
+ * mount. The GPS button in `LocationSearch` triggers geolocation; on success,
+ * the coordinates are reverse-geocoded to a city name, the input is populated,
+ * the URL is updated to `?q=<city>`, and the weather search runs using the
+ * known coordinates (skipping a second geocode call). Manages all search state
+ * and renders the appropriate result card.
  *
  * Must be rendered inside a `<Suspense>` boundary because it uses
  * `useSearchParams`.
@@ -41,15 +34,19 @@ export default function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const q = searchParams.get("q") ?? "";
-  const [tab, setTab] = useState<Tab>(() => parseTab(searchParams.get("tab")));
 
+  const [inputValue, setInputValue] = useState(q);
   const [result, setResult] = useState<WeatherResult | null>(null);
-  // Start in loading state when a query is already in the URL (e.g. on initial load
-  // or back/forward navigation), so no synchronous setState is needed inside effects.
-  const [loading, setLoading] = useState(tab !== "location" && !!q);
+  // Start in loading state when a query is already in the URL (e.g. on initial
+  // load or back/forward navigation), so no synchronous setState is needed
+  // inside effects.
+  const [loading, setLoading] = useState(!!q);
 
   // Tracks the currently active search so stale responses are discarded.
   const searchIdRef = useRef(0);
+  // Set before a GPS-triggered router.push to prevent the useEffect from
+  // starting a redundant geocode call after the URL update.
+  const skipQEffect = useRef(false);
 
   async function runSearch(
     lat: number,
@@ -71,24 +68,9 @@ export default function HomeContent() {
     }
   }
 
-  async function resolve(
-    location: string,
-    resolveTab: Tab,
-  ): Promise<{ lat: number; lon: number; displayName: string }> {
-    if (resolveTab === "city") {
-      return geocodeLocation(location);
-    }
-    const [rawLat, rawLon] = location.split(",");
-    return { lat: Number(rawLat), lon: Number(rawLon), displayName: location };
-  }
-
-  async function runSearchFromQuery(
-    location: string,
-    searchTab: Tab,
-    id: number,
-  ) {
+  async function runSearchFromQuery(location: string, id: number) {
     try {
-      const { lat, lon, displayName } = await resolve(location, searchTab);
+      const { lat, lon, displayName } = await geocodeLocation(location);
       if (searchIdRef.current !== id) return;
       await runSearch(lat, lon, displayName, id);
     } catch (e) {
@@ -103,10 +85,8 @@ export default function HomeContent() {
     const id = ++searchIdRef.current;
     setLoading(true);
     setResult(null);
-    router.push(
-      `/?tab=${encodeURIComponent(tab)}&q=${encodeURIComponent(location)}`,
-    );
-    void runSearchFromQuery(location, tab, id);
+    router.push(`/?q=${encodeURIComponent(location)}`);
+    void runSearchFromQuery(location, id);
   }
 
   async function runGeoSearch(lat: number, lon: number, id: number) {
@@ -117,6 +97,9 @@ export default function HomeContent() {
       // fall back to raw coordinates
     }
     if (searchIdRef.current !== id) return;
+    setInputValue(displayName);
+    skipQEffect.current = true;
+    router.push(`/?q=${encodeURIComponent(displayName)}`);
     await runSearch(lat, lon, displayName, id);
   }
 
@@ -127,22 +110,21 @@ export default function HomeContent() {
     void runGeoSearch(lat, lon, id);
   }
 
-  function handleTabChange(newTab: Tab) {
-    setTab(newTab);
-    setResult(null);
-  }
-
   useEffect(() => {
-    if (!q || tab === "location") return;
+    if (!q) return;
+    if (skipQEffect.current) {
+      skipQEffect.current = false;
+      return;
+    }
     const id = ++searchIdRef.current;
-    void runSearchFromQuery(q, tab, id);
+    void runSearchFromQuery(q, id);
   }, [q]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="mt-3 w-full max-w-lg space-y-3">
       <LocationSearch
-        tab={tab}
-        onTabChange={handleTabChange}
+        value={inputValue}
+        onChange={setInputValue}
         onSearch={handleSearch}
         onGeoSearch={handleGeoSearch}
         disabled={loading}

@@ -13,8 +13,8 @@ vi.mock("@/lib/weather");
 vi.mock("@/lib/songs");
 
 describe("Home", () => {
-  it("renders the location search tabs on initial load", () => {
+  it("renders the location search on initial load", () => {
     render(<Home />);
-    expect(screen.getByRole("button", { name: "City" })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("City name")).toBeInTheDocument();
   });
 });
