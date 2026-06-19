@@ -71,19 +71,8 @@ and `WeatherStatus` values pre-derived from WMO codes.
 
 ### Song Catalog
 
-Defined in `src/data/songs.json`. Cover art JPEGs are stored alongside MP3s
-in `public/assets/`.
-
-| Status       | Song                              | Artist          |
-| ------------ | --------------------------------- | --------------- |
-| Clear        | Power of the Sun                  | Bruce Dickinson |
-| Cloudy       | Under the Grey Clouded Winter Sky | Amon Amarth     |
-| Foggy        | Her Ghost in the Fog              | Cradle of Filth |
-| Drizzle      | Desert Rain                       | Iced Earth      |
-| Rain         | Raining Blood                     | Slayer          |
-| Snow         | Across the Snows                  | Kiuas           |
-| Thunderstorm | Ride the Lightning                | Metallica       |
-| Error        | The Uninvited Guest               | Mercyful Fate   |
+Defined in `src/data/songs.json`. One song per `WeatherStatus` plus one error
+fallback. Cover art JPEGs are stored alongside MP3s in `public/assets/`.
 
 ---
 
