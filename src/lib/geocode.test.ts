@@ -77,6 +77,72 @@ describe("geocodeLocation", () => {
     });
   });
 
+  it("prefers exact name match over higher-ranked result with different name", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        results: [
+          {
+            latitude: 39.9,
+            longitude: -84.2,
+            name: "Venice Township",
+            admin1: "Ohio",
+            country: "United States",
+            country_code: "US",
+          },
+          {
+            latitude: 45.4375,
+            longitude: 12.3358,
+            name: "Venice",
+            admin1: "Veneto",
+            country: "Italy",
+            country_code: "IT",
+          },
+        ],
+      }),
+    } as Response);
+
+    const result = await geocodeLocation("Venice");
+    expect(result).toEqual({
+      lat: 45.4375,
+      lon: 12.3358,
+      displayName: "Venice, Veneto, Italy",
+    });
+  });
+
+  it("applies qualifier filtering within exact name matches", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        results: [
+          {
+            latitude: 45.4375,
+            longitude: 12.3358,
+            name: "Venice",
+            admin1: "Veneto",
+            country: "Italy",
+            country_code: "IT",
+          },
+          {
+            latitude: 33.985,
+            longitude: -118.472,
+            name: "Venice",
+            admin1: "California",
+            country: "United States",
+            country_code: "US",
+          },
+        ],
+      }),
+    } as Response);
+
+    const result = await geocodeLocation("Venice, CA");
+    expect(result).toEqual({
+      lat: 33.985,
+      lon: -118.472,
+      displayName: "Venice, California, United States",
+    });
+  });
+
   it("falls back to first result when qualifier matches nothing", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,

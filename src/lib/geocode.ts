@@ -29,9 +29,8 @@ export async function geocodeLocation(
 ): Promise<{ lat: number; lon: number; displayName: string }> {
   const [cityName, ...rest] = location.split(",").map((s) => s.trim());
   const qualifiers = rest.filter(Boolean);
-  const count = qualifiers.length > 0 ? 10 : 1;
 
-  const url = `${GEOCODING_URL}?name=${encodeURIComponent(cityName)}&count=${count}&language=en&format=json`;
+  const url = `${GEOCODING_URL}?name=${encodeURIComponent(cityName)}&count=10&language=en&format=json`;
 
   let response: Response;
   try {
@@ -52,15 +51,21 @@ export async function geocodeLocation(
     throw new Error(`Location not found: "${location}"`);
   }
 
-  let result = data.results[0];
+  const matches = (field: string, q: string) => {
+    const f = field.toLowerCase();
+    const lq = q.toLowerCase();
+    return f === lq || f.split(/\s+/).some((word) => word.startsWith(lq));
+  };
+
+  const nameMatches = data.results.filter(
+    (r) => r.name.toLowerCase() === cityName.toLowerCase(),
+  );
+  const pool = nameMatches.length > 0 ? nameMatches : data.results;
+
+  let result = pool[0];
 
   if (qualifiers.length > 0) {
-    const matches = (field: string, q: string) => {
-      const f = field.toLowerCase();
-      const lq = q.toLowerCase();
-      return f === lq || f.split(/\s+/).some((word) => word.startsWith(lq));
-    };
-    const match = data.results.find((r) =>
+    const match = pool.find((r) =>
       qualifiers.some((q) =>
         [r.admin1, r.admin2, r.country, r.country_code]
           .filter(Boolean)
