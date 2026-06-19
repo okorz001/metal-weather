@@ -70,7 +70,7 @@ export interface SongCatalog {
  * @param temperatureFahrenheit - Forecast temperature in degrees Fahrenheit.
  * @param status - Forecast weather status. Absent if the WMO code is unrecognized.
  */
-export interface HourlyEntry {
+export interface WeatherDataHourly {
   time: string;
   temperatureCelsius: number;
   temperatureFahrenheit: number;
@@ -115,7 +115,7 @@ export interface WeatherData {
   highFahrenheit: number;
   lowCelsius: number;
   lowFahrenheit: number;
-  hourly: HourlyEntry[];
+  hourly: WeatherDataHourly[];
 }
 
 /**

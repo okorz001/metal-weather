@@ -1,6 +1,6 @@
 "use client";
 
-import type { HourlyEntry } from "@/lib/types";
+import type { WeatherDataHourly } from "@/lib/types";
 import { WEATHER_EMOJI } from "@/lib/weatherEmoji";
 
 import { useSettings } from "./SettingsContext";
@@ -24,7 +24,11 @@ function formatHour(time: string): string {
  * @param hourly - The 12-hour forecast entries from {@link WeatherData}.
  * @returns The rendered hourly forecast strip.
  */
-export default function HourlyForecast({ hourly }: { hourly: HourlyEntry[] }) {
+export default function HourlyForecast({
+  hourly,
+}: {
+  hourly: WeatherDataHourly[];
+}) {
   const { isMetric } = useSettings();
 
   return (

@@ -1,4 +1,4 @@
-import type { HourlyEntry, WeatherData, WeatherStatus } from "./types";
+import type { WeatherData, WeatherDataHourly, WeatherStatus } from "./types";
 
 // WMO weather interpretation codes — internal to this module.
 enum WeatherCode {
@@ -131,7 +131,7 @@ export async function fetchWeather(
   const startIdx = Math.max(0, data.hourly.time.indexOf(current.time));
   const hourly = data.hourly.time
     .slice(startIdx, startIdx + 12)
-    .map((time, i): HourlyEntry => {
+    .map((time, i): WeatherDataHourly => {
       const temperatureCelsius = data.hourly.temperature_2m[startIdx + i];
       return {
         time,
