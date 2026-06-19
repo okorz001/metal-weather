@@ -24,6 +24,7 @@ export type WeatherStatus =
  * @param endTime - End time in seconds for the cropped audio clip.
  * @param fadeIn - Fade-in duration in seconds for the audio clip.
  * @param fadeOut - Fade-out duration in seconds for the audio clip.
+ * @param coverArt - Path to the cover art image served from public/, e.g. `/assets/raining-blood.jpg`.
  */
 export interface Song {
   title: string;
@@ -34,6 +35,7 @@ export interface Song {
   endTime: number;
   fadeIn: number;
   fadeOut: number;
+  coverArt?: string;
 }
 
 /**
@@ -81,6 +83,8 @@ export interface SongCatalog {
  * @param highFahrenheit - Today's forecast high temperature in degrees Fahrenheit.
  * @param lowCelsius - Today's forecast low temperature in degrees Celsius.
  * @param lowFahrenheit - Today's forecast low temperature in degrees Fahrenheit.
+ * @param hourly - Upcoming 12-hour forecast data starting from the current hour,
+ *   with temperatures in both unit systems and statuses pre-derived from WMO codes.
  */
 export interface WeatherData {
   displayName: string;
@@ -97,6 +101,12 @@ export interface WeatherData {
   highFahrenheit: number;
   lowCelsius: number;
   lowFahrenheit: number;
+  hourly: {
+    times: string[];
+    temperaturesCelsius: number[];
+    temperaturesFahrenheit: number[];
+    statuses: (WeatherStatus | undefined)[];
+  };
 }
 
 /**

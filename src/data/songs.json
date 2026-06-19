@@ -11,7 +11,8 @@
           "startTime": 42,
           "endTime": 64,
           "fadeIn": 2,
-          "fadeOut": 2
+          "fadeOut": 2,
+          "coverArt": "/assets/power-of-the-sun.jpg"
         }
       ]
     },
@@ -26,7 +27,8 @@
           "startTime": 20,
           "endTime": 40,
           "fadeIn": 2,
-          "fadeOut": 2
+          "fadeOut": 2,
+          "coverArt": "/assets/under-the-grey-clouded-winter-sky.jpg"
         }
       ]
     },
@@ -41,7 +43,8 @@
           "startTime": 320,
           "endTime": 343,
           "fadeIn": 2,
-          "fadeOut": 3
+          "fadeOut": 3,
+          "coverArt": "/assets/her-ghost-in-the-fog.jpg"
         }
       ]
     },
@@ -56,7 +59,8 @@
           "startTime": 193,
           "endTime": 219,
           "fadeIn": 2,
-          "fadeOut": 3
+          "fadeOut": 3,
+          "coverArt": "/assets/desert-rain.jpg"
         }
       ]
     },
@@ -71,7 +75,8 @@
           "startTime": 157,
           "endTime": 180,
           "fadeIn": 2,
-          "fadeOut": 2
+          "fadeOut": 2,
+          "coverArt": "/assets/raining-blood.jpg"
         }
       ]
     },
@@ -86,7 +91,8 @@
           "startTime": 68,
           "endTime": 90,
           "fadeIn": 2,
-          "fadeOut": 2
+          "fadeOut": 2,
+          "coverArt": "/assets/across-the-snows.jpg"
         }
       ]
     },
@@ -101,7 +107,8 @@
           "startTime": 0,
           "endTime": 20,
           "fadeIn": 0,
-          "fadeOut": 3
+          "fadeOut": 3,
+          "coverArt": "/assets/ride-the-lightning.jpg"
         }
       ]
     }
@@ -116,7 +123,8 @@
         "startTime": 59,
         "endTime": 77,
         "fadeIn": 1,
-        "fadeOut": 2
+        "fadeOut": 2,
+        "coverArt": "/assets/the-uninvited-guest.jpg"
       }
     ]
   }

@@ -6,12 +6,20 @@ beforeEach(() => {
   vi.restoreAllMocks();
 });
 
+const hourlyTimes = Array.from(
+  { length: 12 },
+  (_, i) => `2024-01-01T${String(i).padStart(2, "0")}:00`,
+);
+const hourlyTemps = Array.from({ length: 12 }, () => 10.5);
+const hourlyCodes = Array.from({ length: 12 }, () => 3);
+
 describe("fetchWeather", () => {
   it("returns WeatherData with mapped status on success", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => ({
         current: {
+          time: "2024-01-01T00:00",
           temperature_2m: 10.5,
           wind_speed_10m: 15.2,
           wind_direction_10m: 180,
@@ -22,6 +30,11 @@ describe("fetchWeather", () => {
         daily: {
           temperature_2m_max: [14.0],
           temperature_2m_min: [7.0],
+        },
+        hourly: {
+          time: hourlyTimes,
+          temperature_2m: hourlyTemps,
+          weather_code: hourlyCodes,
         },
       }),
     } as Response);
@@ -46,6 +59,12 @@ describe("fetchWeather", () => {
       highFahrenheit: (14.0 * 9) / 5 + 32,
       lowCelsius: 7.0,
       lowFahrenheit: (7.0 * 9) / 5 + 32,
+      hourly: {
+        times: hourlyTimes,
+        temperaturesCelsius: hourlyTemps,
+        temperaturesFahrenheit: hourlyTemps.map((t) => (t * 9) / 5 + 32),
+        statuses: Array.from({ length: 12 }, () => "Cloudy"),
+      },
     });
   });
 
@@ -54,6 +73,7 @@ describe("fetchWeather", () => {
       ok: true,
       json: async () => ({
         current: {
+          time: "2024-01-01T00:00",
           temperature_2m: 10.5,
           wind_speed_10m: 15.2,
           wind_direction_10m: 180,
@@ -64,6 +84,11 @@ describe("fetchWeather", () => {
         daily: {
           temperature_2m_max: [14.0],
           temperature_2m_min: [7.0],
+        },
+        hourly: {
+          time: hourlyTimes,
+          temperature_2m: hourlyTemps,
+          weather_code: Array.from({ length: 12 }, () => 999),
         },
       }),
     } as Response);

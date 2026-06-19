@@ -33,6 +33,12 @@ const mockWeather: WeatherData = {
   highFahrenheit: 64.4,
   lowCelsius: 10,
   lowFahrenheit: 50,
+  hourly: {
+    times: [],
+    temperaturesCelsius: [],
+    temperaturesFahrenheit: [],
+    statuses: [],
+  },
 };
 
 const mockSong: Song = { title: "Raining Blood", artist: "Slayer" };
@@ -103,9 +109,6 @@ describe("HomeContent", () => {
       );
       expect(push).toHaveBeenCalledWith(
         "/?q=Seattle%2C%20Washington%2C%20United%20States",
-      );
-      expect(screen.getByPlaceholderText("City name")).toHaveValue(
-        "Seattle, Washington, United States",
       );
     });
 

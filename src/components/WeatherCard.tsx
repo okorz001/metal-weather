@@ -1,34 +1,23 @@
 "use client";
 
-import type { Song, WeatherData } from "@/lib/types";
+import type { WeatherData } from "@/lib/types";
+import { WEATHER_EMOJI } from "@/lib/weatherEmoji";
 
-import MusicPlayer from "./MusicPlayer";
 import { useSettings } from "./SettingsContext";
 
-function toCardinal(deg: number): string {
-  const dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
-  return dirs[Math.round(deg / 45) % 8];
-}
-
 /**
- * Displays current weather data and the matched metal song.
+ * Displays current weather conditions as a simplified card.
  *
- * Shows condition label, location, temperature, wind speed and cardinal
- * direction, humidity, precipitation, and a "Now Playing" section with the
- * song title and artist. Unit system (metric vs imperial) is read from
- * {@link useSettings}.
+ * Shows the current temperature (in the unit system from {@link useSettings}),
+ * a large condition emoji in the top-right corner, and today's high/low
+ * temperatures below the emoji. The detail grid (wind, humidity,
+ * precipitation), location name, and song section are shown in separate
+ * dedicated components.
  *
  * @param weather - Normalized weather data to display.
- * @param song - The metal song matched to the current weather condition.
  * @returns The rendered weather card element.
  */
-export default function WeatherCard({
-  weather,
-  song,
-}: {
-  weather: WeatherData;
-  song: Song;
-}) {
+export default function WeatherCard({ weather }: { weather: WeatherData }) {
   const { isMetric } = useSettings();
 
   const displayTemp = isMetric
@@ -43,61 +32,20 @@ export default function WeatherCard({
     ? `${weather.lowCelsius.toFixed(1)}°`
     : `${weather.lowFahrenheit.toFixed(1)}°`;
 
-  const displayWind = isMetric
-    ? `${weather.windSpeedKmh} km/h ${toCardinal(weather.windDirectionDeg)}`
-    : `${weather.windSpeedMph.toFixed(1)} mph ${toCardinal(weather.windDirectionDeg)}`;
-
-  const displayPrecip = isMetric
-    ? `${weather.precipitationMm} mm`
-    : `${weather.precipitationIn.toFixed(2)} in`;
+  const emoji = weather.status != null ? WEATHER_EMOJI[weather.status] : null;
 
   return (
     <div className="rounded-lg bg-zinc-50 p-6 text-zinc-900 dark:bg-zinc-900 dark:text-white">
-      <div className="mb-2">
-        <div className="text-sm font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-400">
-          {weather.status}
+      <div className="flex items-start justify-between">
+        <div className="text-7xl leading-none font-bold tracking-tight">
+          {displayTemp}
         </div>
-        <div className="text-xl font-bold">{weather.displayName}</div>
-      </div>
-
-      <div className="mb-6 text-7xl leading-none font-bold tracking-tight">
-        {displayTemp}
-      </div>
-
-      <div className="mb-4 grid grid-cols-2 gap-3">
-        <div>
-          <div className="text-sm text-zinc-600 dark:text-zinc-400">
-            High / Low
-          </div>
-          <div className="font-semibold">
+        <div className="flex flex-col items-end gap-3">
+          {emoji && <div className="text-6xl leading-none">{emoji}</div>}
+          <div className="text-zinc-600 dark:text-zinc-400">
             {displayHigh} / {displayLow}
           </div>
         </div>
-        <div>
-          <div className="text-sm text-zinc-600 dark:text-zinc-400">Wind</div>
-          <div className="font-semibold">{displayWind}</div>
-        </div>
-        <div>
-          <div className="text-sm text-zinc-600 dark:text-zinc-400">
-            Humidity
-          </div>
-          <div className="font-semibold">{weather.humidityPercent}%</div>
-        </div>
-        <div>
-          <div className="text-sm text-zinc-600 dark:text-zinc-400">
-            Precipitation
-          </div>
-          <div className="font-semibold">{displayPrecip}</div>
-        </div>
-      </div>
-
-      <div className="border-t border-zinc-200 pt-4 dark:border-zinc-700">
-        <div className="text-sm font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-400">
-          Now Playing
-        </div>
-        <div className="font-bold">{song.title}</div>
-        <div className="text-zinc-700 dark:text-zinc-300">{song.artist}</div>
-        <MusicPlayer song={song} />
       </div>
     </div>
   );

@@ -67,6 +67,7 @@ const FORECAST_URL = "https://api.open-meteo.com/v1/forecast";
 const CURRENT_FIELDS =
   "temperature_2m,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,weather_code";
 const DAILY_FIELDS = "temperature_2m_max,temperature_2m_min";
+const HOURLY_FIELDS = "temperature_2m,weather_code";
 
 /**
  * Fetches current weather conditions for the given coordinates.
@@ -84,7 +85,7 @@ export async function fetchWeather(
   lon: number,
   displayName: string,
 ): Promise<WeatherData> {
-  const url = `${FORECAST_URL}?latitude=${lat}&longitude=${lon}&current=${CURRENT_FIELDS}&daily=${DAILY_FIELDS}&timezone=auto`;
+  const url = `${FORECAST_URL}?latitude=${lat}&longitude=${lon}&current=${CURRENT_FIELDS}&daily=${DAILY_FIELDS}&hourly=${HOURLY_FIELDS}&timezone=auto`;
 
   let response: Response;
   try {
@@ -101,6 +102,7 @@ export async function fetchWeather(
 
   const data = (await response.json()) as {
     current: {
+      time: string;
       temperature_2m: number;
       wind_speed_10m: number;
       wind_direction_10m: number;
@@ -112,6 +114,11 @@ export async function fetchWeather(
       temperature_2m_max: number[];
       temperature_2m_min: number[];
     };
+    hourly: {
+      time: string[];
+      temperature_2m: number[];
+      weather_code: number[];
+    };
   };
 
   const { current, daily } = data;
@@ -120,6 +127,18 @@ export async function fetchWeather(
   const precipitationMm = current.precipitation;
   const highCelsius = daily.temperature_2m_max[0];
   const lowCelsius = daily.temperature_2m_min[0];
+
+  const startIdx = Math.max(0, data.hourly.time.indexOf(current.time));
+  const hourlyTemps = data.hourly.temperature_2m.slice(startIdx, startIdx + 12);
+  const hourly = {
+    times: data.hourly.time.slice(startIdx, startIdx + 12),
+    temperaturesCelsius: hourlyTemps,
+    temperaturesFahrenheit: hourlyTemps.map((t) => (t * 9) / 5 + 32),
+    statuses: data.hourly.weather_code
+      .slice(startIdx, startIdx + 12)
+      .map((code) => WEATHER_CODE_STATUS[code as WeatherCode]),
+  };
+
   return {
     displayName,
     temperatureCelsius,
@@ -135,5 +154,6 @@ export async function fetchWeather(
     highFahrenheit: (highCelsius * 9) / 5 + 32,
     lowCelsius,
     lowFahrenheit: (lowCelsius * 9) / 5 + 32,
+    hourly,
   };
 }

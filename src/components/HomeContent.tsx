@@ -10,7 +10,10 @@ import type { SongCatalog, WeatherResult } from "@/lib/types";
 import { fetchWeather } from "@/lib/weather";
 
 import ErrorCard from "./ErrorCard";
-import LocationSearch from "./LocationSearch";
+import HourlyForecast from "./HourlyForecast";
+import LocationBar from "./LocationBar";
+import LocationModal from "./LocationModal";
+import SongCard from "./SongCard";
 import WeatherCard from "./WeatherCard";
 
 const typedCatalog = catalog as SongCatalog;
@@ -18,18 +21,17 @@ const typedCatalog = catalog as SongCatalog;
 /**
  * The main application content component.
  *
- * Reads `?q=` from the URL to pre-fill the search input on mount, but does
- * not auto-search — the user must click Go. This preserves a user-gesture
- * before any audio can autoplay. The GPS button in `LocationSearch` triggers geolocation; on success,
- * the coordinates are reverse-geocoded to a city name, the input is populated,
- * the URL is updated to `?q=<city>`, and the weather search runs using the
- * known coordinates (skipping a second geocode call). Manages all search state
- * and renders the appropriate result card.
+ * Manages location search, weather fetching, and song selection. On first
+ * render the location modal opens automatically. Once a result is set the
+ * modal closes and the user can reopen it by clicking the {@link LocationBar}.
+ * The GPS button in {@link LocationBar} triggers geolocation directly without
+ * opening the modal. Manages all search state and renders the appropriate
+ * result cards.
  *
  * Must be rendered inside a `<Suspense>` boundary because it uses
  * `useSearchParams`.
  *
- * @returns The rendered search form and weather or error result.
+ * @returns The rendered location bar, modal, and weather or error result cards.
  */
 export default function HomeContent() {
   const router = useRouter();
@@ -39,6 +41,7 @@ export default function HomeContent() {
   const [inputValue, setInputValue] = useState(q);
   const [result, setResult] = useState<WeatherResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(true);
 
   // Tracks the currently active search so stale responses are discarded.
   const searchIdRef = useRef(0);
@@ -125,9 +128,18 @@ export default function HomeContent() {
     void runSearchFromQuery(q, id);
   }, [q]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const location = result?.ok === true ? result.weather.displayName : null;
+
   return (
     <div className="mt-3 w-full max-w-lg space-y-3">
-      <LocationSearch
+      <LocationBar
+        location={location}
+        onOpenModal={() => setModalOpen(true)}
+        onGeolocate={handleGeoSearch}
+      />
+      <LocationModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
         value={inputValue}
         onChange={setInputValue}
         onSearch={handleSearch}
@@ -136,7 +148,11 @@ export default function HomeContent() {
       />
       {loading && <div>Loading…</div>}
       {!loading && result?.ok === true && (
-        <WeatherCard weather={result.weather} song={result.song} />
+        <>
+          <WeatherCard weather={result.weather} />
+          <SongCard song={result.song} />
+          <HourlyForecast hourly={result.weather.hourly} />
+        </>
       )}
       {!loading && result?.ok === false && (
         <ErrorCard message={result.message} song={result.song} />
