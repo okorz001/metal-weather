@@ -59,12 +59,12 @@ describe("fetchWeather", () => {
       highFahrenheit: (14.0 * 9) / 5 + 32,
       lowCelsius: 7.0,
       lowFahrenheit: (7.0 * 9) / 5 + 32,
-      hourly: {
-        times: hourlyTimes,
-        temperaturesCelsius: hourlyTemps,
-        temperaturesFahrenheit: hourlyTemps.map((t) => (t * 9) / 5 + 32),
-        statuses: Array.from({ length: 12 }, () => "Cloudy"),
-      },
+      hourly: hourlyTimes.map((time, i) => ({
+        time,
+        temperatureCelsius: hourlyTemps[i],
+        temperatureFahrenheit: (hourlyTemps[i] * 9) / 5 + 32,
+        status: "Cloudy",
+      })),
     });
   });
 

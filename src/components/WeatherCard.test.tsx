@@ -21,12 +21,7 @@ const mockWeather: WeatherData = {
   highFahrenheit: 64.4,
   lowCelsius: 10,
   lowFahrenheit: 50,
-  hourly: {
-    times: [],
-    temperaturesCelsius: [],
-    temperaturesFahrenheit: [],
-    statuses: [],
-  },
+  hourly: [],
 };
 
 function renderMetric() {

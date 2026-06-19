@@ -1,6 +1,6 @@
 "use client";
 
-import type { WeatherData } from "@/lib/types";
+import type { HourlyEntry } from "@/lib/types";
 import { WEATHER_EMOJI } from "@/lib/weatherEmoji";
 
 import { useSettings } from "./SettingsContext";
@@ -21,38 +21,35 @@ function formatHour(time: string): string {
  * (middle), and a formatted hour label (bottom). Unit system (metric vs
  * imperial) is read from {@link useSettings}.
  *
- * @param hourly - The 12-hour forecast slice from {@link WeatherData}.
+ * @param hourly - The 12-hour forecast entries from {@link WeatherData}.
  * @returns The rendered hourly forecast strip.
  */
-export default function HourlyForecast({
-  hourly,
-}: {
-  hourly: WeatherData["hourly"];
-}) {
+export default function HourlyForecast({ hourly }: { hourly: HourlyEntry[] }) {
   const { isMetric } = useSettings();
 
   return (
     <div className="overflow-x-auto rounded-lg bg-zinc-50 p-4 dark:bg-zinc-900">
       <div className="flex gap-4">
-        {hourly.times.map((time, i) => {
-          const temp = isMetric
-            ? `${hourly.temperaturesCelsius[i].toFixed(0)}°`
-            : `${hourly.temperaturesFahrenheit[i].toFixed(0)}°`;
-          const status = hourly.statuses[i];
-          const emoji = status != null ? WEATHER_EMOJI[status] : "—";
-          return (
-            <div
-              key={time}
-              className="flex min-w-[3.5rem] flex-col items-center gap-1 text-zinc-900 dark:text-white"
-            >
-              <div className="text-sm font-semibold">{temp}</div>
-              <div className="text-2xl leading-none">{emoji}</div>
-              <div className="text-xs text-zinc-600 dark:text-zinc-400">
-                {formatHour(time)}
+        {hourly.map(
+          ({ time, temperatureCelsius, temperatureFahrenheit, status }) => {
+            const temp = isMetric
+              ? `${temperatureCelsius.toFixed(0)}°`
+              : `${temperatureFahrenheit.toFixed(0)}°`;
+            const emoji = status != null ? WEATHER_EMOJI[status] : "—";
+            return (
+              <div
+                key={time}
+                className="flex min-w-[3.5rem] flex-col items-center gap-1 text-zinc-900 dark:text-white"
+              >
+                <div className="text-sm font-semibold">{temp}</div>
+                <div className="text-2xl leading-none">{emoji}</div>
+                <div className="text-xs text-zinc-600 dark:text-zinc-400">
+                  {formatHour(time)}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          },
+        )}
       </div>
     </div>
   );
