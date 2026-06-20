@@ -79,14 +79,14 @@ export default function MusicPlayer({ song }: { song: Song }) {
         onClick={togglePlay}
         disabled={loadError}
         aria-label={playing ? "Pause" : "Play"}
-        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-zinc-300 text-zinc-900 hover:bg-zinc-400 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
+        className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-zinc-300 text-zinc-900 hover:bg-zinc-400 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
       >
         {playing ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className="h-4 w-4"
+            className="h-3 w-3"
           >
             <rect x="6" y="5" width="4" height="14" rx="1" />
             <rect x="14" y="5" width="4" height="14" rx="1" />
@@ -96,7 +96,7 @@ export default function MusicPlayer({ song }: { song: Song }) {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className="h-4 w-4"
+            className="h-3 w-3"
           >
             <path d="M8 5v14l11-7z" />
           </svg>
