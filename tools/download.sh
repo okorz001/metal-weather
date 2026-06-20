@@ -58,10 +58,38 @@ while IFS= read -r song; do
       echo "[$title] Cover already exists, skipping (use --force to re-download)"
     else
       mkdir -p "$(dirname "$cover_path")"
-      if curl -fsSL -o "$cover_path" "https://img.youtube.com/vi/${youtube_id}/hqdefault.jpg"; then
+      tmp_cover=$(mktemp /tmp/cover_XXXXXX.jpg)
+      cover_ok=true
+
+      if ! curl -fsSL -o "$tmp_cover" "https://img.youtube.com/vi/${youtube_id}/hqdefault.jpg"; then
+        echo "[$title] Error: curl failed to download cover art" >&2
+        cover_ok=false
+      fi
+
+      if [[ "$cover_ok" == true ]]; then
+        # 1. cropdetect removes black letterbox bars (top/bottom).
+        # 2. square center-crop removes colored pillarbox columns (left/right).
+        # limit=16: treat luma ≤ 16 as black to handle compression artifacts.
+        crop_params=$(ffmpeg -i "$tmp_cover" \
+          -vf "cropdetect=limit=16:round=2:reset=0" \
+          -f null - 2>&1 | grep -oP 'crop=\d+:\d+:\d+:\d+' | tail -1)
+        square="crop=min(iw\,ih):min(iw\,ih)"
+        if [[ -n "$crop_params" ]]; then
+          vf_chain="${crop_params},${square}"
+        else
+          vf_chain="$square"
+        fi
+        if ! ffmpeg -y -i "$tmp_cover" -vf "$vf_chain" "$cover_path" 2>/dev/null; then
+          echo "[$title] Error: ffmpeg failed to crop cover art" >&2
+          cover_ok=false
+        fi
+      fi
+
+      rm -f "$tmp_cover"
+
+      if [[ "$cover_ok" == true ]]; then
         echo "[$title] Cover — $cover_path"
       else
-        echo "[$title] Error: curl failed to download cover art" >&2
         errors=$((errors + 1))
       fi
     fi
