@@ -143,7 +143,6 @@ export default function HomeContent() {
         value={inputValue}
         onChange={setInputValue}
         onSearch={handleSearch}
-        onGeoSearch={handleGeoSearch}
         disabled={loading}
       />
       {loading && <div>Loading…</div>}

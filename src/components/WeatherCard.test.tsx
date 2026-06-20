@@ -54,12 +54,12 @@ describe("WeatherCard", () => {
 
   it("renders temperature in Celsius when metric", () => {
     renderMetric();
-    expect(screen.getByText("15.0 °C")).toBeInTheDocument();
+    expect(screen.getByText("15.0°C")).toBeInTheDocument();
   });
 
   it("renders temperature in Fahrenheit when imperial", () => {
     renderImperial();
-    expect(screen.getByText("59.0 °F")).toBeInTheDocument();
+    expect(screen.getByText("59.0°F")).toBeInTheDocument();
   });
 
   it("renders high/low in Celsius when metric", () => {

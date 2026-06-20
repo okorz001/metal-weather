@@ -6,15 +6,13 @@ import LocationSearch from "./LocationSearch";
  * A full-screen overlay modal wrapping the location search form.
  *
  * Renders over all other content when `open` is true. Closes automatically
- * when the user submits a text search or triggers GPS (via the inner
- * {@link LocationSearch}). Can also be dismissed via the close button.
+ * when the user submits a search. Can also be dismissed via the close button.
  *
  * @param open - Whether the modal is visible.
  * @param onClose - Called when the user explicitly closes the modal.
  * @param value - The current text input value (controlled).
  * @param onChange - Called when the text input value changes.
  * @param onSearch - Called with the trimmed city name when the user submits.
- * @param onGeoSearch - Called with latitude and longitude when GPS succeeds.
  * @param disabled - When true, the search form inputs are disabled.
  * @returns The rendered modal element, or `null` when closed.
  */
@@ -24,7 +22,6 @@ export default function LocationModal({
   value,
   onChange,
   onSearch,
-  onGeoSearch,
   disabled = false,
 }: {
   open: boolean;
@@ -32,18 +29,12 @@ export default function LocationModal({
   value: string;
   onChange: (value: string) => void;
   onSearch: (location: string) => void;
-  onGeoSearch: (lat: number, lon: number) => void;
   disabled?: boolean;
 }) {
   if (!open) return null;
 
   function handleSearch(location: string) {
     onSearch(location);
-    onClose();
-  }
-
-  function handleGeoSearch(lat: number, lon: number) {
-    onGeoSearch(lat, lon);
     onClose();
   }
 
@@ -76,7 +67,6 @@ export default function LocationModal({
           value={value}
           onChange={onChange}
           onSearch={handleSearch}
-          onGeoSearch={handleGeoSearch}
           disabled={disabled}
         />
       </div>

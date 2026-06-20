@@ -50,9 +50,6 @@ beforeEach(() => {
     lon: -122.3,
     displayName: "Seattle, WA, US",
   });
-  vi.mocked(geocodeModule.reverseGeocode).mockResolvedValue(
-    "Seattle, Washington, United States",
-  );
   vi.mocked(weatherModule.fetchWeather).mockResolvedValue(mockWeather);
   vi.mocked(songsModule.pickSong).mockReturnValue(mockSong);
   vi.mocked(songsModule.pickErrorSong).mockReturnValue(mockErrorSong);
@@ -74,63 +71,6 @@ describe("HomeContent", () => {
     expect(screen.getByPlaceholderText("City name")).toHaveValue("Seattle");
     expect(geocodeModule.geocodeLocation).not.toHaveBeenCalled();
     expect(weatherModule.fetchWeather).not.toHaveBeenCalled();
-  });
-
-  describe("GPS geo search", () => {
-    it("reverse-geocodes coordinates, populates input, updates URL, and renders WeatherCard", async () => {
-      const push = vi.fn();
-      vi.mocked(useRouter).mockReturnValue({ push } as ReturnType<
-        typeof useRouter
-      >);
-      render(<HomeContent />);
-      const mockGeo = {
-        getCurrentPosition: vi.fn((success) => {
-          success({ coords: { latitude: 47.6, longitude: -122.3 } });
-        }),
-      };
-      Object.defineProperty(navigator, "geolocation", {
-        value: mockGeo,
-        configurable: true,
-      });
-      fireEvent.click(screen.getByRole("button", { name: "Use my location" }));
-      await waitFor(() =>
-        expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
-      );
-      expect(geocodeModule.reverseGeocode).toHaveBeenCalledWith(47.6, -122.3);
-      expect(weatherModule.fetchWeather).toHaveBeenCalledWith(
-        47.6,
-        -122.3,
-        "Seattle, Washington, United States",
-      );
-      expect(push).toHaveBeenCalledWith(
-        "/?q=Seattle%2C%20Washington%2C%20United%20States",
-      );
-    });
-
-    it("falls back to raw coordinates when reverse geocoding fails", async () => {
-      vi.mocked(geocodeModule.reverseGeocode).mockRejectedValue(
-        new Error("Service unavailable"),
-      );
-      render(<HomeContent />);
-      const mockGeo = {
-        getCurrentPosition: vi.fn((success) => {
-          success({ coords: { latitude: 47.6, longitude: -122.3 } });
-        }),
-      };
-      Object.defineProperty(navigator, "geolocation", {
-        value: mockGeo,
-        configurable: true,
-      });
-      fireEvent.click(screen.getByRole("button", { name: "Use my location" }));
-      await waitFor(() =>
-        expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
-      );
-      expect(weatherModule.fetchWeather).toHaveBeenCalledWith(
-        47.6,
-        -122.3,
-        "47.6,-122.3",
-      );
-    });
   });
 
   describe("manual city search", () => {
