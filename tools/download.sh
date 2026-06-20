@@ -61,7 +61,7 @@ while IFS= read -r song; do
       tmp_cover=$(mktemp /tmp/cover_XXXXXX.jpg)
       cover_ok=true
 
-      if ! curl -fsSL -o "$tmp_cover" "https://img.youtube.com/vi/${youtube_id}/hqdefault.jpg"; then
+      if ! curl -fsSL -o "$tmp_cover" "https://img.youtube.com/vi/${youtube_id}/maxresdefault.jpg"; then
         echo "[$title] Error: curl failed to download cover art" >&2
         cover_ok=false
       fi
