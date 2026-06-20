@@ -45,7 +45,7 @@ export default function LocationBar({
     "rounded p-1 hover:bg-zinc-200 disabled:opacity-50 dark:hover:bg-zinc-700";
 
   return (
-    <div className="flex items-center gap-2 rounded-lg bg-zinc-50 px-4 py-3 text-zinc-900 dark:bg-zinc-900 dark:text-white">
+    <div className="flex items-center gap-2 rounded-lg bg-zinc-50 p-2 text-zinc-900 dark:bg-zinc-900 dark:text-white">
       <button
         onClick={handleGpsClick}
         disabled={geoStatus === "loading"}
