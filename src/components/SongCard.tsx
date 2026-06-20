@@ -30,12 +30,11 @@ export default function SongCard({ song }: { song: Song }) {
         <div className="h-24 w-24 flex-shrink-0 rounded bg-zinc-300 dark:bg-zinc-700" />
       )}
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-        <div className="min-w-0">
-          <span className="font-bold">{song.title}</span>
-          <span className="text-zinc-700 dark:text-zinc-300">
-            {" · "}
-            {song.artist}
-          </span>
+        <div className="overflow-x-auto font-bold whitespace-nowrap">
+          {song.title}
+        </div>
+        <div className="overflow-x-auto whitespace-nowrap text-zinc-700 dark:text-zinc-300">
+          {song.artist}
         </div>
         <MusicPlayer song={song} />
       </div>
