@@ -70,7 +70,7 @@ while IFS= read -r song; do
         # Crop a centered square using the full image height. This handles both
         # 16:9 thumbnails (480x270, side fills ~105px) and 4:3 thumbnails
         # (480x360, side fills ~60px) without hardcoding coordinates.
-        if ! ffmpeg -y -i "$tmp_cover" -vf "crop=in_h:in_h:(iw-in_h)/2:0" "$cover_path"; then
+        if ! ffmpeg -y -i "$tmp_cover" -vf "crop=in_h:in_h:(iw-in_h)/2:0,scale=96:96" "$cover_path"; then
           echo "[$title] Error: ffmpeg failed to crop cover art" >&2
           cover_ok=false
         fi
