@@ -131,7 +131,7 @@ export default function HomeContent() {
   const location = result?.ok === true ? result.weather.displayName : null;
 
   return (
-    <div className="mt-2 w-full max-w-fit space-y-2">
+    <div className="mt-2 w-full space-y-2">
       <LocationBar
         location={location}
         onOpenModal={() => setModalOpen(true)}

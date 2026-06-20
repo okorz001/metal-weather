@@ -111,7 +111,7 @@ export default function MusicPlayer({ song }: { song: Song }) {
         onChange={handleSeek}
         disabled={loadError}
         aria-label="Seek"
-        className="h-1 flex-1 cursor-pointer accent-zinc-600 disabled:cursor-not-allowed disabled:opacity-40 dark:accent-zinc-400"
+        className="h-1 min-w-0 flex-1 cursor-pointer accent-zinc-600 disabled:cursor-not-allowed disabled:opacity-40 dark:accent-zinc-400"
       />
       <span className="flex-shrink-0 font-mono text-xs text-zinc-600 dark:text-zinc-400">
         {`${formatTime(currentTime)} / ${formatTime(duration)}`}
