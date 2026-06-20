@@ -67,20 +67,9 @@ while IFS= read -r song; do
       fi
 
       if [[ "$cover_ok" == true ]]; then
-        # 1. cropdetect removes black letterbox bars (top/bottom).
-        #    limit=24: catches JPEG-compressed black (luma up to ~30).
-        # 2. crop=in_h:in_h: after removing black bars, the height equals the
-        #    content area height; squaring on that removes the colored side fills.
-        crop_params=$(ffmpeg -i "$tmp_cover" \
-          -vf "cropdetect=limit=24:round=2:reset=0" \
-          -f null - 2>&1 | grep -oP 'crop=\d+:\d+:\d+:\d+' | tail -1) || true
-        square="crop=in_h:in_h"
-        if [[ -n "$crop_params" ]]; then
-          vf_chain="${crop_params},${square}"
-        else
-          vf_chain="$square"
-        fi
-        if ! ffmpeg -y -i "$tmp_cover" -vf "$vf_chain" "$cover_path" 2>/dev/null; then
+        # hqdefault thumbnails are 480x360. The album art is a 360x360 square
+        # centered horizontally (60px colored fills on each side, no top/bottom bars).
+        if ! ffmpeg -y -i "$tmp_cover" -vf "crop=360:360:60:0" "$cover_path"; then
           echo "[$title] Error: ffmpeg failed to crop cover art" >&2
           cover_ok=false
         fi
