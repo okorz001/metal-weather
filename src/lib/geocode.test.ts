@@ -28,7 +28,7 @@ describe("geocodeLocation", () => {
     expect(result).toEqual({
       lat: 47.60621,
       lon: -122.33207,
-      displayName: "Seattle, Washington, United States",
+      displayName: "Seattle, WA",
     });
   });
 
@@ -73,7 +73,7 @@ describe("geocodeLocation", () => {
     expect(result).toEqual({
       lat: 37.3382,
       lon: -121.8863,
-      displayName: "San Jose, California, United States",
+      displayName: "San Jose, CA",
     });
   });
 
@@ -106,7 +106,7 @@ describe("geocodeLocation", () => {
     expect(result).toEqual({
       lat: 45.4375,
       lon: 12.3358,
-      displayName: "Venice, Veneto, Italy",
+      displayName: "Venice, Italy",
     });
   });
 
@@ -139,7 +139,7 @@ describe("geocodeLocation", () => {
     expect(result).toEqual({
       lat: 33.985,
       lon: -118.472,
-      displayName: "Venice, California, United States",
+      displayName: "Venice, CA",
     });
   });
 
@@ -207,7 +207,7 @@ describe("geocodeLocation", () => {
 });
 
 describe("reverseGeocode", () => {
-  it("returns a display name built from city, region, and country", async () => {
+  it("abbreviates US state and includes country", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -218,10 +218,38 @@ describe("reverseGeocode", () => {
     } as Response);
 
     const result = await reverseGeocode(47.60621, -122.33207);
-    expect(result).toBe("Seattle, Washington, United States");
+    expect(result).toBe("Seattle, WA");
   });
 
-  it("omits empty fields from the display name", async () => {
+  it("omits subdivision for non-US locations", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        city: "Paris",
+        principalSubdivision: "Île-de-France",
+        countryCode: "FR",
+      }),
+    } as Response);
+
+    const result = await reverseGeocode(48.8566, 2.3522);
+    expect(result).toBe("Paris, France");
+  });
+
+  it("falls back to country when US subdivision has no abbreviation", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        city: "Washington D.C.",
+        principalSubdivision: "District of Columbia",
+        countryCode: "US",
+      }),
+    } as Response);
+
+    const result = await reverseGeocode(38.9072, -77.0369);
+    expect(result).toBe("Washington D.C., United States");
+  });
+
+  it("omits empty city from the display name", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -232,7 +260,7 @@ describe("reverseGeocode", () => {
     } as Response);
 
     const result = await reverseGeocode(47.60621, -122.33207);
-    expect(result).toBe("Washington, United States");
+    expect(result).toBe("WA");
   });
 
   it("throws when the API returns a non-OK status", async () => {

@@ -2,6 +2,72 @@ const GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search";
 const REVERSE_GEOCODING_URL =
   "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
+const US_STATES: Record<string, string> = {
+  Alabama: "AL",
+  Alaska: "AK",
+  Arizona: "AZ",
+  Arkansas: "AR",
+  California: "CA",
+  Colorado: "CO",
+  Connecticut: "CT",
+  Delaware: "DE",
+  Florida: "FL",
+  Georgia: "GA",
+  Hawaii: "HI",
+  Idaho: "ID",
+  Illinois: "IL",
+  Indiana: "IN",
+  Iowa: "IA",
+  Kansas: "KS",
+  Kentucky: "KY",
+  Louisiana: "LA",
+  Maine: "ME",
+  Maryland: "MD",
+  Massachusetts: "MA",
+  Michigan: "MI",
+  Minnesota: "MN",
+  Mississippi: "MS",
+  Missouri: "MO",
+  Montana: "MT",
+  Nebraska: "NE",
+  Nevada: "NV",
+  "New Hampshire": "NH",
+  "New Jersey": "NJ",
+  "New Mexico": "NM",
+  "New York": "NY",
+  "North Carolina": "NC",
+  "North Dakota": "ND",
+  Ohio: "OH",
+  Oklahoma: "OK",
+  Oregon: "OR",
+  Pennsylvania: "PA",
+  "Rhode Island": "RI",
+  "South Carolina": "SC",
+  "South Dakota": "SD",
+  Tennessee: "TN",
+  Texas: "TX",
+  Utah: "UT",
+  Vermont: "VT",
+  Virginia: "VA",
+  Washington: "WA",
+  "West Virginia": "WV",
+  Wisconsin: "WI",
+  Wyoming: "WY",
+};
+
+function formatDisplayName(
+  city: string | undefined,
+  subdivision: string | undefined,
+  countryCode: string | undefined,
+  country: string | undefined,
+): string {
+  if (countryCode === "US") {
+    const region = subdivision ? US_STATES[subdivision] : undefined;
+    if (region) return [city, region].filter(Boolean).join(", ");
+  }
+  return [city, country].filter(Boolean).join(", ");
+}
+
 interface GeocodingResult {
   latitude: number;
   longitude: number;
@@ -80,9 +146,12 @@ export async function geocodeLocation(
     ? (countryDisplayNames.of(result.country_code) ?? result.country)
     : result.country;
 
-  const displayName = [result.name, result.admin1, country]
-    .filter(Boolean)
-    .join(", ");
+  const displayName = formatDisplayName(
+    result.name,
+    result.admin1,
+    result.country_code,
+    country,
+  );
 
   return { lat: result.latitude, lon: result.longitude, displayName };
 }
@@ -133,7 +202,10 @@ export async function reverseGeocode(
     ? (countryDisplayNames.of(data.countryCode) ?? data.countryCode)
     : undefined;
 
-  return [data.city, data.principalSubdivision, country]
-    .filter(Boolean)
-    .join(", ");
+  return formatDisplayName(
+    data.city,
+    data.principalSubdivision,
+    data.countryCode,
+    country,
+  );
 }
