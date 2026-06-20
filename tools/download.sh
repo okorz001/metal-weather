@@ -3,19 +3,27 @@
 # Intended to be run inside the Docker container defined in tools/Dockerfile.
 #
 # Usage:
-#   download.sh [--force] [title]
+#   download.sh [--force] [--no-audio] [--no-cover] [title]
 #
-#   --force  Re-download even if the output file already exists.
-#   title    Optional song title to process a single song (case-insensitive).
-#            Without this, all songs are processed.
+#   --force     Re-download even if the output file already exists.
+#   --no-audio  Skip audio download.
+#   --no-cover  Skip cover art download.
+#   title       Optional song title to process a single song (case-insensitive).
+#               Without this, all songs are processed.
 set -euo pipefail
 
 force=false
+no_audio=false
+no_cover=false
 title_filter=""
 
 for arg in "$@"; do
   if [[ "$arg" == "--force" ]]; then
     force=true
+  elif [[ "$arg" == "--no-audio" ]]; then
+    no_audio=true
+  elif [[ "$arg" == "--no-cover" ]]; then
+    no_cover=true
   else
     title_filter="$arg"
   fi
@@ -44,7 +52,7 @@ while IFS= read -r song; do
   matched=$((matched + 1))
 
   # coverArt is a public URL path like /assets/foo.jpg; download YouTube thumbnail.
-  if [[ -n "$cover_art" ]]; then
+  if [[ "$no_cover" == false ]] && [[ -n "$cover_art" ]]; then
     cover_path="/app/public${cover_art}"
     if [[ "$force" == false ]] && [[ -f "$cover_path" ]]; then
       echo "[$title] Cover already exists, skipping (use --force to re-download)"
@@ -57,6 +65,10 @@ while IFS= read -r song; do
         errors=$((errors + 1))
       fi
     fi
+  fi
+
+  if [[ "$no_audio" == true ]]; then
+    continue
   fi
 
   # audioFile is a public URL path like /assets/foo.mp3; prepend /app/public
