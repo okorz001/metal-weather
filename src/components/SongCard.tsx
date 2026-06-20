@@ -29,13 +29,13 @@ export default function SongCard({ song }: { song: Song }) {
       ) : (
         <div className="h-24 w-24 flex-shrink-0 rounded bg-zinc-300 dark:bg-zinc-700" />
       )}
-      <div className="flex min-w-0 flex-col justify-center">
-        <div className="text-sm font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-400">
-          Now Playing
-        </div>
-        <div className="truncate font-bold">{song.title}</div>
-        <div className="truncate text-zinc-700 dark:text-zinc-300">
-          {song.artist}
+      <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
+        <div className="min-w-0">
+          <span className="font-bold">{song.title}</span>
+          <span className="text-zinc-700 dark:text-zinc-300">
+            {" · "}
+            {song.artist}
+          </span>
         </div>
         <MusicPlayer song={song} />
       </div>
