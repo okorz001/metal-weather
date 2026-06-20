@@ -68,12 +68,12 @@ export default function LocationBar({
 
       <button
         onClick={onOpenModal}
-        className="min-w-0 flex-1 text-center text-lg font-semibold"
+        className="min-w-0 flex-1 overflow-x-auto text-lg font-semibold whitespace-nowrap"
       >
         {location ?? <span className="text-zinc-500">Search for a city…</span>}
       </button>
 
-      <div aria-hidden className={iconBtn}>
+      <div aria-hidden className={`flex-shrink-0 ${iconBtn}`}>
         <svg
           viewBox="0 0 24 24"
           fill="none"

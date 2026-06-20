@@ -24,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={jimNightshade.variable}>
-      <body className="min-w-80">
+      <body className="min-h-screen w-screen min-w-80">
         <SettingsProvider>
           <AppBar />
           {children}
