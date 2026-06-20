@@ -40,7 +40,7 @@ export default function AppBar() {
   }, [isOpen]);
 
   return (
-    <header className="fixed top-0 right-0 left-0 z-50 flex h-14 items-center bg-zinc-900 px-4 text-zinc-100 shadow-md">
+    <header className="fixed top-0 right-0 left-0 z-50 flex h-14 items-center bg-zinc-900 px-2 text-zinc-100 shadow-md">
       <div className="relative" ref={menuRef}>
         <button
           onClick={() => setIsOpen((o) => !o)}
@@ -65,7 +65,7 @@ export default function AppBar() {
 
         {isOpen && (
           <div className="absolute top-full left-0 mt-1 min-w-48 rounded-lg bg-white shadow-xl dark:bg-zinc-800">
-            <div className="p-3">
+            <div className="p-2">
               <p className="mb-2 text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
                 Theme
               </p>
@@ -131,7 +131,7 @@ export default function AppBar() {
         )}
       </div>
 
-      <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-bold tracking-wide">
+      <h1 className="absolute left-1/2 -mb-2 -translate-x-1/2 font-serif text-4xl tracking-wide">
         Metal Weather
       </h1>
     </header>

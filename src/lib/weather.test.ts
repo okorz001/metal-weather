@@ -6,12 +6,20 @@ beforeEach(() => {
   vi.restoreAllMocks();
 });
 
+const hourlyTimes = Array.from(
+  { length: 24 },
+  (_, i) => `2024-01-01T${String(i).padStart(2, "0")}:00`,
+);
+const hourlyTemps = Array.from({ length: 24 }, () => 10.5);
+const hourlyCodes = Array.from({ length: 24 }, () => 3);
+
 describe("fetchWeather", () => {
   it("returns WeatherData with mapped status on success", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => ({
         current: {
+          time: "2024-01-01T00:00",
           temperature_2m: 10.5,
           wind_speed_10m: 15.2,
           wind_direction_10m: 180,
@@ -22,6 +30,11 @@ describe("fetchWeather", () => {
         daily: {
           temperature_2m_max: [14.0],
           temperature_2m_min: [7.0],
+        },
+        hourly: {
+          time: hourlyTimes,
+          temperature_2m: hourlyTemps,
+          weather_code: hourlyCodes,
         },
       }),
     } as Response);
@@ -46,7 +59,43 @@ describe("fetchWeather", () => {
       highFahrenheit: (14.0 * 9) / 5 + 32,
       lowCelsius: 7.0,
       lowFahrenheit: (7.0 * 9) / 5 + 32,
+      hourly: hourlyTimes.slice(0, 12).map((time, i) => ({
+        time,
+        temperatureCelsius: hourlyTemps[i],
+        temperatureFahrenheit: (hourlyTemps[i] * 9) / 5 + 32,
+        status: "Cloudy",
+      })),
     });
+  });
+
+  it("starts hourly forecast from the current hour when time has minutes", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        current: {
+          time: "2024-01-01T05:37",
+          temperature_2m: 10.5,
+          wind_speed_10m: 15.2,
+          wind_direction_10m: 180,
+          relative_humidity_2m: 75,
+          precipitation: 0.0,
+          weather_code: 3,
+        },
+        daily: {
+          temperature_2m_max: [14.0],
+          temperature_2m_min: [7.0],
+        },
+        hourly: {
+          time: hourlyTimes,
+          temperature_2m: hourlyTemps,
+          weather_code: hourlyCodes,
+        },
+      }),
+    } as Response);
+
+    const result = await fetchWeather(47.6, -122.3, "Seattle");
+    expect(result.hourly[0].time).toBe("2024-01-01T05:00");
+    expect(result.hourly).toHaveLength(12);
   });
 
   it("sets status to undefined for an unrecognized weather code", async () => {
@@ -54,6 +103,7 @@ describe("fetchWeather", () => {
       ok: true,
       json: async () => ({
         current: {
+          time: "2024-01-01T00:00",
           temperature_2m: 10.5,
           wind_speed_10m: 15.2,
           wind_direction_10m: 180,
@@ -64,6 +114,11 @@ describe("fetchWeather", () => {
         daily: {
           temperature_2m_max: [14.0],
           temperature_2m_min: [7.0],
+        },
+        hourly: {
+          time: hourlyTimes,
+          temperature_2m: hourlyTemps,
+          weather_code: Array.from({ length: 12 }, () => 999),
         },
       }),
     } as Response);
