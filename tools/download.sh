@@ -67,9 +67,9 @@ while IFS= read -r song; do
       fi
 
       if [[ "$cover_ok" == true ]]; then
-        # hqdefault thumbnails are 480x360. The album art is a 360x360 square
-        # centered horizontally (60px colored fills on each side, no top/bottom bars).
-        if ! ffmpeg -y -i "$tmp_cover" -vf "crop=360:360:60:0" "$cover_path"; then
+        # hqdefault thumbnails are 480x360. The album art is a 320x320 square
+        # centered (80px fills on left/right, 20px fills on top/bottom).
+        if ! ffmpeg -y -i "$tmp_cover" -vf "crop=320:320:80:20" "$cover_path"; then
           echo "[$title] Error: ffmpeg failed to crop cover art" >&2
           cover_ok=false
         fi
