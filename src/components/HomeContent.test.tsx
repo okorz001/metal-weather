@@ -11,7 +11,7 @@ import HomeContent from "./HomeContent";
 
 vi.mock("next/navigation", () => ({
   useSearchParams: vi.fn(() => new URLSearchParams()),
-  useRouter: vi.fn(() => ({ push: vi.fn() })),
+  useRouter: vi.fn(() => ({ push: vi.fn(), replace: vi.fn() })),
 }));
 
 vi.mock("@/lib/geocode");
@@ -42,9 +42,10 @@ const mockErrorSong: Song = { title: "The Wicker Man", artist: "Iron Maiden" };
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(useSearchParams).mockReturnValue(new URLSearchParams());
-  vi.mocked(useRouter).mockReturnValue({ push: vi.fn() } as ReturnType<
-    typeof useRouter
-  >);
+  vi.mocked(useRouter).mockReturnValue({
+    push: vi.fn(),
+    replace: vi.fn(),
+  } as ReturnType<typeof useRouter>);
   vi.mocked(geocodeModule.geocodeLocation).mockResolvedValue({
     lat: 47.6,
     lon: -122.3,
@@ -63,14 +64,15 @@ describe("HomeContent", () => {
     expect(screen.queryByText("The Wicker Man")).not.toBeInTheDocument();
   });
 
-  it("pre-fills the input from ?q= on mount without auto-searching", () => {
+  it("auto-searches when ?q= param is present on mount", async () => {
     vi.mocked(useSearchParams).mockReturnValue(
       new URLSearchParams("q=Seattle"),
     );
     render(<HomeContent />);
-    expect(screen.getByPlaceholderText("City name")).toHaveValue("Seattle");
-    expect(geocodeModule.geocodeLocation).not.toHaveBeenCalled();
-    expect(weatherModule.fetchWeather).not.toHaveBeenCalled();
+    await waitFor(() =>
+      expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
+    );
+    expect(geocodeModule.geocodeLocation).toHaveBeenCalledWith("Seattle");
   });
 
   describe("manual city search", () => {
