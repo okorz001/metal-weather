@@ -38,7 +38,7 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
     <div className="rounded-lg bg-zinc-50 p-2 text-zinc-900 dark:bg-zinc-900 dark:text-white">
       <div className="flex flex-row items-start justify-around gap-2">
         <div className="flex flex-col items-center gap-2">
-          <div className="text-7xl leading-none font-bold tracking-tight">
+          <div className="font-serif text-7xl leading-none tracking-tight">
             {displayTemp}
           </div>
           <div className="text-zinc-600 dark:text-zinc-400">

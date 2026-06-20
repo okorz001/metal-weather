@@ -131,7 +131,7 @@ export default function AppBar() {
         )}
       </div>
 
-      <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-bold tracking-wide">
+      <h1 className="absolute left-1/2 -translate-x-1/2 font-serif text-2xl tracking-wide">
         Metal Weather
       </h1>
     </header>
