@@ -67,12 +67,12 @@ while IFS= read -r song; do
       fi
 
       if [[ "$cover_ok" == true ]]; then
-        # 1. cropdetect removes bars (black top/bottom and dark colored sides).
-        #    limit=64: catches dark-colored fills (luma ≤ 64), not just true black.
-        # 2. crop=in_h:in_h: square-crops using the post-detect height, since the
-        #    album art always fills the full height of whatever cropdetect leaves.
+        # 1. cropdetect removes black letterbox bars (top/bottom).
+        #    limit=24: catches JPEG-compressed black (luma up to ~30).
+        # 2. crop=in_h:in_h: after removing black bars, the height equals the
+        #    content area height; squaring on that removes the colored side fills.
         crop_params=$(ffmpeg -i "$tmp_cover" \
-          -vf "cropdetect=limit=64:round=2:reset=0" \
+          -vf "cropdetect=limit=24:round=2:reset=0" \
           -f null - 2>&1 | grep -oP 'crop=\d+:\d+:\d+:\d+' | tail -1) || true
         square="crop=in_h:in_h"
         if [[ -n "$crop_params" ]]; then
