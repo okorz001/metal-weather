@@ -67,9 +67,11 @@ while IFS= read -r song; do
       fi
 
       if [[ "$cover_ok" == true ]]; then
-        # hqdefault thumbnails are 480x360. The album art is a 320x320 square
-        # centered (80px fills on left/right, 20px fills on top/bottom).
-        if ! ffmpeg -y -i "$tmp_cover" -vf "crop=320:320:80:20" "$cover_path"; then
+        # hqdefault thumbnails are 480x360. YouTube music thumbnails embed the
+        # album art as a 270x270 square in a 16:9 area (480x270), which is then
+        # letterboxed into 4:3 with 45px black bars top/bottom. The art sits at
+        # x=105, y=45 (105px side fills, 45px top/bottom fills).
+        if ! ffmpeg -y -i "$tmp_cover" -vf "crop=270:270:105:45" "$cover_path"; then
           echo "[$title] Error: ffmpeg failed to crop cover art" >&2
           cover_ok=false
         fi
