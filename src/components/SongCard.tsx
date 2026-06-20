@@ -24,7 +24,7 @@ export default function SongCard({ song }: { song: Song }) {
           alt={`${song.title} cover art`}
           width={96}
           height={96}
-          className="flex-shrink-0 rounded"
+          className="flex-shrink-0 self-start rounded"
         />
       ) : (
         <div className="h-24 w-24 flex-shrink-0 rounded bg-zinc-300 dark:bg-zinc-700" />
