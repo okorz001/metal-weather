@@ -21,15 +21,15 @@ export default function ErrorCard({
   song: Song;
 }) {
   return (
-    <div className="rounded-lg bg-zinc-50 p-6 text-zinc-900 dark:bg-zinc-900 dark:text-white">
-      <div className="mb-4">
+    <div className="rounded-lg bg-zinc-50 p-2 text-zinc-900 dark:bg-zinc-900 dark:text-white">
+      <div className="mb-2">
         <div className="text-sm font-semibold tracking-wide text-red-400 uppercase">
           Error
         </div>
         <div className="font-semibold">{message}</div>
       </div>
 
-      <div className="border-t border-zinc-200 pt-4 dark:border-zinc-700">
+      <div className="border-t border-zinc-200 pt-2 dark:border-zinc-700">
         <div className="text-sm font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-400">
           Now Playing
         </div>

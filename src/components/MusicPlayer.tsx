@@ -63,7 +63,7 @@ export default function MusicPlayer({ song }: { song: Song }) {
   };
 
   return (
-    <div className="mt-3 flex min-w-0 items-center gap-3">
+    <div className="mt-2 flex min-w-0 items-center gap-2">
       <audio
         ref={audioRef}
         src={song.audioFile}

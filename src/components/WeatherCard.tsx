@@ -37,7 +37,7 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
   return (
     <div className="rounded-lg bg-zinc-50 p-2 text-zinc-900 dark:bg-zinc-900 dark:text-white">
       <div className="flex flex-row items-start justify-around gap-2">
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-2">
           <div className="text-7xl leading-none font-bold tracking-tight">
             {displayTemp}
           </div>
@@ -45,7 +45,7 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
             {displayHigh} / {displayLow}
           </div>
         </div>
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-2">
           {emoji && <div className="text-7xl leading-none">{emoji}</div>}
           {weather.status && (
             <div className="text-zinc-600 dark:text-zinc-400">

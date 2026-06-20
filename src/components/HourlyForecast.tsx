@@ -33,7 +33,7 @@ export default function HourlyForecast({
 
   return (
     <div className="overflow-x-auto rounded-lg bg-zinc-50 p-2 dark:bg-zinc-900">
-      <div className="flex gap-4">
+      <div className="flex gap-2">
         {hourly.map(
           ({ time, temperatureCelsius, temperatureFahrenheit, status }) => {
             const temp = isMetric

@@ -39,9 +39,9 @@ export default function LocationModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 pt-16">
-      <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl dark:bg-zinc-800">
-        <div className="mb-4 flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-2 pt-16">
+      <div className="w-full max-w-lg rounded-lg bg-white p-4 shadow-xl dark:bg-zinc-800">
+        <div className="mb-2 flex items-center justify-between">
           <h2 className="font-bold text-zinc-900 dark:text-white">
             Search Location
           </h2>
