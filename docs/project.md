@@ -8,7 +8,8 @@ rain).
 
 ### What the App Does
 
-1. User searches for a city by name or uses the GPS button to detect their location.
+1. User searches for a city by name via the modal, or uses the GPS button in
+   `LocationBar` to detect their location.
 2. The app geocodes the input via Open-Meteo Geocoding and fetches current
    weather via Open-Meteo Forecast.
 3. The WMO weather code is mapped to one of seven `WeatherStatus` values; a
@@ -53,7 +54,7 @@ and `WeatherStatus` values pre-derived from WMO codes.
 | `AppBar`          | Top navigation bar with settings (units toggle, dark/light theme)   |
 | `LocationBar`     | Persistent bar showing current location; GPS and open-modal buttons |
 | `LocationModal`   | Full-screen overlay with `LocationSearch` form                      |
-| `LocationSearch`  | Text input + GPS + Go button                                        |
+| `LocationSearch`  | Text input + Go button                                              |
 | `WeatherCard`     | Current temperature, condition emoji, hi/lo                         |
 | `SongCard`        | Cover art, song title/artist, `MusicPlayer` controls                |
 | `HourlyForecast`  | Horizontally scrolling 12-hour strip (temp + emoji + hour)          |
