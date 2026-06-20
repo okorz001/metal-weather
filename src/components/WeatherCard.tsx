@@ -21,8 +21,8 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
   const { isMetric } = useSettings();
 
   const displayTemp = isMetric
-    ? `${weather.temperatureCelsius.toFixed(1)} °C`
-    : `${weather.temperatureFahrenheit.toFixed(1)} °F`;
+    ? `${weather.temperatureCelsius.toFixed(1)}°C`
+    : `${weather.temperatureFahrenheit.toFixed(1)}°F`;
 
   const displayHigh = isMetric
     ? `${weather.highCelsius.toFixed(1)}°`
@@ -36,8 +36,8 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
 
   return (
     <div className="rounded-lg bg-zinc-50 p-2 text-zinc-900 dark:bg-zinc-900 dark:text-white">
-      <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+      <div className="flex flex-row items-start justify-around gap-2">
+        <div className="flex flex-col items-center gap-3">
           <div className="text-7xl leading-none font-bold tracking-tight">
             {displayTemp}
           </div>
@@ -45,8 +45,8 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
             {displayHigh} / {displayLow}
           </div>
         </div>
-        <div className="flex flex-row items-center gap-3 sm:flex-col sm:items-end">
-          {emoji && <div className="text-6xl leading-none">{emoji}</div>}
+        <div className="flex flex-col items-center gap-3">
+          {emoji && <div className="text-7xl leading-none">{emoji}</div>}
           {weather.status && (
             <div className="text-zinc-600 dark:text-zinc-400">
               {weather.status}
