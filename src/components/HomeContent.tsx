@@ -21,8 +21,9 @@ const typedCatalog = catalog as SongCatalog;
 /**
  * The main application content component.
  *
- * Manages location search, weather fetching, and song selection. On first
- * render the location modal opens automatically. Once a result is set the
+ * Manages location search, weather fetching, and song selection. If `?q=` is
+ * present in the URL on load, the search runs automatically. Otherwise the
+ * location modal opens so the user can enter a city. Once a result is set the
  * modal closes and the user can reopen it by clicking the {@link LocationBar}.
  * The GPS button in {@link LocationBar} triggers geolocation directly without
  * opening the modal. Manages all search state and renders the appropriate
@@ -40,14 +41,11 @@ export default function HomeContent() {
 
   const [inputValue, setInputValue] = useState(q);
   const [result, setResult] = useState<WeatherResult | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [modalOpen, setModalOpen] = useState(true);
+  const [loading, setLoading] = useState(!!q);
+  const [modalOpen, setModalOpen] = useState(!q);
 
   // Tracks the currently active search so stale responses are discarded.
   const searchIdRef = useRef(0);
-  // Skips the useEffect on the initial render so that a ?q= URL param only
-  // pre-fills the input without auto-searching (user must click Go).
-  const hasMountedRef = useRef(false);
   // Set before a GPS-triggered router.push to prevent the useEffect from
   // starting a redundant geocode call after the URL update.
   const skipQEffect = useRef(false);
@@ -120,10 +118,6 @@ export default function HomeContent() {
   }
 
   useEffect(() => {
-    if (!hasMountedRef.current) {
-      hasMountedRef.current = true;
-      return;
-    }
     if (!q) return;
     if (skipQEffect.current) {
       skipQEffect.current = false;
