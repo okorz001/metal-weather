@@ -35,12 +35,12 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
   const emoji = weather.status != null ? WEATHER_EMOJI[weather.status] : null;
 
   return (
-    <div className="rounded-lg bg-zinc-50 p-6 text-zinc-900 dark:bg-zinc-900 dark:text-white">
-      <div className="flex items-start justify-between">
+    <div className="rounded-lg bg-zinc-50 p-3 text-zinc-900 dark:bg-zinc-900 dark:text-white">
+      <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="text-7xl leading-none font-bold tracking-tight">
           {displayTemp}
         </div>
-        <div className="flex flex-col items-end gap-3">
+        <div className="flex flex-row items-center gap-3 sm:flex-col sm:items-end">
           {emoji && <div className="text-6xl leading-none">{emoji}</div>}
           <div className="text-zinc-600 dark:text-zinc-400">
             {displayHigh} / {displayLow}

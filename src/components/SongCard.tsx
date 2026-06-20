@@ -16,7 +16,7 @@ import MusicPlayer from "./MusicPlayer";
  */
 export default function SongCard({ song }: { song: Song }) {
   return (
-    <div className="flex gap-4 rounded-lg bg-zinc-50 p-4 text-zinc-900 dark:bg-zinc-900 dark:text-white">
+    <div className="flex gap-4 rounded-lg bg-zinc-50 p-3 text-zinc-900 dark:bg-zinc-900 dark:text-white">
       {song.coverArt ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
