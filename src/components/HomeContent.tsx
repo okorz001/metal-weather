@@ -12,6 +12,7 @@ import { fetchWeather } from "@/lib/weather";
 import ErrorCard from "./ErrorCard";
 import HourlyForecast from "./HourlyForecast";
 import LocationBar from "./LocationBar";
+import SunriseSunsetCard from "./SunriseSunsetCard";
 import LocationModal from "./LocationModal";
 import SongCard from "./SongCard";
 import WeatherCard from "./WeatherCard";
@@ -151,6 +152,10 @@ export default function HomeContent() {
           <WeatherCard weather={result.weather} />
           <SongCard song={result.song} />
           <HourlyForecast hourly={result.weather.hourly} />
+          <SunriseSunsetCard
+            sunrise={result.weather.sunrise}
+            sunset={result.weather.sunset}
+          />
         </>
       )}
       {!loading && result?.ok === false && (

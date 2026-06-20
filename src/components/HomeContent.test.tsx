@@ -33,6 +33,8 @@ const mockWeather: WeatherData = {
   highFahrenheit: 64.4,
   lowCelsius: 10,
   lowFahrenheit: 50,
+  sunrise: "2024-01-01T07:00",
+  sunset: "2024-01-01T17:00",
   hourly: [],
 };
 

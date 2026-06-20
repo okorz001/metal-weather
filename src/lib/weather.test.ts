@@ -30,6 +30,8 @@ describe("fetchWeather", () => {
         daily: {
           temperature_2m_max: [14.0],
           temperature_2m_min: [7.0],
+          sunrise: ["2024-01-01T07:00"],
+          sunset: ["2024-01-01T17:00"],
         },
         hourly: {
           time: hourlyTimes,
@@ -59,6 +61,8 @@ describe("fetchWeather", () => {
       highFahrenheit: (14.0 * 9) / 5 + 32,
       lowCelsius: 7.0,
       lowFahrenheit: (7.0 * 9) / 5 + 32,
+      sunrise: "2024-01-01T07:00",
+      sunset: "2024-01-01T17:00",
       hourly: hourlyTimes.slice(0, 12).map((time, i) => ({
         time,
         temperatureCelsius: hourlyTemps[i],
@@ -84,6 +88,8 @@ describe("fetchWeather", () => {
         daily: {
           temperature_2m_max: [14.0],
           temperature_2m_min: [7.0],
+          sunrise: ["2024-01-01T07:00"],
+          sunset: ["2024-01-01T17:00"],
         },
         hourly: {
           time: hourlyTimes,
@@ -114,6 +120,8 @@ describe("fetchWeather", () => {
         daily: {
           temperature_2m_max: [14.0],
           temperature_2m_min: [7.0],
+          sunrise: ["2024-01-01T07:00"],
+          sunset: ["2024-01-01T17:00"],
         },
         hourly: {
           time: hourlyTimes,

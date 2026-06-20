@@ -98,6 +98,8 @@ export interface WeatherDataHourly {
  * @param highFahrenheit - Today's forecast high temperature in degrees Fahrenheit.
  * @param lowCelsius - Today's forecast low temperature in degrees Celsius.
  * @param lowFahrenheit - Today's forecast low temperature in degrees Fahrenheit.
+ * @param sunrise - Today's sunrise time as an ISO-8601 datetime string from Open-Meteo, e.g. `"2024-01-01T07:00"`.
+ * @param sunset - Today's sunset time as an ISO-8601 datetime string from Open-Meteo, e.g. `"2024-01-01T19:00"`.
  * @param hourly - Upcoming 12-hour forecast starting from the current hour.
  */
 export interface WeatherData {
@@ -115,6 +117,8 @@ export interface WeatherData {
   highFahrenheit: number;
   lowCelsius: number;
   lowFahrenheit: number;
+  sunrise: string;
+  sunset: string;
   hourly: WeatherDataHourly[];
 }
 
