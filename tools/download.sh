@@ -30,6 +30,7 @@ while IFS= read -r song; do
   title=$(echo "$song" | jq -r '.title')
   youtube_id=$(echo "$song" | jq -r '.youtubeId')
   audio_file=$(echo "$song" | jq -r '.audioFile')
+  cover_art=$(echo "$song" | jq -r '.coverArt // empty')
   start_time=$(echo "$song" | jq -r '.startTime')
   end_time=$(echo "$song" | jq -r '.endTime')
   fade_in=$(echo "$song" | jq -r '.fadeIn')
@@ -42,12 +43,28 @@ while IFS= read -r song; do
 
   matched=$((matched + 1))
 
+  # coverArt is a public URL path like /assets/foo.jpg; download YouTube thumbnail.
+  if [[ -n "$cover_art" ]]; then
+    cover_path="/app/public${cover_art}"
+    if [[ "$force" == false ]] && [[ -f "$cover_path" ]]; then
+      echo "[$title] Cover already exists, skipping (use --force to re-download)"
+    else
+      mkdir -p "$(dirname "$cover_path")"
+      if curl -fsSL -o "$cover_path" "https://img.youtube.com/vi/${youtube_id}/hqdefault.jpg"; then
+        echo "[$title] Cover — $cover_path"
+      else
+        echo "[$title] Error: curl failed to download cover art" >&2
+        errors=$((errors + 1))
+      fi
+    fi
+  fi
+
   # audioFile is a public URL path like /assets/foo.mp3; prepend /app/public
   # to get the filesystem path inside the container (repo root is mounted at /app).
   output_path="/app/public${audio_file}"
 
   if [[ "$force" == false ]] && [[ -f "$output_path" ]]; then
-    echo "[$title] Already exists, skipping (use --force to re-download)"
+    echo "[$title] Audio already exists, skipping (use --force to re-download)"
     continue
   fi
 
