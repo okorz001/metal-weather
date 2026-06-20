@@ -72,7 +72,7 @@ while IFS= read -r song; do
         # limit=16: treat luma ≤ 16 as black to handle compression artifacts.
         crop_params=$(ffmpeg -i "$tmp_cover" \
           -vf "cropdetect=limit=16:round=2:reset=0" \
-          -f null - 2>&1 | grep -oP 'crop=\d+:\d+:\d+:\d+' | tail -1)
+          -f null - 2>&1 | grep -oP 'crop=\d+:\d+:\d+:\d+' | tail -1) || true
         square="crop=min(iw\,ih):min(iw\,ih)"
         if [[ -n "$crop_params" ]]; then
           vf_chain="${crop_params},${square}"
