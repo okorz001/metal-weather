@@ -76,6 +76,11 @@ export default function HomeContent() {
     try {
       const { lat, lon, displayName } = await geocodeLocation(location);
       if (searchIdRef.current !== id) return;
+      if (displayName !== location) {
+        skipQEffect.current = true;
+        router.replace(`/?q=${encodeURIComponent(displayName)}`);
+        setInputValue(displayName);
+      }
       await runSearch(lat, lon, displayName, id);
     } catch (e) {
       if (searchIdRef.current !== id) return;
