@@ -68,7 +68,7 @@ export default function LocationBar({
 
       <button
         onClick={onOpenModal}
-        className="min-w-0 flex-1 text-center text-sm font-semibold"
+        className="min-w-0 flex-1 text-center text-lg font-semibold"
       >
         {location ?? <span className="text-zinc-500">Search for a city…</span>}
       </button>
