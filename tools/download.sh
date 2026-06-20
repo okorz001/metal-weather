@@ -67,13 +67,14 @@ while IFS= read -r song; do
       fi
 
       if [[ "$cover_ok" == true ]]; then
-        # 1. cropdetect removes black letterbox bars (top/bottom).
-        # 2. square center-crop removes colored pillarbox columns (left/right).
-        # limit=16: treat luma ≤ 16 as black to handle compression artifacts.
+        # 1. cropdetect removes bars (black top/bottom and dark colored sides).
+        #    limit=64: catches dark-colored fills (luma ≤ 64), not just true black.
+        # 2. crop=in_h:in_h: square-crops using the post-detect height, since the
+        #    album art always fills the full height of whatever cropdetect leaves.
         crop_params=$(ffmpeg -i "$tmp_cover" \
-          -vf "cropdetect=limit=16:round=2:reset=0" \
+          -vf "cropdetect=limit=64:round=2:reset=0" \
           -f null - 2>&1 | grep -oP 'crop=\d+:\d+:\d+:\d+' | tail -1) || true
-        square="crop=min(iw\,ih):min(iw\,ih)"
+        square="crop=in_h:in_h"
         if [[ -n "$crop_params" ]]; then
           vf_chain="${crop_params},${square}"
         else
