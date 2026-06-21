@@ -1,4 +1,4 @@
-const GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search";
+const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
 const REVERSE_GEOCODING_URL =
   "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
@@ -68,26 +68,35 @@ function formatDisplayName(
   return [city, country].filter(Boolean).join(", ");
 }
 
-interface GeocodingResult {
-  latitude: number;
-  longitude: number;
-  name: string;
-  admin1?: string;
-  admin2?: string;
-  country?: string;
-  country_code?: string;
+interface NominatimResult {
+  name?: string;
+  lat: string;
+  lon: string;
+  address?: {
+    suburb?: string;
+    neighbourhood?: string;
+    city?: string;
+    town?: string;
+    village?: string;
+    county?: string;
+    state?: string;
+    country?: string;
+    country_code?: string;
+  };
 }
 
 /**
- * Resolves a location name to geographic coordinates.
+ * Resolves a location name or US zip code to geographic coordinates.
  *
- * Calls the Open-Meteo Geocoding API and returns the best match.
- * Accepts an optional comma-separated qualifier (e.g. `"San Jose, CA"`) to
- * disambiguate results by matching the qualifier against the region, sub-region,
- * country, or country code fields; falls back to the top result if no qualifier
- * matches. Throws a descriptive error if no results are found or the request fails.
+ * Calls the Nominatim (OpenStreetMap) Geocoding API and returns the best
+ * match. A 5-digit input is treated as a US postal code; all other inputs
+ * are treated as city names. For city name queries, accepts an optional
+ * comma-separated qualifier (e.g. `"San Jose, CA"`) to disambiguate results
+ * by matching the qualifier against the state, county, country, or country
+ * code fields; falls back to the top result if no qualifier matches. Throws a
+ * descriptive error if no results are found or the request fails.
  *
- * @param location - The location name to search for (e.g. "Seattle" or "San Jose, CA").
+ * @param location - The location to search for (e.g. `"Seattle"`, `"San Jose, CA"`, or `"95124"`).
  * @returns The latitude, longitude, and human-readable display name of the location.
  */
 export async function geocodeLocation(
@@ -96,11 +105,17 @@ export async function geocodeLocation(
   const [cityName, ...rest] = location.split(",").map((s) => s.trim());
   const qualifiers = rest.filter(Boolean);
 
-  const url = `${GEOCODING_URL}?name=${encodeURIComponent(cityName)}&count=10&language=en&format=json`;
+  const isZip = /^\d{5}$/.test(cityName);
+  const query = isZip
+    ? `postalcode=${encodeURIComponent(cityName)}&countrycodes=us&limit=1`
+    : `q=${encodeURIComponent(cityName)}&limit=10`;
+  const url = `${NOMINATIM_URL}?${query}&format=json&addressdetails=1`;
 
   let response: Response;
   try {
-    response = await fetch(url);
+    response = await fetch(url, {
+      headers: { "User-Agent": "metal-weather/1.0" },
+    });
   } catch (e) {
     throw new Error(
       `Failed to reach geocoding service: ${e instanceof Error ? e.message : String(e)}`,
@@ -111,9 +126,9 @@ export async function geocodeLocation(
     throw new Error(`Geocoding request failed with status ${response.status}`);
   }
 
-  const data = (await response.json()) as { results?: GeocodingResult[] };
+  const data = (await response.json()) as NominatimResult[];
 
-  if (!data.results || data.results.length === 0) {
+  if (data.length === 0) {
     throw new Error(`Location not found: "${location}"`);
   }
 
@@ -123,17 +138,22 @@ export async function geocodeLocation(
     return f === lq || f.split(/\s+/).some((word) => word.startsWith(lq));
   };
 
-  const nameMatches = data.results.filter(
-    (r) => r.name.toLowerCase() === cityName.toLowerCase(),
+  const nameMatches = data.filter(
+    (r) => r.name?.toLowerCase() === cityName.toLowerCase(),
   );
-  const pool = nameMatches.length > 0 ? nameMatches : data.results;
+  const pool = nameMatches.length > 0 ? nameMatches : data;
 
   let result = pool[0];
 
   if (qualifiers.length > 0) {
     const match = pool.find((r) =>
       qualifiers.some((q) =>
-        [r.admin1, r.admin2, r.country, r.country_code]
+        [
+          r.address?.state,
+          r.address?.county,
+          r.address?.country,
+          r.address?.country_code?.toUpperCase(),
+        ]
           .filter(Boolean)
           .some((field) => matches(field!, q)),
       ),
@@ -141,19 +161,27 @@ export async function geocodeLocation(
     if (match) result = match;
   }
 
-  const countryDisplayNames = new Intl.DisplayNames(["en"], { type: "region" });
-  const country = result.country_code
-    ? (countryDisplayNames.of(result.country_code) ?? result.country)
-    : result.country;
+  const area =
+    result.address?.suburb ??
+    result.address?.neighbourhood ??
+    result.address?.city ??
+    result.address?.town ??
+    result.address?.village ??
+    result.name;
 
-  const displayName = formatDisplayName(
-    result.name,
-    result.admin1,
-    result.country_code,
-    country,
-  );
+  const displayName =
+    formatDisplayName(
+      area,
+      result.address?.state,
+      result.address?.country_code?.toUpperCase(),
+      result.address?.country,
+    ) || location;
 
-  return { lat: result.latitude, lon: result.longitude, displayName };
+  return {
+    lat: parseFloat(result.lat),
+    lon: parseFloat(result.lon),
+    displayName,
+  };
 }
 
 interface ReverseGeocodingResult {
