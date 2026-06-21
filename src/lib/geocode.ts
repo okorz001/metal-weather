@@ -189,6 +189,8 @@ interface BdcReverseResult {
   city?: string;
   principalSubdivision?: string;
   countryCode?: string;
+  continent?: string;
+  locality?: string;
 }
 
 interface OsmReverseResult {
@@ -244,7 +246,7 @@ export async function reverseGeocodeBdc(
   const countryDisplayNames = new Intl.DisplayNames(["en"], { type: "region" });
   const country = data.countryCode
     ? (countryDisplayNames.of(data.countryCode) ?? data.countryCode)
-    : undefined;
+    : data.continent || data.locality;
 
   return formatDisplayName(
     data.city,

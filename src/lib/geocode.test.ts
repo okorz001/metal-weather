@@ -364,6 +364,38 @@ describe("reverseGeocodeBdc", () => {
     expect(result).toBe("WA");
   });
 
+  it("falls back to continent when country is missing", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        city: "",
+        principalSubdivision: "",
+        countryCode: "",
+        continent: "Antarctica",
+        locality: "New Swabia",
+      }),
+    } as Response);
+
+    const result = await reverseGeocodeBdc(-75, 0);
+    expect(result).toBe("Antarctica");
+  });
+
+  it("falls back to locality when continent is also missing", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        city: "",
+        principalSubdivision: "",
+        countryCode: "",
+        continent: "",
+        locality: "Atlantic Ocean",
+      }),
+    } as Response);
+
+    const result = await reverseGeocodeBdc(0, 0);
+    expect(result).toBe("Atlantic Ocean");
+  });
+
   it("throws when the API returns a non-OK status", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: false,
