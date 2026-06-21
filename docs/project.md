@@ -101,6 +101,52 @@ Every user action (text search, coordinate input, GPS, select favorite) writes
 all three parameters to the URL so the result is always bookmarkable and
 reloadable.
 
+#### URL Load Sequences
+
+**All three parameters present** — weather is fetched directly, no geocoding:
+
+```mermaid
+sequenceDiagram
+    participant App as HomeContent
+    participant OpenMeteo as Open-Meteo
+
+    Note over App: ?name=Seattle&lat=47.6&lon=-122.3
+    App->>OpenMeteo: fetchWeather(47.6, -122.3)
+    OpenMeteo-->>App: WeatherData
+```
+
+**Coordinates only, no `name`** — reverse geocoded first, URL updated with resolved name:
+
+```mermaid
+sequenceDiagram
+    participant App as HomeContent
+    participant Nominatim
+    participant OpenMeteo as Open-Meteo
+
+    Note over App: ?lat=47.6&lon=-122.3
+    App->>Nominatim: reverseGeocode(47.6, -122.3)
+    Nominatim-->>App: "Seattle, WA"
+    App->>App: replace URL → ?name=Seattle%2C+WA&lat=47.6&lon=-122.3
+    App->>OpenMeteo: fetchWeather(47.6, -122.3)
+    OpenMeteo-->>App: WeatherData
+```
+
+**Name only, no coordinates** — geocoded first, URL updated with resolved coordinates:
+
+```mermaid
+sequenceDiagram
+    participant App as HomeContent
+    participant Nominatim
+    participant OpenMeteo as Open-Meteo
+
+    Note over App: ?name=Seattle
+    App->>Nominatim: geocodeLocation("Seattle")
+    Nominatim-->>App: {lat: 47.6, lon: -122.3, displayName: "Seattle, WA, US"}
+    App->>App: replace URL → ?name=Seattle%2C+WA%2C+US&lat=47.6&lon=-122.3
+    App->>OpenMeteo: fetchWeather(47.6, -122.3)
+    OpenMeteo-->>App: WeatherData
+```
+
 ### API Call Flow by Input Type
 
 | User Action                           | API Calls                                              |
@@ -109,6 +155,76 @@ reloadable.
 | Type coordinates (e.g. `47.6,-122.3`) | Nominatim (reverse) → Open-Meteo                       |
 | GPS button                            | Browser Geolocation → Nominatim (reverse) → Open-Meteo |
 | Select saved favorite                 | Open-Meteo only                                        |
+
+#### User Action Sequences
+
+**City name or zip code:**
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant App as HomeContent
+    participant Nominatim
+    participant OpenMeteo as Open-Meteo
+
+    User->>App: submit "Seattle"
+    App->>Nominatim: geocodeLocation("Seattle")
+    Nominatim-->>App: {lat: 47.6, lon: -122.3, displayName: "Seattle, WA, US"}
+    App->>App: push URL → ?name=Seattle%2C+WA%2C+US&lat=47.6&lon=-122.3
+    App->>OpenMeteo: fetchWeather(47.6, -122.3)
+    OpenMeteo-->>App: WeatherData
+```
+
+**Coordinate input (e.g. `47.6,-122.3`):**
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant App as HomeContent
+    participant Nominatim
+    participant OpenMeteo as Open-Meteo
+
+    User->>App: submit "47.6,-122.3"
+    App->>Nominatim: reverseGeocode(47.6, -122.3)
+    Nominatim-->>App: "Seattle, WA"
+    App->>App: push URL → ?name=Seattle%2C+WA&lat=47.6&lon=-122.3
+    App->>OpenMeteo: fetchWeather(47.6, -122.3)
+    OpenMeteo-->>App: WeatherData
+```
+
+**GPS button:**
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant App as HomeContent
+    participant Geo as Geolocation API
+    participant Nominatim
+    participant OpenMeteo as Open-Meteo
+
+    User->>App: click GPS button
+    App->>Geo: getCurrentPosition()
+    Geo-->>App: {lat, lon}
+    App->>Nominatim: reverseGeocode(lat, lon)
+    Nominatim-->>App: "Seattle, WA"
+    App->>App: push URL → ?name=Seattle%2C+WA&lat=...&lon=...
+    App->>OpenMeteo: fetchWeather(lat, lon)
+    OpenMeteo-->>App: WeatherData
+```
+
+**Select saved favorite:**
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant App as HomeContent
+    participant OpenMeteo as Open-Meteo
+
+    User->>App: click saved favorite
+    App->>App: push URL → ?name=...&lat=...&lon=...
+    App->>OpenMeteo: fetchWeather(lat, lon)
+    OpenMeteo-->>App: WeatherData
+```
 
 ### Song Catalog
 
