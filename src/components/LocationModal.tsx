@@ -100,15 +100,17 @@ export default function LocationModal({
                   >
                     −
                   </button>
-                  <button
-                    onClick={() => {
-                      onSelectFavorite(fav);
-                      onClose();
-                    }}
-                    className="min-w-0 flex-1 truncate rounded px-1 text-left text-zinc-900 hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700"
-                  >
-                    {fav.displayName}
-                  </button>
+                  <div className="min-w-0 flex-1">
+                    <button
+                      onClick={() => {
+                        onSelectFavorite(fav);
+                        onClose();
+                      }}
+                      className="max-w-full truncate rounded px-1 text-left text-zinc-900 hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700"
+                    >
+                      {fav.displayName}
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>

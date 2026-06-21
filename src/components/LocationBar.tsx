@@ -72,12 +72,16 @@ export default function LocationBar({
         </svg>
       </button>
 
-      <button
-        onClick={onOpenModal}
-        className="min-w-0 flex-1 overflow-x-auto rounded px-1 text-lg font-semibold whitespace-nowrap hover:bg-zinc-200 dark:hover:bg-zinc-700"
-      >
-        {location ?? <span className="text-zinc-500">Search for a city…</span>}
-      </button>
+      <div className="min-w-0 flex-1 overflow-x-auto">
+        <button
+          onClick={onOpenModal}
+          className="rounded px-1 text-lg font-semibold whitespace-nowrap hover:bg-zinc-200 dark:hover:bg-zinc-700"
+        >
+          {location ?? (
+            <span className="text-zinc-500">Search for a city…</span>
+          )}
+        </button>
+      </div>
 
       <button
         onClick={onToggleFavorite}
