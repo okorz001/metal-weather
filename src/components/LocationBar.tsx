@@ -12,6 +12,7 @@ import { useState } from "react";
  * location from favorites; it is disabled when no location is loaded.
  *
  * @param location - The current location name, or `null` when no location is set.
+ * @param coords - The current coordinates, or `null` when no location is set.
  * @param onOpenModal - Called when the location name area is clicked.
  * @param onGeolocate - Called with latitude and longitude when GPS succeeds.
  * @param isFavorite - Whether the current location is saved as a favorite.
@@ -20,12 +21,14 @@ import { useState } from "react";
  */
 export default function LocationBar({
   location,
+  coords = null,
   onOpenModal,
   onGeolocate,
   isFavorite,
   onToggleFavorite,
 }: {
   location: string | null;
+  coords?: { lat: number; lon: number } | null;
   onOpenModal: () => void;
   onGeolocate: (lat: number, lon: number) => void;
   isFavorite: boolean;
@@ -75,10 +78,17 @@ export default function LocationBar({
       <div className="min-w-0 flex-1 overflow-x-auto text-center">
         <button
           onClick={onOpenModal}
-          className="rounded px-1 text-lg font-semibold whitespace-nowrap hover:bg-zinc-200 dark:hover:bg-zinc-700"
+          className="rounded px-1 hover:bg-zinc-200 dark:hover:bg-zinc-700"
         >
-          {location ?? (
-            <span className="text-zinc-500">Search for a city…</span>
+          <div className="text-lg font-semibold whitespace-nowrap">
+            {location ?? (
+              <span className="text-zinc-500">Search for a city…</span>
+            )}
+          </div>
+          {coords && (
+            <div className="text-xs text-zinc-500 dark:text-zinc-400">
+              {coords.lat.toFixed(4)}, {coords.lon.toFixed(4)}
+            </div>
           )}
         </button>
       </div>

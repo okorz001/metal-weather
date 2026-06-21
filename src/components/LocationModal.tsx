@@ -106,9 +106,14 @@ export default function LocationModal({
                         onSelectFavorite(fav);
                         onClose();
                       }}
-                      className="max-w-full truncate rounded px-1 text-left text-zinc-900 hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700"
+                      className="min-w-0 rounded px-1 text-left hover:bg-zinc-200 dark:hover:bg-zinc-700"
                     >
-                      {fav.displayName}
+                      <div className="truncate text-zinc-900 dark:text-white">
+                        {fav.displayName}
+                      </div>
+                      <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                        {fav.lat.toFixed(4)}, {fav.lon.toFixed(4)}
+                      </div>
                     </button>
                   </div>
                 </li>

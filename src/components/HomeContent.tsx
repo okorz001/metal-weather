@@ -266,6 +266,7 @@ export default function HomeContent() {
     <div className="mt-2 w-full max-w-3xl space-y-2">
       <LocationBar
         location={location}
+        coords={currentCoords}
         onOpenModal={() => setModalOpen(true)}
         onGeolocate={handleGeoSearch}
         isFavorite={
