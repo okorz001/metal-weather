@@ -189,9 +189,12 @@ interface BdcReverseResult {
   city?: string;
   principalSubdivision?: string;
   countryCode?: string;
+  continent?: string;
+  locality?: string;
 }
 
 interface OsmReverseResult {
+  error?: string;
   address?: {
     suburb?: string;
     neighbourhood?: string;
@@ -243,7 +246,7 @@ export async function reverseGeocodeBdc(
   const countryDisplayNames = new Intl.DisplayNames(["en"], { type: "region" });
   const country = data.countryCode
     ? (countryDisplayNames.of(data.countryCode) ?? data.countryCode)
-    : undefined;
+    : data.continent || data.locality;
 
   return formatDisplayName(
     data.city,
@@ -291,6 +294,10 @@ export async function reverseGeocodeOsm(
 
   const data = (await response.json()) as OsmReverseResult;
 
+  if (data.error) {
+    throw new Error(`Reverse geocoding failed: ${data.error}`);
+  }
+
   const area =
     data.address?.suburb ??
     data.address?.neighbourhood ??
@@ -300,20 +307,25 @@ export async function reverseGeocodeOsm(
 
   const countryCode = data.address?.country_code?.toUpperCase();
 
-  return formatDisplayName(
+  const displayName = formatDisplayName(
     area,
     data.address?.state,
     countryCode,
     data.address?.country,
   );
+
+  if (!displayName) {
+    throw new Error(`Location not found at ${lat},${lon}`);
+  }
+
+  return displayName;
 }
 
 /**
  * Resolves geographic coordinates to a human-readable location name.
  *
- * Delegates to {@link reverseGeocodeOsm}. Throws a descriptive error if
- * the request fails or returns a non-OK status; callers should fall back to
- * raw coordinate strings on failure.
+ * Tries {@link reverseGeocodeOsm} first; falls back to {@link reverseGeocodeBdc}
+ * if OSM fails for any reason. Throws if both fail.
  *
  * @param lat - The latitude in decimal degrees.
  * @param lon - The longitude in decimal degrees.
@@ -323,5 +335,9 @@ export async function reverseGeocode(
   lat: number,
   lon: number,
 ): Promise<string> {
-  return reverseGeocodeOsm(lat, lon);
+  try {
+    return await reverseGeocodeOsm(lat, lon);
+  } catch {
+    return reverseGeocodeBdc(lat, lon);
+  }
 }

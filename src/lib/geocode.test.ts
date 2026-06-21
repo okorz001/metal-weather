@@ -364,6 +364,38 @@ describe("reverseGeocodeBdc", () => {
     expect(result).toBe("WA");
   });
 
+  it("falls back to continent when country is missing", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        city: "",
+        principalSubdivision: "",
+        countryCode: "",
+        continent: "Antarctica",
+        locality: "New Swabia",
+      }),
+    } as Response);
+
+    const result = await reverseGeocodeBdc(-75, 0);
+    expect(result).toBe("Antarctica");
+  });
+
+  it("falls back to locality when continent is also missing", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        city: "",
+        principalSubdivision: "",
+        countryCode: "",
+        continent: "",
+        locality: "Atlantic Ocean",
+      }),
+    } as Response);
+
+    const result = await reverseGeocodeBdc(0, 0);
+    expect(result).toBe("Atlantic Ocean");
+  });
+
   it("throws when the API returns a non-OK status", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: false,
@@ -471,6 +503,28 @@ describe("reverseGeocodeOsm", () => {
     expect(result).toBe("Issaquah, WA");
   });
 
+  it("throws when the response contains an error field", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({ error: "Unable to geocode" }),
+    } as Response);
+
+    await expect(reverseGeocodeOsm(0, 0)).rejects.toThrow(
+      "Reverse geocoding failed: Unable to geocode",
+    );
+  });
+
+  it("throws when no meaningful name can be derived from the address", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({ address: { road: "Kohnen-Traverse" } }),
+    } as Response);
+
+    await expect(reverseGeocodeOsm(-75, 0)).rejects.toThrow(
+      "Location not found at -75,0",
+    );
+  });
+
   it("throws when the API returns a non-OK status", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: false,
@@ -492,7 +546,7 @@ describe("reverseGeocodeOsm", () => {
 });
 
 describe("reverseGeocode", () => {
-  it("delegates to reverseGeocodeOsm", async () => {
+  it("returns OSM result when OSM succeeds", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -511,5 +565,37 @@ describe("reverseGeocode", () => {
       expect.stringContaining("nominatim.openstreetmap.org/reverse"),
       expect.any(Object),
     );
+  });
+
+  it("falls back to BDC when OSM fails", async () => {
+    vi.spyOn(global, "fetch")
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ error: "Unable to geocode" }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          city: "Seattle",
+          principalSubdivision: "Washington",
+          countryCode: "US",
+        }),
+      } as Response);
+
+    const result = await reverseGeocode(47.60621, -122.33207);
+    expect(result).toBe("Seattle, WA");
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("nominatim.openstreetmap.org/reverse"),
+      expect.any(Object),
+    );
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("bigdatacloud.net"),
+    );
+  });
+
+  it("throws when both OSM and BDC fail", async () => {
+    vi.spyOn(global, "fetch").mockRejectedValue(new Error("Network error"));
+
+    await expect(reverseGeocode(0, 0)).rejects.toThrow("Network error");
   });
 });
