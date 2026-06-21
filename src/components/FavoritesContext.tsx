@@ -45,9 +45,11 @@ function getFavoritesSnapshot(): Favorite[] {
   return _cachedFavorites;
 }
 
+const EMPTY_FAVORITES: Favorite[] = [];
+
 /** Server snapshot: always empty so SSR output matches the default client state. */
 function getFavoritesServerSnapshot(): Favorite[] {
-  return [];
+  return EMPTY_FAVORITES;
 }
 
 interface FavoritesContextValue {
