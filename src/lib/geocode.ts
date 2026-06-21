@@ -1,5 +1,6 @@
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
-const REVERSE_GEOCODING_URL =
+const NOMINATIM_REVERSE_URL = "https://nominatim.openstreetmap.org/reverse";
+const BDC_REVERSE_URL =
   "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
 const US_STATES: Record<string, string> = {
@@ -66,6 +67,30 @@ function formatDisplayName(
     if (region) return [city, region].filter(Boolean).join(", ");
   }
   return [city, country].filter(Boolean).join(", ");
+}
+
+/**
+ * Parses a coordinate string of the form "lat,lon" into numeric values.
+ *
+ * Accepts optional whitespace around the comma and around the entire string.
+ * Validates that latitude is in the range [-90, 90] and longitude is in the
+ * range [-180, 180]. Returns `null` for any input that does not match this
+ * format or fails validation, so callers can safely fall through to normal
+ * location search.
+ *
+ * @param input - The raw string to test (e.g. `"47.6,-122.3"`).
+ * @returns An object with `lat` and `lon` as numbers, or `null` if the input
+ *   is not a valid coordinate pair.
+ */
+export function parseCoordinates(
+  input: string,
+): { lat: number; lon: number } | null {
+  const match = /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/.exec(input);
+  if (!match) return null;
+  const lat = parseFloat(match[1]);
+  const lon = parseFloat(match[2]);
+  if (lat < -90 || lat > 90 || lon < -180 || lon > 180) return null;
+  return { lat, lon };
 }
 
 interface NominatimResult {
@@ -184,29 +209,44 @@ export async function geocodeLocation(
   };
 }
 
-interface ReverseGeocodingResult {
+interface BdcReverseResult {
   city?: string;
   principalSubdivision?: string;
   countryCode?: string;
+  continent?: string;
+}
+
+interface NominatimReverseResult {
+  address?: {
+    suburb?: string;
+    neighbourhood?: string;
+    city?: string;
+    town?: string;
+    village?: string;
+    county?: string;
+    state?: string;
+    country?: string;
+    country_code?: string;
+  };
 }
 
 /**
- * Resolves geographic coordinates to a human-readable location name.
+ * Resolves geographic coordinates to a human-readable location name using the
+ * BigDataCloud reverse geocoding API (no API key required).
  *
- * Calls the BigDataCloud reverse geocoding API (no API key required) and
- * returns a display name built from the city, region, and country. Throws a
+ * Returns a display name built from the city, region, and country. Throws a
  * descriptive error if the request fails or returns a non-OK status; callers
  * should fall back to raw coordinate strings on failure.
  *
  * @param lat - The latitude in decimal degrees.
  * @param lon - The longitude in decimal degrees.
- * @returns A human-readable display name such as "Seattle, Washington, United States".
+ * @returns A human-readable display name such as `"Seattle, WA"`.
  */
-export async function reverseGeocode(
+export async function reverseGeocodeBdc(
   lat: number,
   lon: number,
 ): Promise<string> {
-  const url = `${REVERSE_GEOCODING_URL}?latitude=${lat}&longitude=${lon}&localityLanguage=en`;
+  const url = `${BDC_REVERSE_URL}?latitude=${lat}&longitude=${lon}&localityLanguage=en`;
 
   let response: Response;
   try {
@@ -223,12 +263,12 @@ export async function reverseGeocode(
     );
   }
 
-  const data = (await response.json()) as ReverseGeocodingResult;
+  const data = (await response.json()) as BdcReverseResult;
 
   const countryDisplayNames = new Intl.DisplayNames(["en"], { type: "region" });
   const country = data.countryCode
     ? (countryDisplayNames.of(data.countryCode) ?? data.countryCode)
-    : undefined;
+    : data.continent;
 
   return formatDisplayName(
     data.city,
@@ -236,4 +276,77 @@ export async function reverseGeocode(
     data.countryCode,
     country,
   );
+}
+
+/**
+ * Resolves geographic coordinates to a human-readable location name using the
+ * Nominatim (OpenStreetMap) reverse geocoding API.
+ *
+ * Returns a display name built from the city, region, and country using the
+ * same address fields as forward geocoding. Throws a descriptive error if the
+ * request fails or returns a non-OK status; callers should fall back to raw
+ * coordinate strings on failure.
+ *
+ * @param lat - The latitude in decimal degrees.
+ * @param lon - The longitude in decimal degrees.
+ * @returns A human-readable display name such as `"Seattle, WA"`.
+ */
+export async function reverseGeocodeNominatim(
+  lat: number,
+  lon: number,
+): Promise<string> {
+  const url = `${NOMINATIM_REVERSE_URL}?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      headers: { "User-Agent": "metal-weather/1.0" },
+    });
+  } catch (e) {
+    throw new Error(
+      `Failed to reach reverse geocoding service: ${e instanceof Error ? e.message : String(e)}`,
+    );
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      `Reverse geocoding request failed with status ${response.status}`,
+    );
+  }
+
+  const data = (await response.json()) as NominatimReverseResult;
+
+  const area =
+    data.address?.suburb ??
+    data.address?.neighbourhood ??
+    data.address?.city ??
+    data.address?.town ??
+    data.address?.village;
+
+  const countryCode = data.address?.country_code?.toUpperCase();
+
+  return formatDisplayName(
+    area,
+    data.address?.state,
+    countryCode,
+    data.address?.country,
+  );
+}
+
+/**
+ * Resolves geographic coordinates to a human-readable location name.
+ *
+ * Delegates to {@link reverseGeocodeNominatim}. Throws a descriptive error if
+ * the request fails or returns a non-OK status; callers should fall back to
+ * raw coordinate strings on failure.
+ *
+ * @param lat - The latitude in decimal degrees.
+ * @param lon - The longitude in decimal degrees.
+ * @returns A human-readable display name such as `"Seattle, WA"`.
+ */
+export async function reverseGeocode(
+  lat: number,
+  lon: number,
+): Promise<string> {
+  return reverseGeocodeNominatim(lat, lon);
 }
