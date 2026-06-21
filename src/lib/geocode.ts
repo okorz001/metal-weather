@@ -1,5 +1,5 @@
-const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
-const NOMINATIM_REVERSE_URL = "https://nominatim.openstreetmap.org/reverse";
+const OSM_URL = "https://nominatim.openstreetmap.org/search";
+const OSM_REVERSE_URL = "https://nominatim.openstreetmap.org/reverse";
 const BDC_REVERSE_URL =
   "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
@@ -69,7 +69,7 @@ function formatDisplayName(
   return [city, country].filter(Boolean).join(", ");
 }
 
-interface NominatimResult {
+interface OsmResult {
   name?: string;
   lat: string;
   lon: string;
@@ -110,7 +110,7 @@ export async function geocodeLocation(
   const query = isZip
     ? `postalcode=${encodeURIComponent(cityName)}&countrycodes=us&limit=1`
     : `q=${encodeURIComponent(cityName)}&limit=10`;
-  const url = `${NOMINATIM_URL}?${query}&format=json&addressdetails=1`;
+  const url = `${OSM_URL}?${query}&format=json&addressdetails=1`;
 
   let response: Response;
   try {
@@ -127,7 +127,7 @@ export async function geocodeLocation(
     throw new Error(`Geocoding request failed with status ${response.status}`);
   }
 
-  const data = (await response.json()) as NominatimResult[];
+  const data = (await response.json()) as OsmResult[];
 
   if (data.length === 0) {
     throw new Error(`Location not found: "${location}"`);
@@ -191,7 +191,7 @@ interface BdcReverseResult {
   countryCode?: string;
 }
 
-interface NominatimReverseResult {
+interface OsmReverseResult {
   address?: {
     suburb?: string;
     neighbourhood?: string;
@@ -266,11 +266,11 @@ export async function reverseGeocodeBdc(
  * @param lon - The longitude in decimal degrees.
  * @returns A human-readable display name such as `"Seattle, WA"`.
  */
-export async function reverseGeocodeNominatim(
+export async function reverseGeocodeOsm(
   lat: number,
   lon: number,
 ): Promise<string> {
-  const url = `${NOMINATIM_REVERSE_URL}?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
+  const url = `${OSM_REVERSE_URL}?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
 
   let response: Response;
   try {
@@ -289,7 +289,7 @@ export async function reverseGeocodeNominatim(
     );
   }
 
-  const data = (await response.json()) as NominatimReverseResult;
+  const data = (await response.json()) as OsmReverseResult;
 
   const area =
     data.address?.suburb ??
@@ -311,7 +311,7 @@ export async function reverseGeocodeNominatim(
 /**
  * Resolves geographic coordinates to a human-readable location name.
  *
- * Delegates to {@link reverseGeocodeNominatim}. Throws a descriptive error if
+ * Delegates to {@link reverseGeocodeOsm}. Throws a descriptive error if
  * the request fails or returns a non-OK status; callers should fall back to
  * raw coordinate strings on failure.
  *
@@ -323,5 +323,5 @@ export async function reverseGeocode(
   lat: number,
   lon: number,
 ): Promise<string> {
-  return reverseGeocodeNominatim(lat, lon);
+  return reverseGeocodeOsm(lat, lon);
 }

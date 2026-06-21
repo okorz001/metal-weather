@@ -4,7 +4,7 @@ import {
   geocodeLocation,
   reverseGeocode,
   reverseGeocodeBdc,
-  reverseGeocodeNominatim,
+  reverseGeocodeOsm,
 } from "./geocode";
 
 beforeEach(() => {
@@ -384,7 +384,7 @@ describe("reverseGeocodeBdc", () => {
   });
 });
 
-describe("reverseGeocodeNominatim", () => {
+describe("reverseGeocodeOsm", () => {
   it("abbreviates US state", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
@@ -398,7 +398,7 @@ describe("reverseGeocodeNominatim", () => {
       }),
     } as Response);
 
-    const result = await reverseGeocodeNominatim(47.60621, -122.33207);
+    const result = await reverseGeocodeOsm(47.60621, -122.33207);
     expect(result).toBe("Seattle, WA");
   });
 
@@ -415,7 +415,7 @@ describe("reverseGeocodeNominatim", () => {
       }),
     } as Response);
 
-    const result = await reverseGeocodeNominatim(48.8566, 2.3522);
+    const result = await reverseGeocodeOsm(48.8566, 2.3522);
     expect(result).toBe("Paris, France");
   });
 
@@ -432,7 +432,7 @@ describe("reverseGeocodeNominatim", () => {
       }),
     } as Response);
 
-    const result = await reverseGeocodeNominatim(38.9072, -77.0369);
+    const result = await reverseGeocodeOsm(38.9072, -77.0369);
     expect(result).toBe("Washington D.C., United States");
   });
 
@@ -450,7 +450,7 @@ describe("reverseGeocodeNominatim", () => {
       }),
     } as Response);
 
-    const result = await reverseGeocodeNominatim(37.3, -121.9);
+    const result = await reverseGeocodeOsm(37.3, -121.9);
     expect(result).toBe("Willow Glen, CA");
   });
 
@@ -467,7 +467,7 @@ describe("reverseGeocodeNominatim", () => {
       }),
     } as Response);
 
-    const result = await reverseGeocodeNominatim(47.53, -122.03);
+    const result = await reverseGeocodeOsm(47.53, -122.03);
     expect(result).toBe("Issaquah, WA");
   });
 
@@ -477,7 +477,7 @@ describe("reverseGeocodeNominatim", () => {
       status: 500,
     } as Response);
 
-    await expect(reverseGeocodeNominatim(0, 0)).rejects.toThrow(
+    await expect(reverseGeocodeOsm(0, 0)).rejects.toThrow(
       "Reverse geocoding request failed with status 500",
     );
   });
@@ -485,14 +485,14 @@ describe("reverseGeocodeNominatim", () => {
   it("throws when the network request fails", async () => {
     vi.spyOn(global, "fetch").mockRejectedValue(new Error("Network error"));
 
-    await expect(reverseGeocodeNominatim(0, 0)).rejects.toThrow(
+    await expect(reverseGeocodeOsm(0, 0)).rejects.toThrow(
       "Failed to reach reverse geocoding service: Network error",
     );
   });
 });
 
 describe("reverseGeocode", () => {
-  it("delegates to reverseGeocodeNominatim", async () => {
+  it("delegates to reverseGeocodeOsm", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => ({
