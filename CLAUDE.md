@@ -18,7 +18,7 @@ npm test              # run tests with Vitest (uses esbuild, does not type-check
 npm run verify        # run all checks in sequence (format:check + lint + test + build)
 ```
 
-Always verify `npm run verify` passes before proposing a code change. For documentation-only changes (Markdown, JSON data), `npm run format:check` is sufficient.
+Always run `npm run format` before committing, then verify `npm run verify` passes before proposing a code change. For documentation-only changes (Markdown, JSON data), formatting is all that is needed.
 
 ## GitHub
 
