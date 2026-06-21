@@ -134,6 +134,61 @@ describe("HomeContent", () => {
     });
   });
 
+  describe("coordinate input", () => {
+    beforeEach(() => {
+      vi.mocked(geocodeModule.parseCoordinates).mockReturnValue({
+        lat: 47.6,
+        lon: -122.3,
+      });
+      vi.mocked(geocodeModule.reverseGeocode).mockResolvedValue("Seattle, WA");
+    });
+
+    it("skips geocoding and reverse-geocodes when input is coordinates", async () => {
+      renderHome();
+      fireEvent.change(screen.getByPlaceholderText("City name"), {
+        target: { value: "47.6,-122.3" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: "Go" }));
+      await waitFor(() =>
+        expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
+      );
+      expect(geocodeModule.geocodeLocation).not.toHaveBeenCalled();
+      expect(geocodeModule.reverseGeocode).toHaveBeenCalledWith(47.6, -122.3);
+    });
+
+    it("falls back to raw coordinate string when reverse geocoding fails", async () => {
+      vi.mocked(geocodeModule.reverseGeocode).mockRejectedValue(
+        new Error("Network error"),
+      );
+      renderHome();
+      fireEvent.change(screen.getByPlaceholderText("City name"), {
+        target: { value: "47.6,-122.3" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: "Go" }));
+      await waitFor(() =>
+        expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
+      );
+      expect(geocodeModule.geocodeLocation).not.toHaveBeenCalled();
+      expect(weatherModule.fetchWeather).toHaveBeenCalledWith(
+        47.6,
+        -122.3,
+        "47.6,-122.3",
+      );
+    });
+
+    it("auto-searches coordinates from ?q= param on mount", async () => {
+      vi.mocked(useSearchParams).mockReturnValue(
+        new URLSearchParams("q=47.6,-122.3"),
+      );
+      renderHome();
+      await waitFor(() =>
+        expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
+      );
+      expect(geocodeModule.geocodeLocation).not.toHaveBeenCalled();
+      expect(geocodeModule.reverseGeocode).toHaveBeenCalledWith(47.6, -122.3);
+    });
+  });
+
   describe("favorites", () => {
     async function searchSeattle() {
       renderHome();

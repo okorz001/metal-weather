@@ -69,6 +69,30 @@ function formatDisplayName(
   return [city, country].filter(Boolean).join(", ");
 }
 
+/**
+ * Parses a coordinate string of the form "lat,lon" into numeric values.
+ *
+ * Accepts optional whitespace around the comma and around the entire string.
+ * Validates that latitude is in the range [-90, 90] and longitude is in the
+ * range [-180, 180]. Returns `null` for any input that does not match this
+ * format or fails validation, so callers can safely fall through to normal
+ * location search.
+ *
+ * @param input - The raw string to test (e.g. `"47.6,-122.3"`).
+ * @returns An object with `lat` and `lon` as numbers, or `null` if the input
+ *   is not a valid coordinate pair.
+ */
+export function parseCoordinates(
+  input: string,
+): { lat: number; lon: number } | null {
+  const match = /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/.exec(input);
+  if (!match) return null;
+  const lat = parseFloat(match[1]);
+  const lon = parseFloat(match[2]);
+  if (lat < -90 || lat > 90 || lon < -180 || lon > 180) return null;
+  return { lat, lon };
+}
+
 interface OsmResult {
   name?: string;
   lat: string;

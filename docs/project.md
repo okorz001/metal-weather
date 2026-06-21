@@ -10,9 +10,8 @@ rain).
 
 1. User searches for a city by name via the modal, or uses the GPS button in
    `LocationBar` to detect their location via the browser Geolocation API.
-2. Forward geocoding (city name / US zip code → lat/lon) uses Nominatim
-   (OpenStreetMap). Reverse geocoding (GPS coordinates → display name) uses
-   BigDataCloud.
+2. Forward and reverse geocoding (city name / US zip code → lat/lon and GPS
+   coordinates → display name) both use Nominatim (OpenStreetMap).
 3. Weather is fetched from Open-Meteo Forecast. The WMO weather code is mapped
    to one of seven `WeatherStatus` values; a matching song is selected from the
    JSON catalog.
@@ -77,11 +76,19 @@ and `WeatherStatus` values pre-derived from WMO codes.
 
 ### External APIs (Free, No API Key)
 
-| API                            | Purpose                                             |
-| ------------------------------ | --------------------------------------------------- |
-| Nominatim (OpenStreetMap)      | City name / US zip code → lat/lon/displayName       |
-| BigDataCloud Reverse Geocoding | GPS lat/lon → human-readable display name           |
-| Open-Meteo Forecast            | lat/lon → current weather + hourly 12-hour forecast |
+| API                       | Purpose                                                               |
+| ------------------------- | --------------------------------------------------------------------- |
+| Nominatim (OpenStreetMap) | City name / US zip code → lat/lon/displayName; lat/lon → display name |
+| Open-Meteo Forecast       | lat/lon → current weather + hourly 12-hour forecast                   |
+
+### API Call Flow by Input Type
+
+| User Action                           | API Calls                                                 |
+| ------------------------------------- | --------------------------------------------------------- |
+| Type city name or zip code            | Nominatim → Open-Meteo                                    |
+| Type coordinates (e.g. `47.6,-122.3`) | BigDataCloud (reverse) → Open-Meteo                       |
+| GPS button                            | Browser Geolocation → BigDataCloud (reverse) → Open-Meteo |
+| Select saved favorite                 | Open-Meteo only                                           |
 
 ### Song Catalog
 
