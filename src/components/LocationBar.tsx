@@ -8,22 +8,28 @@ import { useState } from "react";
  * The GPS icon button on the left triggers the browser Geolocation API
  * directly and calls `onGeolocate` with the coordinates on success. The center
  * shows the current location name (or a placeholder) and is clickable to open
- * the search modal. The bookmark icon on the right is a static placeholder
- * with no interaction.
+ * the search modal. The bookmark icon on the right adds or removes the current
+ * location from favorites; it is disabled when no location is loaded.
  *
  * @param location - The current location name, or `null` when no location is set.
  * @param onOpenModal - Called when the location name area is clicked.
  * @param onGeolocate - Called with latitude and longitude when GPS succeeds.
+ * @param isFavorite - Whether the current location is saved as a favorite.
+ * @param onToggleFavorite - Called when the bookmark button is clicked.
  * @returns The rendered location bar element.
  */
 export default function LocationBar({
   location,
   onOpenModal,
   onGeolocate,
+  isFavorite,
+  onToggleFavorite,
 }: {
   location: string | null;
   onOpenModal: () => void;
   onGeolocate: (lat: number, lon: number) => void;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
 }) {
   const [geoStatus, setGeoStatus] = useState<"idle" | "loading">("idle");
 
@@ -73,19 +79,25 @@ export default function LocationBar({
         {location ?? <span className="text-zinc-500">Search for a city…</span>}
       </button>
 
-      <div aria-hidden className={`flex-shrink-0 ${iconBtn}`}>
+      <button
+        onClick={onToggleFavorite}
+        disabled={location === null}
+        aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+        aria-pressed={isFavorite}
+        className={`flex-shrink-0 ${iconBtn}`}
+      >
         <svg
           viewBox="0 0 24 24"
-          fill="none"
+          fill={isFavorite ? "currentColor" : "none"}
           stroke="currentColor"
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="h-5 w-5 text-zinc-400 dark:text-zinc-600"
+          className={`h-5 w-5 ${isFavorite ? "text-yellow-400" : "text-zinc-400 dark:text-zinc-600"}`}
         >
           <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
         </svg>
-      </div>
+      </button>
     </div>
   );
 }

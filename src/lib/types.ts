@@ -119,6 +119,19 @@ export interface WeatherData {
 }
 
 /**
+ * A saved favorite location.
+ *
+ * @param displayName - Human-readable location name as returned by geocoding.
+ * @param lat - Latitude in decimal degrees, stored to avoid re-geocoding.
+ * @param lon - Longitude in decimal degrees, stored to avoid re-geocoding.
+ */
+export interface Favorite {
+  displayName: string;
+  lat: number;
+  lon: number;
+}
+
+/**
  * Discriminated union representing a weather lookup result.
  *
  * When `ok` is `true`, `weather` and `song` are present.

@@ -1,12 +1,16 @@
 "use client";
 
+import type { Favorite } from "@/lib/types";
+
 import LocationSearch from "./LocationSearch";
 
 /**
- * A full-screen overlay modal wrapping the location search form.
+ * A full-screen overlay modal wrapping the location search form and favorites list.
  *
  * Renders over all other content when `open` is true. Closes automatically
- * when the user submits a search. Can also be dismissed via the close button.
+ * when the user submits a search or selects a favorite. Can also be dismissed
+ * via the close button. When favorites exist, they are listed below the search
+ * form with a minus button to remove each one.
  *
  * @param open - Whether the modal is visible.
  * @param onClose - Called when the user explicitly closes the modal.
@@ -14,6 +18,9 @@ import LocationSearch from "./LocationSearch";
  * @param onChange - Called when the text input value changes.
  * @param onSearch - Called with the trimmed city name when the user submits.
  * @param disabled - When true, the search form inputs are disabled.
+ * @param favorites - The list of saved favorite locations to display.
+ * @param onSelectFavorite - Called with the chosen favorite when its name is clicked.
+ * @param onRemoveFavorite - Called with the favorite to remove when its minus button is clicked.
  * @returns The rendered modal element, or `null` when closed.
  */
 export default function LocationModal({
@@ -23,6 +30,9 @@ export default function LocationModal({
   onChange,
   onSearch,
   disabled = false,
+  favorites,
+  onSelectFavorite,
+  onRemoveFavorite,
 }: {
   open: boolean;
   onClose: () => void;
@@ -30,6 +40,9 @@ export default function LocationModal({
   onChange: (value: string) => void;
   onSearch: (location: string) => void;
   disabled?: boolean;
+  favorites: Favorite[];
+  onSelectFavorite: (fav: Favorite) => void;
+  onRemoveFavorite: (fav: Favorite) => void;
 }) {
   if (!open) return null;
 
@@ -69,6 +82,38 @@ export default function LocationModal({
           onSearch={handleSearch}
           disabled={disabled}
         />
+        {favorites.length > 0 && (
+          <div className="mt-3 border-t border-zinc-200 pt-3 dark:border-zinc-700">
+            <p className="mb-1 text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
+              Favorites
+            </p>
+            <ul>
+              {favorites.map((fav) => (
+                <li
+                  key={`${fav.lat},${fav.lon}`}
+                  className="flex items-center gap-2 py-1"
+                >
+                  <button
+                    onClick={() => onRemoveFavorite(fav)}
+                    aria-label={`Remove ${fav.displayName} from favorites`}
+                    className="shrink-0 text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400"
+                  >
+                    −
+                  </button>
+                  <button
+                    onClick={() => {
+                      onSelectFavorite(fav);
+                      onClose();
+                    }}
+                    className="min-w-0 flex-1 truncate text-left text-zinc-900 hover:underline dark:text-white"
+                  >
+                    {fav.displayName}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

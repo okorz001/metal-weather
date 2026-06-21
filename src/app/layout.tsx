@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Jim_Nightshade } from "next/font/google";
 
 import AppBar from "@/components/AppBar";
+import { FavoritesProvider } from "@/components/FavoritesContext";
 import { SettingsProvider } from "@/components/SettingsContext";
 
 import "./globals.css";
@@ -26,8 +27,10 @@ export default function RootLayout({
     <html lang="en" className={jimNightshade.variable}>
       <body className="min-h-screen w-screen min-w-80">
         <SettingsProvider>
-          <AppBar />
-          {children}
+          <FavoritesProvider>
+            <AppBar />
+            {children}
+          </FavoritesProvider>
         </SettingsProvider>
       </body>
     </html>
