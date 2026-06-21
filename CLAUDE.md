@@ -9,7 +9,7 @@ A Next.js site that shows a weather forecast for a location and plays a heavy me
 ## Commands
 
 ```sh
-npm run dev           # start the development server
+npm run dev           # start the development server on port 3000
 npm run build         # type-check and compile for production
 npm run format        # format with Prettier
 npm run format:check  # check formatting without writing
@@ -18,11 +18,17 @@ npm test              # run tests with Vitest (uses esbuild, does not type-check
 npm run verify        # run all checks in sequence (format:check + lint + test + build)
 ```
 
-Always verify `npm run verify` passes before proposing a code change.
+Always verify `npm run verify` passes before proposing a code change. For documentation-only changes (Markdown, JSON data), `npm run format:check` is sufficient.
 
 ## GitHub
 
 When adding a GitHub Actions action, use the same version already used by other jobs in the workflow files if it exists. Only when introducing an action not yet used anywhere should you look up and use its latest stable release.
+
+Never rebase or force push a branch that currently has an open PR.
+
+## Project Docs
+
+Keep `docs/project.md` up to date whenever a feature is added, removed, or significantly changed. Update the relevant sections (What the App Does, Components table, External APIs, data types) as part of the same change that implements the feature.
 
 ## Docs Style
 
