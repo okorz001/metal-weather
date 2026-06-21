@@ -9,15 +9,21 @@ rain).
 ### What the App Does
 
 1. User searches for a city by name via the modal, or uses the GPS button in
-   `LocationBar` to detect their location.
-2. The app geocodes the input via Open-Meteo Geocoding and fetches current
-   weather via Open-Meteo Forecast.
-3. The WMO weather code is mapped to one of seven `WeatherStatus` values; a
-   matching song is selected from the JSON catalog.
+   `LocationBar` to detect their location via the browser Geolocation API.
+2. Forward geocoding (city name / US zip code → lat/lon) uses Nominatim
+   (OpenStreetMap). Reverse geocoding (GPS coordinates → display name) uses
+   BigDataCloud.
+3. Weather is fetched from Open-Meteo Forecast. The WMO weather code is mapped
+   to one of seven `WeatherStatus` values; a matching song is selected from the
+   JSON catalog.
 4. The matched song plays automatically (HTML5 `<audio>` with fade in/out
    cropping). The user can pause, seek, and resume.
 5. On any error (geocode failure, network error, unrecognized code) an error
    card is shown with a fallback song.
+6. The user can bookmark the current location via the star icon in `LocationBar`.
+   Favorites are persisted to `localStorage` and listed in the search modal for
+   one-click access. The bookmark icon reflects the saved state and toggles
+   add/remove.
 
 ### Technology
 
@@ -47,40 +53,37 @@ high/low, all numeric fields provided in both metric and imperial units.
 Includes an `hourly` block with the next 12 hours of temperatures
 and `WeatherStatus` values pre-derived from WMO codes.
 
+**`Favorite`** (`src/lib/types.ts`) — a saved location with `displayName`,
+`lat`, and `lon`. Persisted as a JSON array under the `"favorites"`
+`localStorage` key.
+
 ### Components
 
-| Component         | Role                                                                |
-| ----------------- | ------------------------------------------------------------------- |
-| `AppBar`          | Top navigation bar with settings (units toggle, dark/light theme)   |
-| `LocationBar`     | Persistent bar showing current location; GPS and open-modal buttons |
-| `LocationModal`   | Full-screen overlay with `LocationSearch` form                      |
-| `LocationSearch`  | Text input + Go button                                              |
-| `WeatherCard`     | Current temperature, condition emoji, hi/lo                         |
-| `SongCard`        | Cover art, song title/artist, `MusicPlayer` controls                |
-| `HourlyForecast`  | Horizontally scrolling 12-hour strip (temp + emoji + hour)          |
-| `ErrorCard`       | Error message + fallback song                                       |
-| `MusicPlayer`     | HTML5 audio player with play/pause, seek, and time display          |
-| `HomeContent`     | Orchestrates all search state and renders the above cards           |
-| `SettingsContext` | React context for unit system (metric / imperial) and theme         |
+| Component          | Role                                                                        |
+| ------------------ | --------------------------------------------------------------------------- |
+| `AppBar`           | Top navigation bar with settings (units toggle, dark/light theme)           |
+| `LocationBar`      | Persistent bar showing current location; GPS, open-modal, and bookmark buttons |
+| `LocationModal`    | Full-screen overlay with `LocationSearch` form and saved favorites list     |
+| `LocationSearch`   | Text input + Go button                                                      |
+| `WeatherCard`      | Current temperature, condition emoji, hi/lo                                 |
+| `SongCard`         | Cover art, song title/artist, `MusicPlayer` controls                        |
+| `HourlyForecast`   | Horizontally scrolling 12-hour strip (temp + emoji + hour)                  |
+| `ErrorCard`        | Error message + fallback song                                               |
+| `MusicPlayer`      | HTML5 audio player with play/pause, seek, and time display                  |
+| `Spinner`          | Centered animated loading indicator shown during weather fetches            |
+| `HomeContent`      | Orchestrates all search state and renders the above cards                   |
+| `SettingsContext`  | React context for unit system (metric / imperial) and theme                 |
+| `FavoritesContext` | React context for saved locations, backed by `localStorage`                 |
 
 ### External APIs (Free, No API Key)
 
-| API                  | Purpose                                             |
-| -------------------- | --------------------------------------------------- |
-| Open-Meteo Geocoding | City name → lat/lon/displayName                     |
-| Open-Meteo Forecast  | lat/lon → current weather + hourly 12-hour forecast |
+| API                           | Purpose                                             |
+| ----------------------------- | --------------------------------------------------- |
+| Nominatim (OpenStreetMap)     | City name / US zip code → lat/lon/displayName       |
+| BigDataCloud Reverse Geocoding | GPS lat/lon → human-readable display name          |
+| Open-Meteo Forecast           | lat/lon → current weather + hourly 12-hour forecast |
 
 ### Song Catalog
 
 Defined in `src/data/songs.json`. One song per `WeatherStatus` plus one error
 fallback. Cover art JPEGs are stored alongside MP3s in `public/assets/`.
-
----
-
-## Planned Features
-
-### Favorites / Bookmarks
-
-A bookmark icon is already present in `LocationBar` as a visual placeholder.
-Future work: persist bookmarked locations to `localStorage` and show a picker
-UI so users can jump between saved cities without re-typing.
