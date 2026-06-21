@@ -9,7 +9,7 @@ A Next.js site that shows a weather forecast for a location and plays a heavy me
 ## Commands
 
 ```sh
-npm run dev           # start the development server
+npm run dev           # start the development server on port 3000
 npm run build         # type-check and compile for production
 npm run format        # format with Prettier
 npm run format:check  # check formatting without writing
