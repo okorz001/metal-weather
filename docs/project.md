@@ -59,29 +59,29 @@ and `WeatherStatus` values pre-derived from WMO codes.
 
 ### Components
 
-| Component          | Role                                                                        |
-| ------------------ | --------------------------------------------------------------------------- |
-| `AppBar`           | Top navigation bar with settings (units toggle, dark/light theme)           |
+| Component          | Role                                                                           |
+| ------------------ | ------------------------------------------------------------------------------ |
+| `AppBar`           | Top navigation bar with settings (units toggle, dark/light theme)              |
 | `LocationBar`      | Persistent bar showing current location; GPS, open-modal, and bookmark buttons |
-| `LocationModal`    | Full-screen overlay with `LocationSearch` form and saved favorites list     |
-| `LocationSearch`   | Text input + Go button                                                      |
-| `WeatherCard`      | Current temperature, condition emoji, hi/lo                                 |
-| `SongCard`         | Cover art, song title/artist, `MusicPlayer` controls                        |
-| `HourlyForecast`   | Horizontally scrolling 12-hour strip (temp + emoji + hour)                  |
-| `ErrorCard`        | Error message + fallback song                                               |
-| `MusicPlayer`      | HTML5 audio player with play/pause, seek, and time display                  |
-| `Spinner`          | Centered animated loading indicator shown during weather fetches            |
-| `HomeContent`      | Orchestrates all search state and renders the above cards                   |
-| `SettingsContext`  | React context for unit system (metric / imperial) and theme                 |
-| `FavoritesContext` | React context for saved locations, backed by `localStorage`                 |
+| `LocationModal`    | Full-screen overlay with `LocationSearch` form and saved favorites list        |
+| `LocationSearch`   | Text input + Go button                                                         |
+| `WeatherCard`      | Current temperature, condition emoji, hi/lo                                    |
+| `SongCard`         | Cover art, song title/artist, `MusicPlayer` controls                           |
+| `HourlyForecast`   | Horizontally scrolling 12-hour strip (temp + emoji + hour)                     |
+| `ErrorCard`        | Error message + fallback song                                                  |
+| `MusicPlayer`      | HTML5 audio player with play/pause, seek, and time display                     |
+| `Spinner`          | Centered animated loading indicator shown during weather fetches               |
+| `HomeContent`      | Orchestrates all search state and renders the above cards                      |
+| `SettingsContext`  | React context for unit system (metric / imperial) and theme                    |
+| `FavoritesContext` | React context for saved locations, backed by `localStorage`                    |
 
 ### External APIs (Free, No API Key)
 
-| API                           | Purpose                                             |
-| ----------------------------- | --------------------------------------------------- |
-| Nominatim (OpenStreetMap)     | City name / US zip code → lat/lon/displayName       |
-| BigDataCloud Reverse Geocoding | GPS lat/lon → human-readable display name          |
-| Open-Meteo Forecast           | lat/lon → current weather + hourly 12-hour forecast |
+| API                            | Purpose                                             |
+| ------------------------------ | --------------------------------------------------- |
+| Nominatim (OpenStreetMap)      | City name / US zip code → lat/lon/displayName       |
+| BigDataCloud Reverse Geocoding | GPS lat/lon → human-readable display name           |
+| Open-Meteo Forecast            | lat/lon → current weather + hourly 12-hour forecast |
 
 ### Song Catalog
 
