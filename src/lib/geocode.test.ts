@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { geocodeLocation, reverseGeocode } from "./geocode";
+import {
+  geocodeLocation,
+  reverseGeocode,
+  reverseGeocodeBdc,
+  reverseGeocodeNominatim,
+} from "./geocode";
 
 beforeEach(() => {
   vi.restoreAllMocks();
@@ -302,7 +307,7 @@ describe("geocodeLocation zip code", () => {
   });
 });
 
-describe("reverseGeocode", () => {
+describe("reverseGeocodeBdc", () => {
   it("abbreviates US state and includes country", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
@@ -313,7 +318,7 @@ describe("reverseGeocode", () => {
       }),
     } as Response);
 
-    const result = await reverseGeocode(47.60621, -122.33207);
+    const result = await reverseGeocodeBdc(47.60621, -122.33207);
     expect(result).toBe("Seattle, WA");
   });
 
@@ -327,7 +332,7 @@ describe("reverseGeocode", () => {
       }),
     } as Response);
 
-    const result = await reverseGeocode(48.8566, 2.3522);
+    const result = await reverseGeocodeBdc(48.8566, 2.3522);
     expect(result).toBe("Paris, France");
   });
 
@@ -341,7 +346,7 @@ describe("reverseGeocode", () => {
       }),
     } as Response);
 
-    const result = await reverseGeocode(38.9072, -77.0369);
+    const result = await reverseGeocodeBdc(38.9072, -77.0369);
     expect(result).toBe("Washington D.C., United States");
   });
 
@@ -355,7 +360,7 @@ describe("reverseGeocode", () => {
       }),
     } as Response);
 
-    const result = await reverseGeocode(47.60621, -122.33207);
+    const result = await reverseGeocodeBdc(47.60621, -122.33207);
     expect(result).toBe("WA");
   });
 
@@ -365,7 +370,7 @@ describe("reverseGeocode", () => {
       status: 500,
     } as Response);
 
-    await expect(reverseGeocode(0, 0)).rejects.toThrow(
+    await expect(reverseGeocodeBdc(0, 0)).rejects.toThrow(
       "Reverse geocoding request failed with status 500",
     );
   });
@@ -373,8 +378,138 @@ describe("reverseGeocode", () => {
   it("throws when the network request fails", async () => {
     vi.spyOn(global, "fetch").mockRejectedValue(new Error("Network error"));
 
-    await expect(reverseGeocode(0, 0)).rejects.toThrow(
+    await expect(reverseGeocodeBdc(0, 0)).rejects.toThrow(
       "Failed to reach reverse geocoding service: Network error",
+    );
+  });
+});
+
+describe("reverseGeocodeNominatim", () => {
+  it("abbreviates US state", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        address: {
+          city: "Seattle",
+          state: "Washington",
+          country: "United States",
+          country_code: "us",
+        },
+      }),
+    } as Response);
+
+    const result = await reverseGeocodeNominatim(47.60621, -122.33207);
+    expect(result).toBe("Seattle, WA");
+  });
+
+  it("omits subdivision for non-US locations", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        address: {
+          city: "Paris",
+          state: "Île-de-France",
+          country: "France",
+          country_code: "fr",
+        },
+      }),
+    } as Response);
+
+    const result = await reverseGeocodeNominatim(48.8566, 2.3522);
+    expect(result).toBe("Paris, France");
+  });
+
+  it("falls back to country when US subdivision has no abbreviation", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        address: {
+          city: "Washington D.C.",
+          state: "District of Columbia",
+          country: "United States",
+          country_code: "us",
+        },
+      }),
+    } as Response);
+
+    const result = await reverseGeocodeNominatim(38.9072, -77.0369);
+    expect(result).toBe("Washington D.C., United States");
+  });
+
+  it("prefers suburb over city", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        address: {
+          suburb: "Willow Glen",
+          city: "San Jose",
+          state: "California",
+          country: "United States",
+          country_code: "us",
+        },
+      }),
+    } as Response);
+
+    const result = await reverseGeocodeNominatim(37.3, -121.9);
+    expect(result).toBe("Willow Glen, CA");
+  });
+
+  it("falls back to town when no city or suburb", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        address: {
+          town: "Issaquah",
+          state: "Washington",
+          country: "United States",
+          country_code: "us",
+        },
+      }),
+    } as Response);
+
+    const result = await reverseGeocodeNominatim(47.53, -122.03);
+    expect(result).toBe("Issaquah, WA");
+  });
+
+  it("throws when the API returns a non-OK status", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: false,
+      status: 500,
+    } as Response);
+
+    await expect(reverseGeocodeNominatim(0, 0)).rejects.toThrow(
+      "Reverse geocoding request failed with status 500",
+    );
+  });
+
+  it("throws when the network request fails", async () => {
+    vi.spyOn(global, "fetch").mockRejectedValue(new Error("Network error"));
+
+    await expect(reverseGeocodeNominatim(0, 0)).rejects.toThrow(
+      "Failed to reach reverse geocoding service: Network error",
+    );
+  });
+});
+
+describe("reverseGeocode", () => {
+  it("delegates to reverseGeocodeNominatim", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        address: {
+          city: "Seattle",
+          state: "Washington",
+          country: "United States",
+          country_code: "us",
+        },
+      }),
+    } as Response);
+
+    const result = await reverseGeocode(47.60621, -122.33207);
+    expect(result).toBe("Seattle, WA");
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("nominatim.openstreetmap.org/reverse"),
+      expect.any(Object),
     );
   });
 });
