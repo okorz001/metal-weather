@@ -72,7 +72,7 @@ export default function LocationBar({
         </svg>
       </button>
 
-      <div className="min-w-0 flex-1 overflow-x-auto">
+      <div className="min-w-0 flex-1 overflow-x-auto text-center">
         <button
           onClick={onOpenModal}
           className="rounded px-1 text-lg font-semibold whitespace-nowrap hover:bg-zinc-200 dark:hover:bg-zinc-700"
