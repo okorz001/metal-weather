@@ -15,6 +15,7 @@ import HourlyForecast from "./HourlyForecast";
 import LocationBar from "./LocationBar";
 import LocationModal from "./LocationModal";
 import SongCard from "./SongCard";
+import Spinner from "./Spinner";
 import WeatherCard from "./WeatherCard";
 
 const typedCatalog = catalog as SongCatalog;
@@ -184,7 +185,7 @@ export default function HomeContent() {
         onSelectFavorite={handleSelectFavorite}
         onRemoveFavorite={(fav) => removeFavorite(fav.lat, fav.lon)}
       />
-      {loading && <div>Loading…</div>}
+      {loading && <Spinner />}
       {!loading && result?.ok === true && (
         <>
           <WeatherCard weather={result.weather} />

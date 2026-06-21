@@ -126,10 +126,10 @@ describe("HomeContent", () => {
         target: { value: "Seattle" },
       });
       fireEvent.click(screen.getByRole("button", { name: "Go" }));
-      expect(screen.getByText("Loading…")).toBeInTheDocument();
+      expect(document.querySelector(".animate-spin")).toBeInTheDocument();
       resolve();
       await waitFor(() =>
-        expect(screen.queryByText("Loading…")).not.toBeInTheDocument(),
+        expect(document.querySelector(".animate-spin")).not.toBeInTheDocument(),
       );
     });
   });
