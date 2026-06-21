@@ -84,6 +84,23 @@ the app.
 | Nominatim (OpenStreetMap) | City name / US zip code → lat/lon/displayName; lat/lon → display name |
 | Open-Meteo Forecast       | lat/lon → current weather + hourly 12-hour forecast                   |
 
+### URL Parameters
+
+The active location is stored in three query parameters. `lat` and `lon` are
+canonical — they drive the weather fetch directly. `name` is the human-readable
+display name shown in `LocationBar`.
+
+| Scenario                                  | Behavior                                                                                         |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `?name=Seattle&lat=47.6061&lon=-122.3328` | Fetches weather immediately using `lat`/`lon`; `name` shown as-is                                |
+| `?lat=47.6061&lon=-122.3328` (no `name`)  | Reverse geocodes coordinates to get a display name, then updates URL with `name` before fetching |
+| `?name=Seattle` (no `lat`/`lon`)          | Geocodes the name to get coordinates, then updates URL with `lat`/`lon` before fetching          |
+| No parameters                             | Opens the location search modal                                                                  |
+
+Every user action (text search, coordinate input, GPS, select favorite) writes
+all three parameters to the URL so the result is always bookmarkable and
+reloadable.
+
 ### API Call Flow by Input Type
 
 | User Action                           | API Calls                                              |
