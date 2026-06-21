@@ -49,7 +49,7 @@ export default function HomeContent() {
   const latStr = searchParams.get("lat") ?? "";
   const lonStr = searchParams.get("lon") ?? "";
 
-  const [inputValue, setInputValue] = useState(name);
+  const [inputValue, setInputValue] = useState("");
   const [result, setResult] = useState<WeatherResult | null>(null);
   const [loading, setLoading] = useState(!!(latStr && lonStr) || !!name);
   const [modalOpen, setModalOpen] = useState(!(latStr && lonStr) && !name);
@@ -106,7 +106,6 @@ export default function HomeContent() {
       router.replace(
         `/?name=${encodeURIComponent(resolvedName)}&lat=${lat}&lon=${lon}`,
       );
-      setInputValue(resolvedName);
     }
     await runSearch(lat, lon, resolvedName, id);
   }
@@ -127,7 +126,6 @@ export default function HomeContent() {
         // fall back to raw coordinate string
       }
       if (searchIdRef.current !== id) return;
-      setInputValue(displayName);
       skipUrlEffect.current = true;
       router.push(
         `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}`,
@@ -139,7 +137,6 @@ export default function HomeContent() {
     try {
       const { lat, lon, displayName } = await geocodeLocation(input);
       if (searchIdRef.current !== id) return;
-      setInputValue(displayName);
       skipUrlEffect.current = true;
       router.push(
         `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}`,
@@ -162,7 +159,6 @@ export default function HomeContent() {
       // fall back to raw coordinates
     }
     if (searchIdRef.current !== id) return;
-    setInputValue(displayName);
     skipUrlEffect.current = true;
     router.push(
       `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}`,
@@ -194,7 +190,6 @@ export default function HomeContent() {
     const id = ++searchIdRef.current;
     setLoading(true);
     setResult(null);
-    setInputValue(loc.displayName);
     skipUrlEffect.current = true;
     router.push(
       `/?name=${encodeURIComponent(loc.displayName)}&lat=${loc.lat}&lon=${loc.lon}`,
@@ -214,7 +209,6 @@ export default function HomeContent() {
         // fall back to raw coordinate string
       }
       if (searchIdRef.current !== id) return;
-      setInputValue(displayName);
       skipUrlEffect.current = true;
       router.replace(
         `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}`,
@@ -226,7 +220,6 @@ export default function HomeContent() {
     try {
       const { lat, lon, displayName } = await geocodeLocation(inputName);
       if (searchIdRef.current !== id) return;
-      setInputValue(displayName);
       skipUrlEffect.current = true;
       router.replace(
         `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}`,
