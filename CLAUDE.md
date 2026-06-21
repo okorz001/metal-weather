@@ -24,6 +24,8 @@ Always verify `npm run verify` passes before proposing a code change.
 
 When adding a GitHub Actions action, use the same version already used by other jobs in the workflow files if it exists. Only when introducing an action not yet used anywhere should you look up and use its latest stable release.
 
+Never rebase or force push a branch that currently has an open PR.
+
 ## Project Docs
 
 Keep `docs/project.md` up to date whenever a feature is added, removed, or significantly changed. Update the relevant sections (What the App Does, Components table, External APIs, data types) as part of the same change that implements the feature.
