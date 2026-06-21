@@ -76,7 +76,7 @@ describe("LocationModal favorites list", () => {
 
   it("calls onSelectFavorite and onClose when a favorite name is clicked", () => {
     const { props } = renderModal({ favorites: [SEATTLE] });
-    fireEvent.click(screen.getByRole("button", { name: "Seattle, WA, US" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Seattle, WA, US/ }));
     expect(props.onSelectFavorite).toHaveBeenCalledWith(SEATTLE);
     expect(props.onClose).toHaveBeenCalledTimes(1);
   });

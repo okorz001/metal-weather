@@ -260,7 +260,7 @@ describe("HomeContent", () => {
       await waitFor(() =>
         expect(screen.getByText("Seattle, WA, US")).toBeInTheDocument(),
       );
-      fireEvent.click(screen.getByRole("button", { name: "Seattle, WA, US" }));
+      fireEvent.click(screen.getByRole("button", { name: /^Seattle, WA, US/ }));
       await waitFor(() =>
         expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
       );
