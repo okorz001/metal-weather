@@ -10,18 +10,19 @@ describe("geocodeLocation", () => {
   it("returns lat, lon, and displayName on success", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
-      json: async () => ({
-        results: [
-          {
-            latitude: 47.60621,
-            longitude: -122.33207,
-            name: "Seattle",
-            admin1: "Washington",
-            country: "United States of America (the)",
-            country_code: "US",
+      json: async () => [
+        {
+          lat: "47.60621",
+          lon: "-122.33207",
+          name: "Seattle",
+          address: {
+            city: "Seattle",
+            state: "Washington",
+            country: "United States",
+            country_code: "us",
           },
-        ],
-      }),
+        },
+      ],
     } as Response);
 
     const result = await geocodeLocation("Seattle");
@@ -32,12 +33,17 @@ describe("geocodeLocation", () => {
     });
   });
 
-  it("omits missing admin1/country fields from displayName", async () => {
+  it("omits missing state/country fields from displayName", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
-      json: async () => ({
-        results: [{ latitude: 51.5074, longitude: -0.1278, name: "London" }],
-      }),
+      json: async () => [
+        {
+          lat: "51.5074",
+          lon: "-0.1278",
+          name: "London",
+          address: { city: "London" },
+        },
+      ],
     } as Response);
 
     const result = await geocodeLocation("London");
@@ -47,26 +53,30 @@ describe("geocodeLocation", () => {
   it("picks the matching result when a qualifier is provided", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
-      json: async () => ({
-        results: [
-          {
-            latitude: 9.9281,
-            longitude: -84.0907,
-            name: "San José",
-            admin1: "San José Province",
+      json: async () => [
+        {
+          lat: "9.9281",
+          lon: "-84.0907",
+          name: "San José",
+          address: {
+            city: "San José",
+            state: "San José Province",
             country: "Costa Rica",
-            country_code: "CR",
+            country_code: "cr",
           },
-          {
-            latitude: 37.3382,
-            longitude: -121.8863,
-            name: "San Jose",
-            admin1: "California",
+        },
+        {
+          lat: "37.3382",
+          lon: "-121.8863",
+          name: "San Jose",
+          address: {
+            city: "San Jose",
+            state: "California",
             country: "United States",
-            country_code: "US",
+            country_code: "us",
           },
-        ],
-      }),
+        },
+      ],
     } as Response);
 
     const result = await geocodeLocation("San Jose, CA");
@@ -80,26 +90,30 @@ describe("geocodeLocation", () => {
   it("prefers exact name match over higher-ranked result with different name", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
-      json: async () => ({
-        results: [
-          {
-            latitude: 39.9,
-            longitude: -84.2,
-            name: "Venice Township",
-            admin1: "Ohio",
+      json: async () => [
+        {
+          lat: "39.9",
+          lon: "-84.2",
+          name: "Venice Township",
+          address: {
+            city: "Venice Township",
+            state: "Ohio",
             country: "United States",
-            country_code: "US",
+            country_code: "us",
           },
-          {
-            latitude: 45.4375,
-            longitude: 12.3358,
-            name: "Venice",
-            admin1: "Veneto",
+        },
+        {
+          lat: "45.4375",
+          lon: "12.3358",
+          name: "Venice",
+          address: {
+            city: "Venice",
+            state: "Veneto",
             country: "Italy",
-            country_code: "IT",
+            country_code: "it",
           },
-        ],
-      }),
+        },
+      ],
     } as Response);
 
     const result = await geocodeLocation("Venice");
@@ -113,26 +127,30 @@ describe("geocodeLocation", () => {
   it("applies qualifier filtering within exact name matches", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
-      json: async () => ({
-        results: [
-          {
-            latitude: 45.4375,
-            longitude: 12.3358,
-            name: "Venice",
-            admin1: "Veneto",
+      json: async () => [
+        {
+          lat: "45.4375",
+          lon: "12.3358",
+          name: "Venice",
+          address: {
+            city: "Venice",
+            state: "Veneto",
             country: "Italy",
-            country_code: "IT",
+            country_code: "it",
           },
-          {
-            latitude: 33.985,
-            longitude: -118.472,
-            name: "Venice",
-            admin1: "California",
+        },
+        {
+          lat: "33.985",
+          lon: "-118.472",
+          name: "Venice",
+          address: {
+            city: "Venice",
+            state: "California",
             country: "United States",
-            country_code: "US",
+            country_code: "us",
           },
-        ],
-      }),
+        },
+      ],
     } as Response);
 
     const result = await geocodeLocation("Venice, CA");
@@ -146,18 +164,19 @@ describe("geocodeLocation", () => {
   it("falls back to first result when qualifier matches nothing", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
-      json: async () => ({
-        results: [
-          {
-            latitude: 47.60621,
-            longitude: -122.33207,
-            name: "Springfield",
-            admin1: "Oregon",
+      json: async () => [
+        {
+          lat: "47.60621",
+          lon: "-122.33207",
+          name: "Springfield",
+          address: {
+            city: "Springfield",
+            state: "Oregon",
             country: "United States",
-            country_code: "US",
+            country_code: "us",
           },
-        ],
-      }),
+        },
+      ],
     } as Response);
 
     const result = await geocodeLocation("Springfield, ZZ");
@@ -167,18 +186,7 @@ describe("geocodeLocation", () => {
   it("throws when results array is empty", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
-      json: async () => ({ results: [] }),
-    } as Response);
-
-    await expect(geocodeLocation("NoSuchPlace")).rejects.toThrow(
-      'Location not found: "NoSuchPlace"',
-    );
-  });
-
-  it("throws when results field is absent", async () => {
-    vi.spyOn(global, "fetch").mockResolvedValue({
-      ok: true,
-      json: async () => ({}),
+      json: async () => [],
     } as Response);
 
     await expect(geocodeLocation("NoSuchPlace")).rejects.toThrow(
@@ -202,6 +210,94 @@ describe("geocodeLocation", () => {
 
     await expect(geocodeLocation("Seattle")).rejects.toThrow(
       "Failed to reach geocoding service: Network error",
+    );
+  });
+});
+
+describe("geocodeLocation zip code", () => {
+  it("returns suburb as displayName when available", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [
+        {
+          lat: "37.255",
+          lon: "-121.892",
+          address: {
+            suburb: "Willow Glen",
+            state: "California",
+            country: "United States",
+            country_code: "us",
+          },
+        },
+      ],
+    } as Response);
+
+    const result = await geocodeLocation("95124");
+    expect(result).toEqual({
+      lat: 37.255,
+      lon: -121.892,
+      displayName: "Willow Glen, CA",
+    });
+  });
+
+  it("falls back to city when no suburb is present", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [
+        {
+          lat: "37.255",
+          lon: "-121.892",
+          address: {
+            city: "San Jose",
+            state: "California",
+            country: "United States",
+            country_code: "us",
+          },
+        },
+      ],
+    } as Response);
+
+    const result = await geocodeLocation("95124");
+    expect(result.displayName).toBe("San Jose, CA");
+  });
+
+  it("falls back to the zip string when no area name is resolvable", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [{ lat: "37.255", lon: "-121.892" }],
+    } as Response);
+
+    const result = await geocodeLocation("95124");
+    expect(result.displayName).toBe("95124");
+  });
+
+  it("throws when results array is empty", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    } as Response);
+
+    await expect(geocodeLocation("95124")).rejects.toThrow(
+      'Location not found: "95124"',
+    );
+  });
+
+  it("throws when the API returns a non-OK status", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: false,
+      status: 503,
+    } as Response);
+
+    await expect(geocodeLocation("95124")).rejects.toThrow(
+      "Geocoding request failed with status 503",
+    );
+  });
+
+  it("throws when the network request fails", async () => {
+    vi.spyOn(global, "fetch").mockRejectedValue(new Error("timeout"));
+
+    await expect(geocodeLocation("95124")).rejects.toThrow(
+      "Failed to reach geocoding service: timeout",
     );
   });
 });
