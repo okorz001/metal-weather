@@ -6,14 +6,14 @@ import {
   isFavorite,
   removeFavorite,
 } from "./favorites";
-import type { Favorite } from "./types";
+import type { Location } from "./types";
 
-const SEATTLE: Favorite = {
+const SEATTLE: Location = {
   displayName: "Seattle, WA, US",
   lat: 47.6,
   lon: -122.3,
 };
-const TOKYO: Favorite = {
+const TOKYO: Location = {
   displayName: "Tokyo, Japan",
   lat: 35.6895,
   lon: 139.6917,

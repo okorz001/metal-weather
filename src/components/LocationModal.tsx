@@ -1,6 +1,6 @@
 "use client";
 
-import type { Favorite } from "@/lib/types";
+import type { Location } from "@/lib/types";
 
 import LocationSearch from "./LocationSearch";
 
@@ -40,9 +40,9 @@ export default function LocationModal({
   onChange: (value: string) => void;
   onSearch: (location: string) => void;
   disabled?: boolean;
-  favorites: Favorite[];
-  onSelectFavorite: (fav: Favorite) => void;
-  onRemoveFavorite: (fav: Favorite) => void;
+  favorites: Location[];
+  onSelectFavorite: (fav: Location) => void;
+  onRemoveFavorite: (fav: Location) => void;
 }) {
   if (!open) return null;
 

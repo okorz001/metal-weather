@@ -119,13 +119,16 @@ export interface WeatherData {
 }
 
 /**
- * A saved favorite location.
+ * A resolved location with coordinates and a human-readable display name.
+ *
+ * Used both for saved favorites and as the canonical location type throughout
+ * the app. Coordinates are the primary data; the display name is for rendering.
  *
  * @param displayName - Human-readable location name as returned by geocoding.
- * @param lat - Latitude in decimal degrees, stored to avoid re-geocoding.
- * @param lon - Longitude in decimal degrees, stored to avoid re-geocoding.
+ * @param lat - Latitude in decimal degrees.
+ * @param lon - Longitude in decimal degrees.
  */
-export interface Favorite {
+export interface Location {
   displayName: string;
   lat: number;
   lon: number;
