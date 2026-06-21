@@ -36,7 +36,7 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
 
   return (
     <div className="rounded-lg bg-zinc-50 p-2 text-zinc-900 dark:bg-zinc-900 dark:text-white">
-      <div className="grid grid-cols-[auto_auto] justify-around place-items-center gap-y-2">
+      <div className="grid grid-cols-[auto_auto] place-items-center justify-around gap-y-2">
         {/* -mb-8 compensates for extra whitespace below glyphs in the serif font */}
         <div className="-mb-4 font-serif text-8xl leading-none">
           {displayTemp}
