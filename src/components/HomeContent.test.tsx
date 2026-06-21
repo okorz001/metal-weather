@@ -74,6 +74,22 @@ describe("HomeContent", () => {
     expect(screen.queryByText("The Wicker Man")).not.toBeInTheDocument();
   });
 
+  it("auto-searches when only ?name= param is present on mount", async () => {
+    vi.mocked(useSearchParams).mockReturnValue(
+      new URLSearchParams("name=Seattle"),
+    );
+    renderHome();
+    await waitFor(() =>
+      expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
+    );
+    expect(geocodeModule.geocodeLocation).toHaveBeenCalledWith("Seattle");
+    expect(weatherModule.fetchWeather).toHaveBeenCalledWith(
+      47.6,
+      -122.3,
+      "Seattle, WA, US",
+    );
+  });
+
   it("auto-searches when ?lat= and ?lon= params are present on mount", async () => {
     vi.mocked(useSearchParams).mockReturnValue(
       new URLSearchParams("name=Seattle%2C+WA%2C+US&lat=47.6&lon=-122.3"),
