@@ -7,6 +7,7 @@ import * as songsModule from "@/lib/songs";
 import type { Song, WeatherData } from "@/lib/types";
 import * as weatherModule from "@/lib/weather";
 
+import { FavoritesProvider } from "./FavoritesContext";
 import HomeContent from "./HomeContent";
 
 vi.mock("next/navigation", () => ({
@@ -41,6 +42,7 @@ const mockErrorSong: Song = { title: "The Wicker Man", artist: "Iron Maiden" };
 
 beforeEach(() => {
   vi.clearAllMocks();
+  localStorage.removeItem("favorites");
   vi.mocked(useSearchParams).mockReturnValue(new URLSearchParams());
   vi.mocked(useRouter).mockReturnValue({
     push: vi.fn(),
@@ -56,9 +58,17 @@ beforeEach(() => {
   vi.mocked(songsModule.pickErrorSong).mockReturnValue(mockErrorSong);
 });
 
+function renderHome() {
+  return render(
+    <FavoritesProvider>
+      <HomeContent />
+    </FavoritesProvider>,
+  );
+}
+
 describe("HomeContent", () => {
   it("renders the search input on initial load with no result", () => {
-    render(<HomeContent />);
+    renderHome();
     expect(screen.getByPlaceholderText("City name")).toBeInTheDocument();
     expect(screen.queryByText("Raining Blood")).not.toBeInTheDocument();
     expect(screen.queryByText("The Wicker Man")).not.toBeInTheDocument();
@@ -68,7 +78,7 @@ describe("HomeContent", () => {
     vi.mocked(useSearchParams).mockReturnValue(
       new URLSearchParams("q=Seattle"),
     );
-    render(<HomeContent />);
+    renderHome();
     await waitFor(() =>
       expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
     );
@@ -77,7 +87,7 @@ describe("HomeContent", () => {
 
   describe("manual city search", () => {
     it("searches and renders WeatherCard on submit", async () => {
-      render(<HomeContent />);
+      renderHome();
       fireEvent.change(screen.getByPlaceholderText("City name"), {
         target: { value: "Tokyo" },
       });
@@ -92,7 +102,7 @@ describe("HomeContent", () => {
       vi.mocked(geocodeModule.geocodeLocation).mockRejectedValue(
         new Error("Location not found"),
       );
-      render(<HomeContent />);
+      renderHome();
       fireEvent.change(screen.getByPlaceholderText("City name"), {
         target: { value: "?????" },
       });
@@ -111,7 +121,7 @@ describe("HomeContent", () => {
             r({ lat: 47.6, lon: -122.3, displayName: "Seattle, WA, US" });
         }),
       );
-      render(<HomeContent />);
+      renderHome();
       fireEvent.change(screen.getByPlaceholderText("City name"), {
         target: { value: "Seattle" },
       });
@@ -121,6 +131,58 @@ describe("HomeContent", () => {
       await waitFor(() =>
         expect(screen.queryByText("Loading…")).not.toBeInTheDocument(),
       );
+    });
+  });
+
+  describe("favorites", () => {
+    async function searchSeattle() {
+      renderHome();
+      fireEvent.change(screen.getByPlaceholderText("City name"), {
+        target: { value: "Seattle" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: "Go" }));
+      await waitFor(() =>
+        expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
+      );
+    }
+
+    it("clicking bookmark after a successful search adds the location to favorites", async () => {
+      await searchSeattle();
+      fireEvent.click(screen.getByRole("button", { name: "Add to favorites" }));
+      const stored = JSON.parse(localStorage.getItem("favorites") ?? "[]");
+      expect(stored).toHaveLength(1);
+      expect(stored[0].displayName).toBe("Seattle, WA, US");
+    });
+
+    it("clicking bookmark again removes the location from favorites", async () => {
+      await searchSeattle();
+      fireEvent.click(screen.getByRole("button", { name: "Add to favorites" }));
+      fireEvent.click(
+        screen.getByRole("button", { name: "Remove from favorites" }),
+      );
+      const stored = JSON.parse(localStorage.getItem("favorites") ?? "[]");
+      expect(stored).toHaveLength(0);
+    });
+
+    it("selecting a favorite navigates without calling geocodeLocation", async () => {
+      localStorage.setItem(
+        "favorites",
+        JSON.stringify([
+          { displayName: "Seattle, WA, US", lat: 47.6, lon: -122.3 },
+        ]),
+      );
+      renderHome();
+      fireEvent.click(
+        screen.getByRole("button", { name: "Search for a city…" }),
+      );
+      await waitFor(() =>
+        expect(screen.getByText("Seattle, WA, US")).toBeInTheDocument(),
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Seattle, WA, US" }));
+      await waitFor(() =>
+        expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
+      );
+      expect(geocodeModule.geocodeLocation).not.toHaveBeenCalled();
     });
   });
 });

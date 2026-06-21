@@ -6,10 +6,11 @@ import { useEffect, useRef, useState } from "react";
 import catalog from "@/data/songs.json";
 import { geocodeLocation, reverseGeocode } from "@/lib/geocode";
 import { pickErrorSong, pickSong } from "@/lib/songs";
-import type { SongCatalog, WeatherResult } from "@/lib/types";
+import type { Favorite, SongCatalog, WeatherResult } from "@/lib/types";
 import { fetchWeather } from "@/lib/weather";
 
 import ErrorCard from "./ErrorCard";
+import { useFavorites } from "./FavoritesContext";
 import HourlyForecast from "./HourlyForecast";
 import LocationBar from "./LocationBar";
 import LocationModal from "./LocationModal";
@@ -43,6 +44,12 @@ export default function HomeContent() {
   const [result, setResult] = useState<WeatherResult | null>(null);
   const [loading, setLoading] = useState(!!q);
   const [modalOpen, setModalOpen] = useState(!q);
+  const [currentCoords, setCurrentCoords] = useState<{
+    lat: number;
+    lon: number;
+  } | null>(null);
+
+  const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
 
   // Tracks the currently active search so stale responses are discarded.
   const searchIdRef = useRef(0);
@@ -61,6 +68,7 @@ export default function HomeContent() {
       if (searchIdRef.current !== id) return;
       const song = pickSong(typedCatalog, weather.status);
       setResult({ ok: true, weather, song });
+      setCurrentCoords({ lat, lon });
     } catch (e) {
       if (searchIdRef.current !== id) return;
       const message = e instanceof Error ? e.message : "An error occurred";
@@ -117,6 +125,29 @@ export default function HomeContent() {
     void runGeoSearch(lat, lon, id);
   }
 
+  function handleToggleFavorite() {
+    if (!currentCoords || !location) return;
+    if (isFavorite(currentCoords.lat, currentCoords.lon)) {
+      removeFavorite(currentCoords.lat, currentCoords.lon);
+    } else {
+      addFavorite({
+        displayName: location,
+        lat: currentCoords.lat,
+        lon: currentCoords.lon,
+      });
+    }
+  }
+
+  function handleSelectFavorite(fav: Favorite) {
+    const id = ++searchIdRef.current;
+    setLoading(true);
+    setResult(null);
+    setInputValue(fav.displayName);
+    skipQEffect.current = true;
+    router.push(`/?q=${encodeURIComponent(fav.displayName)}`);
+    void runSearch(fav.lat, fav.lon, fav.displayName, id);
+  }
+
   useEffect(() => {
     if (!q) return;
     if (skipQEffect.current) {
@@ -135,6 +166,12 @@ export default function HomeContent() {
         location={location}
         onOpenModal={() => setModalOpen(true)}
         onGeolocate={handleGeoSearch}
+        isFavorite={
+          currentCoords
+            ? isFavorite(currentCoords.lat, currentCoords.lon)
+            : false
+        }
+        onToggleFavorite={handleToggleFavorite}
       />
       <LocationModal
         open={modalOpen}
@@ -143,6 +180,9 @@ export default function HomeContent() {
         onChange={setInputValue}
         onSearch={handleSearch}
         disabled={loading}
+        favorites={favorites}
+        onSelectFavorite={handleSelectFavorite}
+        onRemoveFavorite={(fav) => removeFavorite(fav.lat, fav.lon)}
       />
       {loading && <div>Loading…</div>}
       {!loading && result?.ok === true && (
