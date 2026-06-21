@@ -192,6 +192,7 @@ interface BdcReverseResult {
 }
 
 interface OsmReverseResult {
+  error?: string;
   address?: {
     suburb?: string;
     neighbourhood?: string;
@@ -291,6 +292,10 @@ export async function reverseGeocodeOsm(
 
   const data = (await response.json()) as OsmReverseResult;
 
+  if (data.error) {
+    throw new Error(`Reverse geocoding failed: ${data.error}`);
+  }
+
   const area =
     data.address?.suburb ??
     data.address?.neighbourhood ??
@@ -300,12 +305,18 @@ export async function reverseGeocodeOsm(
 
   const countryCode = data.address?.country_code?.toUpperCase();
 
-  return formatDisplayName(
+  const displayName = formatDisplayName(
     area,
     data.address?.state,
     countryCode,
     data.address?.country,
   );
+
+  if (!displayName) {
+    throw new Error(`Location not found at ${lat},${lon}`);
+  }
+
+  return displayName;
 }
 
 /**

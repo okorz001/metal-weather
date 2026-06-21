@@ -471,6 +471,28 @@ describe("reverseGeocodeOsm", () => {
     expect(result).toBe("Issaquah, WA");
   });
 
+  it("throws when the response contains an error field", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({ error: "Unable to geocode" }),
+    } as Response);
+
+    await expect(reverseGeocodeOsm(0, 0)).rejects.toThrow(
+      "Reverse geocoding failed: Unable to geocode",
+    );
+  });
+
+  it("throws when no meaningful name can be derived from the address", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({ address: { road: "Kohnen-Traverse" } }),
+    } as Response);
+
+    await expect(reverseGeocodeOsm(-75, 0)).rejects.toThrow(
+      "Location not found at -75,0",
+    );
+  });
+
   it("throws when the API returns a non-OK status", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: false,
