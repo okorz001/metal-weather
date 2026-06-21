@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   geocodeLocation,
+  parseCoordinates,
   reverseGeocode,
   reverseGeocodeBdc,
   reverseGeocodeOsm,
@@ -9,6 +10,54 @@ import {
 
 beforeEach(() => {
   vi.restoreAllMocks();
+});
+
+describe("parseCoordinates", () => {
+  it("returns lat and lon for integer coordinates", () => {
+    expect(parseCoordinates("47,-122")).toEqual({ lat: 47, lon: -122 });
+  });
+
+  it("returns lat and lon for decimal coordinates", () => {
+    expect(parseCoordinates("47.6,-122.3")).toEqual({ lat: 47.6, lon: -122.3 });
+  });
+
+  it("accepts whitespace around the comma", () => {
+    expect(parseCoordinates(" 47.6 , -122.3 ")).toEqual({
+      lat: 47.6,
+      lon: -122.3,
+    });
+  });
+
+  it("accepts boundary values", () => {
+    expect(parseCoordinates("90,180")).toEqual({ lat: 90, lon: 180 });
+    expect(parseCoordinates("-90,-180")).toEqual({ lat: -90, lon: -180 });
+  });
+
+  it("returns null when latitude is out of range", () => {
+    expect(parseCoordinates("91,0")).toBeNull();
+    expect(parseCoordinates("-91,0")).toBeNull();
+  });
+
+  it("returns null when longitude is out of range", () => {
+    expect(parseCoordinates("0,181")).toBeNull();
+    expect(parseCoordinates("0,-181")).toBeNull();
+  });
+
+  it("returns null for a plain city name", () => {
+    expect(parseCoordinates("Seattle")).toBeNull();
+  });
+
+  it("returns null for a city name with qualifier", () => {
+    expect(parseCoordinates("San Jose, CA")).toBeNull();
+  });
+
+  it("returns null for a zip code", () => {
+    expect(parseCoordinates("95124")).toBeNull();
+  });
+
+  it("returns null for an empty string", () => {
+    expect(parseCoordinates("")).toBeNull();
+  });
 });
 
 describe("geocodeLocation", () => {

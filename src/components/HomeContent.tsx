@@ -4,7 +4,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import catalog from "@/data/songs.json";
-import { geocodeLocation, reverseGeocode } from "@/lib/geocode";
+import {
+  geocodeLocation,
+  parseCoordinates,
+  reverseGeocode,
+} from "@/lib/geocode";
 import { pickErrorSong, pickSong } from "@/lib/songs";
 import type { Favorite, SongCatalog, WeatherResult } from "@/lib/types";
 import { fetchWeather } from "@/lib/weather";
@@ -79,15 +83,35 @@ export default function HomeContent() {
     }
   }
 
+  function applyResolvedLocation(resolvedName: string, inputName: string) {
+    if (resolvedName !== inputName) {
+      skipQEffect.current = true;
+      router.replace(`/?q=${encodeURIComponent(resolvedName)}`);
+      setInputValue(resolvedName);
+    }
+  }
+
   async function runSearchFromQuery(location: string, id: number) {
+    const coords = parseCoordinates(location);
+    if (coords) {
+      const { lat, lon } = coords;
+      let displayName = location;
+      try {
+        const resolved = await reverseGeocode(lat, lon);
+        if (resolved) displayName = resolved;
+      } catch {
+        // fall back to raw coordinate string
+      }
+      if (searchIdRef.current !== id) return;
+      applyResolvedLocation(displayName, location);
+      await runSearch(lat, lon, displayName, id);
+      return;
+    }
+
     try {
       const { lat, lon, displayName } = await geocodeLocation(location);
       if (searchIdRef.current !== id) return;
-      if (displayName !== location) {
-        skipQEffect.current = true;
-        router.replace(`/?q=${encodeURIComponent(displayName)}`);
-        setInputValue(displayName);
-      }
+      applyResolvedLocation(displayName, location);
       await runSearch(lat, lon, displayName, id);
     } catch (e) {
       if (searchIdRef.current !== id) return;
@@ -108,7 +132,8 @@ export default function HomeContent() {
   async function runGeoSearch(lat: number, lon: number, id: number) {
     let displayName = `${lat},${lon}`;
     try {
-      displayName = await reverseGeocode(lat, lon);
+      const resolved = await reverseGeocode(lat, lon);
+      if (resolved) displayName = resolved;
     } catch {
       // fall back to raw coordinates
     }
