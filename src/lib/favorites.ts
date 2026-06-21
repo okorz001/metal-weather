@@ -1,11 +1,11 @@
-import type { Favorite } from "./types";
+import type { Location } from "./types";
 
 const KEY = "favorites";
 
 /** Tolerance for floating-point lat/lon comparison (≈11 m at equator). */
 const EPSILON = 0.0001;
 
-function coordsMatch(a: Favorite, lat: number, lon: number): boolean {
+function coordsMatch(a: Location, lat: number, lon: number): boolean {
   return Math.abs(a.lat - lat) < EPSILON && Math.abs(a.lon - lon) < EPSILON;
 }
 
@@ -15,11 +15,11 @@ function coordsMatch(a: Favorite, lat: number, lon: number): boolean {
  * @returns The list of favorites, or an empty array when none are saved or the
  *   stored data is malformed.
  */
-export function getFavorites(): Favorite[] {
+export function getFavorites(): Location[] {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return [];
-    return JSON.parse(raw) as Favorite[];
+    return JSON.parse(raw) as Location[];
   } catch {
     return [];
   }
@@ -33,7 +33,7 @@ export function getFavorites(): Favorite[] {
  *
  * @param fav - The location to save.
  */
-export function addFavorite(fav: Favorite): void {
+export function addFavorite(fav: Location): void {
   const current = getFavorites();
   if (current.some((f) => coordsMatch(f, fav.lat, fav.lon))) return;
   localStorage.setItem(KEY, JSON.stringify([...current, fav]));

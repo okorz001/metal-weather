@@ -10,7 +10,7 @@ import {
   reverseGeocode,
 } from "@/lib/geocode";
 import { pickErrorSong, pickSong } from "@/lib/songs";
-import type { Favorite, SongCatalog, WeatherResult } from "@/lib/types";
+import type { Location, SongCatalog, WeatherResult } from "@/lib/types";
 import { fetchWeather } from "@/lib/weather";
 
 import ErrorCard from "./ErrorCard";
@@ -27,13 +27,14 @@ const typedCatalog = catalog as SongCatalog;
 /**
  * The main application content component.
  *
- * Manages location search, weather fetching, and song selection. If `?q=` is
- * present in the URL on load, the search runs automatically. Otherwise the
- * location modal opens so the user can enter a city. Once a result is set the
- * modal closes and the user can reopen it by clicking the {@link LocationBar}.
- * The GPS button in {@link LocationBar} triggers geolocation directly without
- * opening the modal. Manages all search state and renders the appropriate
- * result cards.
+ * Manages location search, weather fetching, and song selection. If `?lat=` and
+ * `?lon=` are present in the URL on load, the weather fetch runs automatically
+ * using the optional `?name=` as the display name (reverse geocoding is used
+ * when `?name=` is absent). Otherwise the location modal opens so the user can
+ * enter a city. Once a result is set the modal closes and the user can reopen it
+ * by clicking the {@link LocationBar}. The GPS button in {@link LocationBar}
+ * triggers geolocation directly without opening the modal. Manages all search
+ * state and renders the appropriate result cards.
  *
  * Must be rendered inside a `<Suspense>` boundary because it uses
  * `useSearchParams`.
@@ -43,12 +44,14 @@ const typedCatalog = catalog as SongCatalog;
 export default function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const q = searchParams.get("q") ?? "";
+  const name = searchParams.get("name") ?? "";
+  const latStr = searchParams.get("lat") ?? "";
+  const lonStr = searchParams.get("lon") ?? "";
 
-  const [inputValue, setInputValue] = useState(q);
+  const [inputValue, setInputValue] = useState(name);
   const [result, setResult] = useState<WeatherResult | null>(null);
-  const [loading, setLoading] = useState(!!q);
-  const [modalOpen, setModalOpen] = useState(!q);
+  const [loading, setLoading] = useState(!!(latStr && lonStr));
+  const [modalOpen, setModalOpen] = useState(!(latStr && lonStr));
   const [currentCoords, setCurrentCoords] = useState<{
     lat: number;
     lon: number;
@@ -58,9 +61,9 @@ export default function HomeContent() {
 
   // Tracks the currently active search so stale responses are discarded.
   const searchIdRef = useRef(0);
-  // Set before a GPS-triggered router.push to prevent the useEffect from
-  // starting a redundant geocode call after the URL update.
-  const skipQEffect = useRef(false);
+  // Set before a handler-triggered router.push to prevent the useEffect from
+  // starting a redundant search after the URL update.
+  const skipUrlEffect = useRef(false);
 
   async function runSearch(
     lat: number,
@@ -83,19 +86,39 @@ export default function HomeContent() {
     }
   }
 
-  function applyResolvedLocation(resolvedName: string, inputName: string) {
-    if (resolvedName !== inputName) {
-      skipQEffect.current = true;
-      router.replace(`/?q=${encodeURIComponent(resolvedName)}`);
+  async function runSearchFromUrl(
+    lat: number,
+    lon: number,
+    displayName: string,
+    id: number,
+  ) {
+    let resolvedName = displayName;
+    if (!resolvedName) {
+      try {
+        const reversed = await reverseGeocode(lat, lon);
+        resolvedName = reversed ?? `${lat},${lon}`;
+      } catch {
+        resolvedName = `${lat},${lon}`;
+      }
+      if (searchIdRef.current !== id) return;
+      skipUrlEffect.current = true;
+      router.replace(
+        `/?name=${encodeURIComponent(resolvedName)}&lat=${lat}&lon=${lon}`,
+      );
       setInputValue(resolvedName);
     }
+    await runSearch(lat, lon, resolvedName, id);
   }
 
-  async function runSearchFromQuery(location: string, id: number) {
-    const coords = parseCoordinates(location);
+  async function handleSearch(input: string) {
+    const id = ++searchIdRef.current;
+    setLoading(true);
+    setResult(null);
+
+    const coords = parseCoordinates(input);
     if (coords) {
       const { lat, lon } = coords;
-      let displayName = location;
+      let displayName = input;
       try {
         const resolved = await reverseGeocode(lat, lon);
         if (resolved) displayName = resolved;
@@ -103,15 +126,23 @@ export default function HomeContent() {
         // fall back to raw coordinate string
       }
       if (searchIdRef.current !== id) return;
-      applyResolvedLocation(displayName, location);
+      setInputValue(displayName);
+      skipUrlEffect.current = true;
+      router.push(
+        `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}`,
+      );
       await runSearch(lat, lon, displayName, id);
       return;
     }
 
     try {
-      const { lat, lon, displayName } = await geocodeLocation(location);
+      const { lat, lon, displayName } = await geocodeLocation(input);
       if (searchIdRef.current !== id) return;
-      applyResolvedLocation(displayName, location);
+      setInputValue(displayName);
+      skipUrlEffect.current = true;
+      router.push(
+        `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}`,
+      );
       await runSearch(lat, lon, displayName, id);
     } catch (e) {
       if (searchIdRef.current !== id) return;
@@ -119,14 +150,6 @@ export default function HomeContent() {
       setResult({ ok: false, message, song: pickErrorSong(typedCatalog) });
       setLoading(false);
     }
-  }
-
-  function handleSearch(location: string) {
-    const id = ++searchIdRef.current;
-    setLoading(true);
-    setResult(null);
-    router.push(`/?q=${encodeURIComponent(location)}`);
-    void runSearchFromQuery(location, id);
   }
 
   async function runGeoSearch(lat: number, lon: number, id: number) {
@@ -139,8 +162,10 @@ export default function HomeContent() {
     }
     if (searchIdRef.current !== id) return;
     setInputValue(displayName);
-    skipQEffect.current = true;
-    router.push(`/?q=${encodeURIComponent(displayName)}`);
+    skipUrlEffect.current = true;
+    router.push(
+      `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}`,
+    );
     await runSearch(lat, lon, displayName, id);
   }
 
@@ -164,25 +189,32 @@ export default function HomeContent() {
     }
   }
 
-  function handleSelectFavorite(fav: Favorite) {
+  function handleSelectFavorite(loc: Location) {
     const id = ++searchIdRef.current;
     setLoading(true);
     setResult(null);
-    setInputValue(fav.displayName);
-    skipQEffect.current = true;
-    router.push(`/?q=${encodeURIComponent(fav.displayName)}`);
-    void runSearch(fav.lat, fav.lon, fav.displayName, id);
+    setInputValue(loc.displayName);
+    skipUrlEffect.current = true;
+    router.push(
+      `/?name=${encodeURIComponent(loc.displayName)}&lat=${loc.lat}&lon=${loc.lon}`,
+    );
+    void runSearch(loc.lat, loc.lon, loc.displayName, id);
   }
 
   useEffect(() => {
-    if (!q) return;
-    if (skipQEffect.current) {
-      skipQEffect.current = false;
+    if (!latStr || !lonStr) return;
+    const lat = parseFloat(latStr);
+    const lon = parseFloat(lonStr);
+    if (isNaN(lat) || isNaN(lon)) return;
+    if (skipUrlEffect.current) {
+      skipUrlEffect.current = false;
       return;
     }
     const id = ++searchIdRef.current;
-    void runSearchFromQuery(q, id);
-  }, [q]); // eslint-disable-line react-hooks/exhaustive-deps
+    setLoading(true);
+    setResult(null);
+    void runSearchFromUrl(lat, lon, name, id);
+  }, [latStr, lonStr, name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const location = result?.ok === true ? result.weather.displayName : null;
 

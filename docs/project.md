@@ -9,7 +9,9 @@ rain).
 ### What the App Does
 
 1. User searches for a city by name via the modal, or uses the GPS button in
-   `LocationBar` to detect their location via the browser Geolocation API.
+   `LocationBar` to detect their location via the browser Geolocation API. The
+   active location is reflected in the URL as
+   `?name=Seattle&lat=47.6061&lon=-122.3328`.
 2. Forward and reverse geocoding (city name / US zip code → lat/lon and GPS
    coordinates → display name) both use Nominatim (OpenStreetMap).
 3. Weather is fetched from Open-Meteo Forecast. The WMO weather code is mapped
@@ -52,9 +54,10 @@ high/low, all numeric fields provided in both metric and imperial units.
 Includes an `hourly` block with the next 12 hours of temperatures
 and `WeatherStatus` values pre-derived from WMO codes.
 
-**`Favorite`** (`src/lib/types.ts`) — a saved location with `displayName`,
-`lat`, and `lon`. Persisted as a JSON array under the `"favorites"`
-`localStorage` key.
+**`Location`** (`src/lib/types.ts`) — a resolved location with `displayName`,
+`lat`, and `lon`. Used for saved favorites (persisted as a JSON array under the
+`"favorites"` `localStorage` key) and as the canonical location type throughout
+the app.
 
 ### Components
 
@@ -83,12 +86,12 @@ and `WeatherStatus` values pre-derived from WMO codes.
 
 ### API Call Flow by Input Type
 
-| User Action                           | API Calls                                                 |
-| ------------------------------------- | --------------------------------------------------------- |
-| Type city name or zip code            | Nominatim → Open-Meteo                                    |
-| Type coordinates (e.g. `47.6,-122.3`) | BigDataCloud (reverse) → Open-Meteo                       |
-| GPS button                            | Browser Geolocation → BigDataCloud (reverse) → Open-Meteo |
-| Select saved favorite                 | Open-Meteo only                                           |
+| User Action                           | API Calls                                              |
+| ------------------------------------- | ------------------------------------------------------ |
+| Type city name or zip code            | Nominatim → Open-Meteo                                 |
+| Type coordinates (e.g. `47.6,-122.3`) | Nominatim (reverse) → Open-Meteo                       |
+| GPS button                            | Browser Geolocation → Nominatim (reverse) → Open-Meteo |
+| Select saved favorite                 | Open-Meteo only                                        |
 
 ### Song Catalog
 

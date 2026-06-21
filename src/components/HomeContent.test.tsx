@@ -74,15 +74,20 @@ describe("HomeContent", () => {
     expect(screen.queryByText("The Wicker Man")).not.toBeInTheDocument();
   });
 
-  it("auto-searches when ?q= param is present on mount", async () => {
+  it("auto-searches when ?lat= and ?lon= params are present on mount", async () => {
     vi.mocked(useSearchParams).mockReturnValue(
-      new URLSearchParams("q=Seattle"),
+      new URLSearchParams("name=Seattle%2C+WA%2C+US&lat=47.6&lon=-122.3"),
     );
     renderHome();
     await waitFor(() =>
       expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
     );
-    expect(geocodeModule.geocodeLocation).toHaveBeenCalledWith("Seattle");
+    expect(geocodeModule.geocodeLocation).not.toHaveBeenCalled();
+    expect(weatherModule.fetchWeather).toHaveBeenCalledWith(
+      47.6,
+      -122.3,
+      "Seattle, WA, US",
+    );
   });
 
   describe("manual city search", () => {
@@ -176,9 +181,10 @@ describe("HomeContent", () => {
       );
     });
 
-    it("auto-searches coordinates from ?q= param on mount", async () => {
+    it("auto-searches when only ?lat= and ?lon= are present, reverse geocodes for display name", async () => {
+      vi.mocked(geocodeModule.reverseGeocode).mockResolvedValue("Seattle, WA");
       vi.mocked(useSearchParams).mockReturnValue(
-        new URLSearchParams("q=47.6,-122.3"),
+        new URLSearchParams("lat=47.6&lon=-122.3"),
       );
       renderHome();
       await waitFor(() =>
@@ -186,6 +192,11 @@ describe("HomeContent", () => {
       );
       expect(geocodeModule.geocodeLocation).not.toHaveBeenCalled();
       expect(geocodeModule.reverseGeocode).toHaveBeenCalledWith(47.6, -122.3);
+      expect(weatherModule.fetchWeather).toHaveBeenCalledWith(
+        47.6,
+        -122.3,
+        "Seattle, WA",
+      );
     });
   });
 

@@ -13,7 +13,7 @@ import {
   isFavorite,
   removeFavorite,
 } from "@/lib/favorites";
-import type { Favorite } from "@/lib/types";
+import type { Location } from "@/lib/types";
 
 /**
  * Subscribes to `localStorage` changes via the `storage` window event.
@@ -27,7 +27,7 @@ function subscribe(callback: () => void): () => void {
 }
 
 let _cachedRaw: string | null = undefined!;
-let _cachedFavorites: Favorite[] = [];
+let _cachedFavorites: Location[] = [];
 
 /**
  * Returns the current favorites list from localStorage.
@@ -36,7 +36,7 @@ let _cachedFavorites: Favorite[] = [];
  * `useSyncExternalStore` receives a stable reference when nothing has changed,
  * preventing React from entering an infinite re-render loop.
  */
-function getFavoritesSnapshot(): Favorite[] {
+function getFavoritesSnapshot(): Location[] {
   const raw = localStorage.getItem("favorites");
   if (raw !== _cachedRaw) {
     _cachedRaw = raw;
@@ -45,16 +45,16 @@ function getFavoritesSnapshot(): Favorite[] {
   return _cachedFavorites;
 }
 
-const EMPTY_FAVORITES: Favorite[] = [];
+const EMPTY_FAVORITES: Location[] = [];
 
 /** Server snapshot: always empty so SSR output matches the default client state. */
-function getFavoritesServerSnapshot(): Favorite[] {
+function getFavoritesServerSnapshot(): Location[] {
   return EMPTY_FAVORITES;
 }
 
 interface FavoritesContextValue {
-  favorites: Favorite[];
-  addFavorite: (fav: Favorite) => void;
+  favorites: Location[];
+  addFavorite: (fav: Location) => void;
   removeFavorite: (lat: number, lon: number) => void;
   isFavorite: (lat: number, lon: number) => boolean;
 }
