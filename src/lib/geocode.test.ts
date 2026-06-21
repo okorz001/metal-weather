@@ -514,7 +514,7 @@ describe("reverseGeocodeOsm", () => {
 });
 
 describe("reverseGeocode", () => {
-  it("delegates to reverseGeocodeOsm", async () => {
+  it("returns OSM result when OSM succeeds", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -533,5 +533,37 @@ describe("reverseGeocode", () => {
       expect.stringContaining("nominatim.openstreetmap.org/reverse"),
       expect.any(Object),
     );
+  });
+
+  it("falls back to BDC when OSM fails", async () => {
+    vi.spyOn(global, "fetch")
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ error: "Unable to geocode" }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          city: "Seattle",
+          principalSubdivision: "Washington",
+          countryCode: "US",
+        }),
+      } as Response);
+
+    const result = await reverseGeocode(47.60621, -122.33207);
+    expect(result).toBe("Seattle, WA");
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("nominatim.openstreetmap.org/reverse"),
+      expect.any(Object),
+    );
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("bigdatacloud.net"),
+    );
+  });
+
+  it("throws when both OSM and BDC fail", async () => {
+    vi.spyOn(global, "fetch").mockRejectedValue(new Error("Network error"));
+
+    await expect(reverseGeocode(0, 0)).rejects.toThrow("Network error");
   });
 });

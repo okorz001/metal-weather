@@ -322,9 +322,8 @@ export async function reverseGeocodeOsm(
 /**
  * Resolves geographic coordinates to a human-readable location name.
  *
- * Delegates to {@link reverseGeocodeOsm}. Throws a descriptive error if
- * the request fails or returns a non-OK status; callers should fall back to
- * raw coordinate strings on failure.
+ * Tries {@link reverseGeocodeOsm} first; falls back to {@link reverseGeocodeBdc}
+ * if OSM fails for any reason. Throws if both fail.
  *
  * @param lat - The latitude in decimal degrees.
  * @param lon - The longitude in decimal degrees.
@@ -334,5 +333,9 @@ export async function reverseGeocode(
   lat: number,
   lon: number,
 ): Promise<string> {
-  return reverseGeocodeOsm(lat, lon);
+  try {
+    return await reverseGeocodeOsm(lat, lon);
+  } catch {
+    return reverseGeocodeBdc(lat, lon);
+  }
 }
