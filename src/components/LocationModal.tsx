@@ -83,9 +83,7 @@ export default function LocationModal({
       <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-2 pt-16">
         <div className="w-full max-w-lg rounded-lg bg-white p-4 shadow-xl dark:bg-zinc-800">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="font-bold text-zinc-900 dark:text-white">
-              Search Location
-            </h2>
+            <h2 className="font-bold text-zinc-900 dark:text-white">Search</h2>
             <button
               onClick={onClose}
               aria-label="Close"
@@ -104,12 +102,12 @@ export default function LocationModal({
               </svg>
             </button>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex gap-2">
             <button
               onClick={handleGpsClick}
               disabled={geoStatus === "loading" || disabled}
               aria-label="Detect my location"
-              className="shrink-0 rounded p-2 text-zinc-900 hover:bg-zinc-200 disabled:opacity-50 dark:text-white dark:hover:bg-zinc-700"
+              className="flex shrink-0 items-center justify-center rounded-lg px-2 text-zinc-900 hover:bg-zinc-200 disabled:opacity-50 dark:text-white dark:hover:bg-zinc-700"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -124,16 +122,18 @@ export default function LocationModal({
                 <circle cx="12" cy="10" r="3" />
               </svg>
             </button>
-            <LocationSearch
-              value={value}
-              onChange={onChange}
-              onSearch={handleSearch}
-              disabled={disabled}
-            />
+            <div className="min-w-0 flex-1">
+              <LocationSearch
+                value={value}
+                onChange={onChange}
+                onSearch={handleSearch}
+                disabled={disabled}
+              />
+            </div>
           </div>
           {favorites.length > 0 && (
             <div className="mt-3 border-t border-zinc-200 pt-3 dark:border-zinc-700">
-              <p className="mb-1 text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
+              <p className="mb-1 font-bold text-zinc-900 dark:text-white">
                 Favorites
               </p>
               <ul>
