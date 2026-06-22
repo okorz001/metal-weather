@@ -10,6 +10,7 @@
  *
  * @param location - The current location name, or `null` when no location is set.
  * @param coords - The current coordinates, or `null` when no location is set.
+ * @param loading - Whether a location search is in progress.
  * @param onOpenModal - Called when the location name area is clicked.
  * @param isFavorite - Whether the current location is saved as a favorite.
  * @param onToggleFavorite - Called when the bookmark button is clicked.
@@ -18,12 +19,14 @@
 export default function LocationBar({
   location,
   coords = null,
+  loading = false,
   onOpenModal,
   isFavorite,
   onToggleFavorite,
 }: {
   location: string | null;
   coords?: { lat: number; lon: number } | null;
+  loading?: boolean;
   onOpenModal: () => void;
   isFavorite: boolean;
   onToggleFavorite: () => void;
@@ -41,10 +44,12 @@ export default function LocationBar({
         >
           <div className="text-lg font-semibold whitespace-nowrap">
             {location ?? (
-              <span className="text-zinc-500">Search for a city…</span>
+              <span className="text-zinc-500">
+                {loading ? "Loading…" : "Enter a location…"}
+              </span>
             )}
           </div>
-          {coords && (
+          {location && coords && (
             <div className="text-xs text-zinc-500 dark:text-zinc-400">
               {coords.lat.toFixed(4)}, {coords.lon.toFixed(4)}
             </div>

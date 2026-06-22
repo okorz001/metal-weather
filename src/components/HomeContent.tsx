@@ -53,10 +53,7 @@ export default function HomeContent() {
   const [result, setResult] = useState<WeatherResult | null>(null);
   const [loading, setLoading] = useState(!!(latStr && lonStr) || !!name);
   const [modalOpen, setModalOpen] = useState(!(latStr && lonStr) && !name);
-  const [currentCoords, setCurrentCoords] = useState<{
-    lat: number;
-    lon: number;
-  } | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
 
   const { favorites, addFavorite, removeFavorite, renameFavorite, isFavorite } =
     useFavorites();
@@ -78,7 +75,7 @@ export default function HomeContent() {
       if (searchIdRef.current !== id) return;
       const song = pickSong(typedCatalog, weather.status);
       setResult({ ok: true, weather, song });
-      setCurrentCoords({ lat, lon });
+      setCurrentLocation({ displayName, lat, lon });
     } catch (e) {
       if (searchIdRef.current !== id) return;
       const message = e instanceof Error ? e.message : "An error occurred";
@@ -115,6 +112,7 @@ export default function HomeContent() {
     const id = ++searchIdRef.current;
     setLoading(true);
     setResult(null);
+    setCurrentLocation(null);
 
     const coords = parseCoordinates(input);
     if (coords) {
@@ -171,18 +169,19 @@ export default function HomeContent() {
     const id = ++searchIdRef.current;
     setLoading(true);
     setResult(null);
+    setCurrentLocation(null);
     void runGeoSearch(lat, lon, id);
   }
 
   function handleToggleFavorite() {
-    if (!currentCoords || !location) return;
-    if (isFavorite(currentCoords.lat, currentCoords.lon)) {
-      removeFavorite(currentCoords.lat, currentCoords.lon);
+    if (!currentLocation) return;
+    if (isFavorite(currentLocation.lat, currentLocation.lon)) {
+      removeFavorite(currentLocation.lat, currentLocation.lon);
     } else {
       addFavorite({
-        displayName: location,
-        lat: currentCoords.lat,
-        lon: currentCoords.lon,
+        displayName: currentLocation.displayName,
+        lat: currentLocation.lat,
+        lon: currentLocation.lon,
       });
     }
   }
@@ -191,6 +190,7 @@ export default function HomeContent() {
     const id = ++searchIdRef.current;
     setLoading(true);
     setResult(null);
+    setCurrentLocation(loc);
     skipUrlEffect.current = true;
     router.push(
       `/?name=${encodeURIComponent(loc.displayName)}&lat=${loc.lat}&lon=${loc.lon}`,
@@ -246,6 +246,7 @@ export default function HomeContent() {
     const id = ++searchIdRef.current;
     setLoading(true);
     setResult(null);
+    setCurrentLocation(name ? { displayName: name, lat, lon } : null);
     void runSearchFromUrl(lat, lon, name, id);
   }, [latStr, lonStr, name]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -258,20 +259,20 @@ export default function HomeContent() {
     const id = ++searchIdRef.current;
     setLoading(true);
     setResult(null);
+    setCurrentLocation(null);
     void runSearchFromName(name, id);
   }, [latStr, lonStr, name]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const location = result?.ok === true ? result.weather.displayName : null;
 
   return (
     <div className="mt-2 w-full max-w-3xl space-y-2">
       <LocationBar
-        location={location}
-        coords={currentCoords}
+        location={currentLocation?.displayName ?? null}
+        coords={currentLocation}
+        loading={loading}
         onOpenModal={() => setModalOpen(true)}
         isFavorite={
-          currentCoords
-            ? isFavorite(currentCoords.lat, currentCoords.lon)
+          currentLocation
+            ? isFavorite(currentLocation.lat, currentLocation.lon)
             : false
         }
         onToggleFavorite={handleToggleFavorite}
