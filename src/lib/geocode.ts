@@ -56,6 +56,23 @@ const US_STATES: Record<string, string> = {
   Wyoming: "WY",
 };
 
+/**
+ * Normalizes a string for case- and accent-insensitive comparison.
+ *
+ * Lowercases the input and strips combining diacritical marks (e.g. accents)
+ * so that values like `"San José"` and `"San Jose"` compare as equal. This
+ * lets name and qualifier matching succeed regardless of accent usage.
+ *
+ * @param value - The string to normalize.
+ * @returns The lowercased, accent-stripped form of the input.
+ */
+function normalize(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
+}
+
 function formatDisplayName(
   city: string | undefined,
   subdivision: string | undefined,
@@ -158,13 +175,13 @@ export async function geocodeLocation(
   }
 
   const matches = (field: string, q: string) => {
-    const f = field.toLowerCase();
-    const lq = q.toLowerCase();
+    const f = normalize(field);
+    const lq = normalize(q);
     return f === lq || f.split(/\s+/).some((word) => word.startsWith(lq));
   };
 
   const nameMatches = data.filter(
-    (r) => r.name?.toLowerCase() === cityName.toLowerCase(),
+    (r) => r.name && normalize(r.name) === normalize(cityName),
   );
   const pool = nameMatches.length > 0 ? nameMatches : data;
 

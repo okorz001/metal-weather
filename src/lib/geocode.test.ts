@@ -141,6 +141,43 @@ describe("geocodeLocation", () => {
     });
   });
 
+  it("matches a qualifier against an accented result name", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [
+        {
+          lat: "37.3382",
+          lon: "-121.8863",
+          name: "San Jose",
+          address: {
+            city: "San Jose",
+            state: "California",
+            country: "United States",
+            country_code: "us",
+          },
+        },
+        {
+          lat: "9.9281",
+          lon: "-84.0907",
+          name: "San José",
+          address: {
+            city: "San José",
+            state: "San José Province",
+            country: "Costa Rica",
+            country_code: "cr",
+          },
+        },
+      ],
+    } as Response);
+
+    const result = await geocodeLocation("San Jose, Costa Rica");
+    expect(result).toEqual({
+      lat: 9.9281,
+      lon: -84.0907,
+      displayName: "San José, Costa Rica",
+    });
+  });
+
   it("prefers exact name match over higher-ranked result with different name", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
