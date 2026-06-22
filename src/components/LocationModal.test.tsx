@@ -25,6 +25,7 @@ function renderModal(
     value: "",
     onChange: vi.fn(),
     onSearch: vi.fn(),
+    onGeolocate: vi.fn(),
     favorites: [],
     onSelectFavorite: vi.fn(),
     onRemoveFavorite: vi.fn(),

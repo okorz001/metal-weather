@@ -1,20 +1,16 @@
 "use client";
 
-import { useState } from "react";
-
 /**
  * A three-zone horizontal bar for displaying and changing the active location.
  *
- * The GPS icon button on the left triggers the browser Geolocation API
- * directly and calls `onGeolocate` with the coordinates on success. The center
- * shows the current location name (or a placeholder) and is clickable to open
- * the search modal. The bookmark icon on the right adds or removes the current
- * location from favorites; it is disabled when no location is loaded.
+ * The center shows the current location name (or a placeholder) and is
+ * clickable to open the search modal. The bookmark icon on the right adds or
+ * removes the current location from favorites; it is disabled when no location
+ * is loaded.
  *
  * @param location - The current location name, or `null` when no location is set.
  * @param coords - The current coordinates, or `null` when no location is set.
  * @param onOpenModal - Called when the location name area is clicked.
- * @param onGeolocate - Called with latitude and longitude when GPS succeeds.
  * @param isFavorite - Whether the current location is saved as a favorite.
  * @param onToggleFavorite - Called when the bookmark button is clicked.
  * @returns The rendered location bar element.
@@ -23,58 +19,21 @@ export default function LocationBar({
   location,
   coords = null,
   onOpenModal,
-  onGeolocate,
   isFavorite,
   onToggleFavorite,
 }: {
   location: string | null;
   coords?: { lat: number; lon: number } | null;
   onOpenModal: () => void;
-  onGeolocate: (lat: number, lon: number) => void;
   isFavorite: boolean;
   onToggleFavorite: () => void;
 }) {
-  const [geoStatus, setGeoStatus] = useState<"idle" | "loading">("idle");
-
-  function handleGpsClick() {
-    if (!navigator.geolocation) return;
-    setGeoStatus("loading");
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setGeoStatus("idle");
-        onGeolocate(pos.coords.latitude, pos.coords.longitude);
-      },
-      () => {
-        setGeoStatus("idle");
-      },
-    );
-  }
-
   const iconBtn =
     "rounded p-1 hover:bg-zinc-200 disabled:opacity-50 dark:hover:bg-zinc-700";
 
   return (
     <div className="flex items-center gap-2 rounded-lg bg-zinc-50 p-2 text-zinc-900 dark:bg-zinc-900 dark:text-white">
-      <button
-        onClick={handleGpsClick}
-        disabled={geoStatus === "loading"}
-        aria-label="Detect my location"
-        className={iconBtn}
-      >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="h-5 w-5"
-        >
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-          <circle cx="12" cy="10" r="3" />
-        </svg>
-      </button>
-
+      <div className="w-7 flex-shrink-0" />
       <div className="min-w-0 flex-1 overflow-x-auto text-center">
         <button
           onClick={onOpenModal}

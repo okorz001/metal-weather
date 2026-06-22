@@ -33,8 +33,8 @@ const typedCatalog = catalog as SongCatalog;
  * when `?name=` is absent). If only `?name=` is present it is geocoded and the
  * URL is updated with the resolved coordinates before fetching. Otherwise the
  * location modal opens so the user can enter a city. Once a result is set the modal closes and the user can reopen it
- * by clicking the {@link LocationBar}. The GPS button in {@link LocationBar}
- * triggers geolocation directly without opening the modal. Manages all search
+ * by clicking the {@link LocationBar}. The GPS button in {@link LocationModal}
+ * triggers geolocation and closes the modal on success. Manages all search
  * state and renders the appropriate result cards.
  *
  * Must be rendered inside a `<Suspense>` boundary because it uses
@@ -269,7 +269,6 @@ export default function HomeContent() {
         location={location}
         coords={currentCoords}
         onOpenModal={() => setModalOpen(true)}
-        onGeolocate={handleGeoSearch}
         isFavorite={
           currentCoords
             ? isFavorite(currentCoords.lat, currentCoords.lon)
@@ -283,6 +282,7 @@ export default function HomeContent() {
         value={inputValue}
         onChange={setInputValue}
         onSearch={handleSearch}
+        onGeolocate={handleGeoSearch}
         disabled={loading}
         favorites={favorites}
         onSelectFavorite={handleSelectFavorite}
