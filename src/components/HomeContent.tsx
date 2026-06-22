@@ -268,6 +268,7 @@ export default function HomeContent() {
       <LocationBar
         location={location}
         coords={currentCoords}
+        loading={loading}
         onOpenModal={() => setModalOpen(true)}
         isFavorite={
           currentCoords

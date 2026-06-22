@@ -255,7 +255,7 @@ describe("HomeContent", () => {
       );
       renderHome();
       fireEvent.click(
-        screen.getByRole("button", { name: "Search for a city…" }),
+        screen.getByRole("button", { name: "Enter a location…" }),
       );
       await waitFor(() =>
         expect(screen.getByText("Seattle, WA, US")).toBeInTheDocument(),
