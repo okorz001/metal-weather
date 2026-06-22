@@ -41,7 +41,7 @@ const mockSong: Song = { title: "Raining Blood", artist: "Slayer" };
 const mockErrorSong: Song = { title: "The Wicker Man", artist: "Iron Maiden" };
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  vi.resetAllMocks();
   localStorage.removeItem("favorites");
   vi.mocked(useSearchParams).mockReturnValue(new URLSearchParams());
   vi.mocked(useRouter).mockReturnValue({
