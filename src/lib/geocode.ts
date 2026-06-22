@@ -56,6 +56,10 @@ const US_STATES: Record<string, string> = {
   Wyoming: "WY",
 };
 
+const US_STATE_ABBREVS: Record<string, string> = Object.fromEntries(
+  Object.entries(US_STATES).map(([name, abbrev]) => [abbrev, name]),
+);
+
 /**
  * Normalizes a string for case- and accent-insensitive comparison.
  *
@@ -175,9 +179,13 @@ export async function geocodeLocation(
   }
 
   const matches = (field: string, q: string) => {
-    const f = normalize(field);
-    const lq = normalize(q);
-    return f === lq || f.split(/\s+/).some((word) => word.startsWith(lq));
+    const expanded = US_STATE_ABBREVS[q.toUpperCase()];
+    const candidates = expanded ? [expanded, q] : [q];
+    return candidates.some((candidate) => {
+      const f = normalize(field);
+      const lq = normalize(candidate);
+      return f === lq || f.split(/\s+/).some((word) => word.startsWith(lq));
+    });
   };
 
   const nameMatches = data.filter(

@@ -252,6 +252,43 @@ describe("geocodeLocation", () => {
     });
   });
 
+  it("expands a US state abbreviation qualifier to match multi-word state names", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [
+        {
+          lat: "43.7167",
+          lon: "-74.4833",
+          name: "Canada Lake",
+          address: {
+            city: "Canada Lake",
+            state: "Indiana",
+            country: "United States",
+            country_code: "us",
+          },
+        },
+        {
+          lat: "43.2167",
+          lon: "-74.5167",
+          name: "Canada Lake",
+          address: {
+            city: "Canada Lake",
+            state: "New York",
+            country: "United States",
+            country_code: "us",
+          },
+        },
+      ],
+    } as Response);
+
+    const result = await geocodeLocation("Canada Lake, NY");
+    expect(result).toEqual({
+      lat: 43.2167,
+      lon: -74.5167,
+      displayName: "Canada Lake, NY",
+    });
+  });
+
   it("falls back to first result when qualifier matches nothing", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
