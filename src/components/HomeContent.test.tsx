@@ -112,7 +112,7 @@ describe("HomeContent", () => {
       fireEvent.change(screen.getByPlaceholderText("City name"), {
         target: { value: "Tokyo" },
       });
-      fireEvent.click(screen.getByRole("button", { name: "Go" }));
+      fireEvent.click(screen.getByRole("button", { name: "Search" }));
       await waitFor(() =>
         expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
       );
@@ -127,7 +127,7 @@ describe("HomeContent", () => {
       fireEvent.change(screen.getByPlaceholderText("City name"), {
         target: { value: "?????" },
       });
-      fireEvent.click(screen.getByRole("button", { name: "Go" }));
+      fireEvent.click(screen.getByRole("button", { name: "Search" }));
       await waitFor(() =>
         expect(screen.getByText("Location not found")).toBeInTheDocument(),
       );
@@ -146,7 +146,7 @@ describe("HomeContent", () => {
       fireEvent.change(screen.getByPlaceholderText("City name"), {
         target: { value: "Seattle" },
       });
-      fireEvent.click(screen.getByRole("button", { name: "Go" }));
+      fireEvent.click(screen.getByRole("button", { name: "Search" }));
       expect(document.querySelector(".animate-spin")).toBeInTheDocument();
       resolve();
       await waitFor(() =>
@@ -169,7 +169,7 @@ describe("HomeContent", () => {
       fireEvent.change(screen.getByPlaceholderText("City name"), {
         target: { value: "47.6,-122.3" },
       });
-      fireEvent.click(screen.getByRole("button", { name: "Go" }));
+      fireEvent.click(screen.getByRole("button", { name: "Search" }));
       await waitFor(() =>
         expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
       );
@@ -185,7 +185,7 @@ describe("HomeContent", () => {
       fireEvent.change(screen.getByPlaceholderText("City name"), {
         target: { value: "47.6,-122.3" },
       });
-      fireEvent.click(screen.getByRole("button", { name: "Go" }));
+      fireEvent.click(screen.getByRole("button", { name: "Search" }));
       await waitFor(() =>
         expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
       );
@@ -222,7 +222,7 @@ describe("HomeContent", () => {
       fireEvent.change(screen.getByPlaceholderText("City name"), {
         target: { value: "Seattle" },
       });
-      fireEvent.click(screen.getByRole("button", { name: "Go" }));
+      fireEvent.click(screen.getByRole("button", { name: "Search" }));
       await waitFor(() =>
         expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
       );

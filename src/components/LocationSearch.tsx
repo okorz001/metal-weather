@@ -30,7 +30,7 @@ export default function LocationSearch({
   }
 
   const btnClass =
-    "rounded-lg bg-zinc-400 px-2 py-2 text-white hover:bg-zinc-500 disabled:opacity-50 dark:bg-zinc-600 dark:hover:bg-zinc-500";
+    "flex items-center justify-center shrink-0 rounded-lg px-2 text-zinc-900 hover:bg-zinc-200 disabled:opacity-50 dark:text-white dark:hover:bg-zinc-700";
 
   return (
     <div className="flex gap-2">
@@ -43,8 +43,24 @@ export default function LocationSearch({
         placeholder="City name"
         className="min-w-0 flex-1 rounded-lg bg-zinc-200 px-2 py-2 text-zinc-900 placeholder-zinc-500 focus:ring-2 focus:ring-zinc-400 focus:outline-none disabled:opacity-50 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-500 dark:focus:ring-zinc-500"
       />
-      <button onClick={handleSubmit} disabled={disabled} className={btnClass}>
-        Go
+      <button
+        onClick={handleSubmit}
+        disabled={disabled}
+        aria-label="Search"
+        className={btnClass}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-5 w-5"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="M21 21l-4.35-4.35" />
+        </svg>
       </button>
     </div>
   );

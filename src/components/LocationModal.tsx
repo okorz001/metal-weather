@@ -11,15 +11,16 @@ import RenameFavoriteModal from "./RenameFavoriteModal";
  * A full-screen overlay modal wrapping the location search form and favorites list.
  *
  * Renders over all other content when `open` is true. Closes automatically
- * when the user submits a search or selects a favorite. Can also be dismissed
- * via the close button. When favorites exist, they are listed below the search
- * form with a minus button to remove each one.
+ * when the user submits a search, selects a favorite, or uses the GPS button.
+ * Can also be dismissed via the close button. When favorites exist, they are
+ * listed below the search form with a minus button to remove each one.
  *
  * @param open - Whether the modal is visible.
  * @param onClose - Called when the user explicitly closes the modal.
  * @param value - The current text input value (controlled).
  * @param onChange - Called when the text input value changes.
  * @param onSearch - Called with the trimmed city name when the user submits.
+ * @param onGeolocate - Called with latitude and longitude when GPS succeeds.
  * @param disabled - When true, the search form inputs are disabled.
  * @param favorites - The list of saved favorite locations to display.
  * @param onSelectFavorite - Called with the chosen favorite when its name is clicked.
@@ -33,6 +34,7 @@ export default function LocationModal({
   value,
   onChange,
   onSearch,
+  onGeolocate,
   disabled = false,
   favorites,
   onSelectFavorite,
@@ -44,6 +46,7 @@ export default function LocationModal({
   value: string;
   onChange: (value: string) => void;
   onSearch: (location: string) => void;
+  onGeolocate: (lat: number, lon: number) => void;
   disabled?: boolean;
   favorites: Location[];
   onSelectFavorite: (fav: Location) => void;
@@ -51,6 +54,22 @@ export default function LocationModal({
   onRenameFavorite: (lat: number, lon: number, newName: string) => void;
 }) {
   const [editingFavorite, setEditingFavorite] = useState<Location | null>(null);
+  const [geoStatus, setGeoStatus] = useState<"idle" | "loading">("idle");
+
+  function handleGpsClick() {
+    if (!navigator.geolocation) return;
+    setGeoStatus("loading");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setGeoStatus("idle");
+        onGeolocate(pos.coords.latitude, pos.coords.longitude);
+        onClose();
+      },
+      () => {
+        setGeoStatus("idle");
+      },
+    );
+  }
 
   if (!open) return null;
 
@@ -64,9 +83,7 @@ export default function LocationModal({
       <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-2 pt-16">
         <div className="w-full max-w-lg rounded-lg bg-white p-4 shadow-xl dark:bg-zinc-800">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="font-bold text-zinc-900 dark:text-white">
-              Search Location
-            </h2>
+            <h2 className="font-bold text-zinc-900 dark:text-white">Search</h2>
             <button
               onClick={onClose}
               aria-label="Close"
@@ -85,15 +102,38 @@ export default function LocationModal({
               </svg>
             </button>
           </div>
-          <LocationSearch
-            value={value}
-            onChange={onChange}
-            onSearch={handleSearch}
-            disabled={disabled}
-          />
+          <div className="flex gap-2">
+            <button
+              onClick={handleGpsClick}
+              disabled={geoStatus === "loading" || disabled}
+              aria-label="Detect my location"
+              className="flex shrink-0 items-center justify-center rounded-lg px-2 text-zinc-900 hover:bg-zinc-200 disabled:opacity-50 dark:text-white dark:hover:bg-zinc-700"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-5 w-5"
+              >
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+            </button>
+            <div className="min-w-0 flex-1">
+              <LocationSearch
+                value={value}
+                onChange={onChange}
+                onSearch={handleSearch}
+                disabled={disabled}
+              />
+            </div>
+          </div>
           {favorites.length > 0 && (
             <div className="mt-3 border-t border-zinc-200 pt-3 dark:border-zinc-700">
-              <p className="mb-1 text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
+              <p className="mb-1 font-bold text-zinc-900 dark:text-white">
                 Favorites
               </p>
               <ul>
@@ -124,16 +164,37 @@ export default function LocationModal({
                         setEditingFavorite(fav);
                       }}
                       aria-label={`Rename ${fav.displayName}`}
-                      className="shrink-0 rounded p-1 text-zinc-500 hover:bg-zinc-200 dark:text-zinc-400 dark:hover:bg-zinc-700"
+                      className="shrink-0 rounded p-1 text-zinc-900 hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700"
                     >
-                      ✏️
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-5 w-5"
+                      >
+                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                      </svg>
                     </button>
                     <button
                       onClick={() => onRemoveFavorite(fav)}
                       aria-label={`Remove ${fav.displayName} from favorites`}
-                      className="shrink-0 rounded p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                      className="shrink-0 rounded p-1 text-zinc-900 hover:bg-zinc-200 dark:text-white dark:hover:bg-zinc-700"
                     >
-                      ❌
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-5 w-5"
+                      >
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
                     </button>
                   </li>
                 ))}
