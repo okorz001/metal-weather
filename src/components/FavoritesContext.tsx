@@ -12,6 +12,7 @@ import {
   getFavorites,
   isFavorite,
   removeFavorite,
+  renameFavorite,
 } from "@/lib/favorites";
 import type { Location } from "@/lib/types";
 
@@ -56,6 +57,7 @@ interface FavoritesContextValue {
   favorites: Location[];
   addFavorite: (fav: Location) => void;
   removeFavorite: (lat: number, lon: number) => void;
+  renameFavorite: (lat: number, lon: number, newName: string) => void;
   isFavorite: (lat: number, lon: number) => boolean;
 }
 
@@ -63,6 +65,7 @@ const FavoritesContext = createContext<FavoritesContextValue>({
   favorites: [],
   addFavorite: () => {},
   removeFavorite: () => {},
+  renameFavorite: () => {},
   isFavorite: () => false,
 });
 
@@ -90,7 +93,13 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
   return (
     <FavoritesContext.Provider
-      value={{ favorites, addFavorite, removeFavorite, isFavorite }}
+      value={{
+        favorites,
+        addFavorite,
+        removeFavorite,
+        renameFavorite,
+        isFavorite,
+      }}
     >
       {children}
     </FavoritesContext.Provider>

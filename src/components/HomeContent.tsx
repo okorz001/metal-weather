@@ -58,7 +58,8 @@ export default function HomeContent() {
     lon: number;
   } | null>(null);
 
-  const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
+  const { favorites, addFavorite, removeFavorite, renameFavorite, isFavorite } =
+    useFavorites();
 
   // Tracks the currently active search so stale responses are discarded.
   const searchIdRef = useRef(0);
@@ -286,6 +287,7 @@ export default function HomeContent() {
         favorites={favorites}
         onSelectFavorite={handleSelectFavorite}
         onRemoveFavorite={(fav) => removeFavorite(fav.lat, fav.lon)}
+        onRenameFavorite={renameFavorite}
       />
       {loading && <Spinner />}
       {!loading && result?.ok === true && (
