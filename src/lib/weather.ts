@@ -129,7 +129,7 @@ export async function fetchWeather(
   const lowCelsius = daily.temperature_2m_min[0];
 
   const currentHour = current.time.slice(0, 13) + ":00";
-  const startIdx = Math.max(0, data.hourly.time.indexOf(currentHour));
+  const startIdx = data.hourly.time.indexOf(currentHour) + 1;
   const hourly = data.hourly.time
     .slice(startIdx, startIdx + 12)
     .map((time, i): WeatherDataHourly => {

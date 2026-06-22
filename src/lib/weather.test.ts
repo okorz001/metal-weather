@@ -59,16 +59,16 @@ describe("fetchWeather", () => {
       highFahrenheit: (14.0 * 9) / 5 + 32,
       lowCelsius: 7.0,
       lowFahrenheit: (7.0 * 9) / 5 + 32,
-      hourly: hourlyTimes.slice(0, 12).map((time, i) => ({
+      hourly: hourlyTimes.slice(1, 13).map((time, i) => ({
         time,
-        temperatureCelsius: hourlyTemps[i],
-        temperatureFahrenheit: (hourlyTemps[i] * 9) / 5 + 32,
+        temperatureCelsius: hourlyTemps[i + 1],
+        temperatureFahrenheit: (hourlyTemps[i + 1] * 9) / 5 + 32,
         status: "Cloudy",
       })),
     });
   });
 
-  it("starts hourly forecast from the current hour when time has minutes", async () => {
+  it("starts hourly forecast from the next hour when time has minutes", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -94,7 +94,7 @@ describe("fetchWeather", () => {
     } as Response);
 
     const result = await fetchWeather(47.6, -122.3, "Seattle");
-    expect(result.hourly[0].time).toBe("2024-01-01T05:00");
+    expect(result.hourly[0].time).toBe("2024-01-01T06:00");
     expect(result.hourly).toHaveLength(12);
   });
 
