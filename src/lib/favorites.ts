@@ -56,6 +56,29 @@ export function removeFavorite(lat: number, lon: number): void {
 }
 
 /**
+ * Updates the display name of a saved favorite location identified by coordinates.
+ *
+ * No-op if no favorite matches the given coordinates or if `newName` is empty.
+ * Dispatches a `StorageEvent` on `window` so same-tab subscribers are notified.
+ *
+ * @param lat - Latitude of the location to rename.
+ * @param lon - Longitude of the location to rename.
+ * @param newName - The replacement display name.
+ */
+export function renameFavorite(
+  lat: number,
+  lon: number,
+  newName: string,
+): void {
+  if (!newName) return;
+  const next = getFavorites().map((f) =>
+    coordsMatch(f, lat, lon) ? { ...f, displayName: newName } : f,
+  );
+  localStorage.setItem(KEY, JSON.stringify(next));
+  window.dispatchEvent(new StorageEvent("storage"));
+}
+
+/**
  * Returns `true` when a location matching the given coordinates is saved.
  *
  * @param lat - Latitude to check.
