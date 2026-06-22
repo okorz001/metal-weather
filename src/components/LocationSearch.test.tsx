@@ -16,10 +16,10 @@ function renderSearch(value = "", onSearch = vi.fn(), onChange = vi.fn()) {
 }
 
 describe("LocationSearch", () => {
-  it("renders the city input and Go button", () => {
+  it("renders the city input and search button", () => {
     renderSearch();
     expect(screen.getByPlaceholderText("City name")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Go" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Search" })).toBeInTheDocument();
   });
 
   it("calls onChange when the input value changes", () => {
@@ -32,7 +32,7 @@ describe("LocationSearch", () => {
 
   it("calls onSearch with trimmed value on Go click", () => {
     const { onSearch } = renderSearch("  Seattle  ");
-    fireEvent.click(screen.getByRole("button", { name: "Go" }));
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
     expect(onSearch).toHaveBeenCalledWith("Seattle");
   });
 
@@ -46,17 +46,17 @@ describe("LocationSearch", () => {
 
   it("does not call onSearch when input is empty", () => {
     const { onSearch } = renderSearch("");
-    fireEvent.click(screen.getByRole("button", { name: "Go" }));
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
     expect(onSearch).not.toHaveBeenCalled();
   });
 
   it("does not call onSearch when input is whitespace only", () => {
     const { onSearch } = renderSearch("   ");
-    fireEvent.click(screen.getByRole("button", { name: "Go" }));
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
     expect(onSearch).not.toHaveBeenCalled();
   });
 
-  it("disables the input and Go button when disabled prop is true", () => {
+  it("disables the input and search button when disabled prop is true", () => {
     render(
       <LocationSearch
         value=""
@@ -66,6 +66,6 @@ describe("LocationSearch", () => {
       />,
     );
     expect(screen.getByPlaceholderText("City name")).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Go" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Search" })).toBeDisabled();
   });
 });
