@@ -16,7 +16,11 @@ rain).
    coordinates → display name) both use Nominatim (OpenStreetMap).
 3. Weather is fetched from Open-Meteo Forecast. The WMO weather code is mapped
    to one of seven `WeatherStatus` values; a matching song is selected from the
-   JSON catalog.
+   JSON catalog. Catalog conditions may additionally specify numeric bounds
+   (temperature, wind speed) to enable finer-grained matching within a status
+   (e.g. separate songs for hot, cold, or windy clear weather). The first
+   matching condition with a non-empty songs list wins, falling back to a
+   generic status match and then to the error song.
 4. The matched song plays automatically (HTML5 `<audio>` with fade in/out
    cropping). The user can pause, seek, and resume.
 5. On any error (geocode failure, network error, unrecognized code) an error
@@ -49,6 +53,25 @@ rain).
 | `fadeIn`    | `number` | Fade-in duration (seconds)          |
 | `fadeOut`   | `number` | Fade-out duration (seconds)         |
 | `coverArt?` | `string` | Path to cover art JPEG in `public/` |
+
+**`SongCondition`** (`src/lib/types.ts`):
+
+| Field                       | Type            | Description                                                                    |
+| --------------------------- | --------------- | ------------------------------------------------------------------------------ |
+| `status`                    | `WeatherStatus` | Weather status this condition matches                                          |
+| `minTemperatureFahrenheit?` | `number`        | Lower inclusive temperature bound (°F); absent means no lower bound            |
+| `maxTemperatureFahrenheit?` | `number`        | Upper inclusive temperature bound (°F); absent means no upper bound            |
+| `minWindSpeedMph?`          | `number`        | Lower inclusive wind speed bound (mph); absent means no bound                  |
+| `songs`                     | `Song[]`        | Songs for this condition; an empty array causes fall-through to the next match |
+
+**`SongContext`** (`src/lib/types.ts`) — numeric weather measurements passed to
+`pickSong` to enable condition-specific matching:
+
+| Field                    | Type            | Description               |
+| ------------------------ | --------------- | ------------------------- |
+| `status?`                | `WeatherStatus` | Current weather status    |
+| `temperatureFahrenheit?` | `number`        | Current temperature in °F |
+| `windSpeedMph?`          | `number`        | Current wind speed in mph |
 
 **`WeatherData`** (`src/lib/types.ts`) — current conditions plus today's
 high/low, all numeric fields provided in both metric and imperial units.
@@ -242,5 +265,11 @@ sequenceDiagram
 
 ### Song Catalog
 
-Defined in `src/data/songs.json`. One song per `WeatherStatus` plus one error
-fallback. Cover art JPEGs are stored alongside MP3s in `public/assets/`.
+Defined in `src/data/songs.json`. The `conditions` array is matched in order:
+`pickSong` returns the first song from the first condition where the status
+matches, all specified numeric bounds are satisfied by the current `SongContext`,
+and the `songs` array is non-empty. Conditions with empty `songs` arrays act as
+placeholders and fall through to the next matching entry. A generic (no numeric
+bounds) entry at the end of each status group serves as a fallback. The top-level
+`error` entry provides a fallback when no condition matches or weather data is
+unavailable. Cover art JPEGs are stored alongside MP3s in `public/assets/`.

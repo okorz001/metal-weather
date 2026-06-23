@@ -41,12 +41,45 @@ export interface Song {
 /**
  * A weather condition entry in the song catalog.
  *
+ * Numeric bound fields are optional and inclusive. When absent, no constraint
+ * is applied on that axis. A condition matches only when all specified bounds
+ * are satisfied by the values in the {@link SongContext}.
+ *
  * @param status - The weather status this condition matches.
- * @param songs - Songs associated with this condition.
+ * @param minTemperatureFahrenheit - Lower inclusive temperature bound in °F.
+ *   When absent, no lower temperature constraint is applied.
+ * @param maxTemperatureFahrenheit - Upper inclusive temperature bound in °F.
+ *   When absent, no upper temperature constraint is applied.
+ * @param minWindSpeedMph - Lower inclusive wind speed bound in mph.
+ *   When absent, no wind speed constraint is applied.
+ * @param songs - Songs associated with this condition. An empty array causes
+ *   the condition to be skipped during matching, allowing fall-through to a
+ *   more generic entry.
  */
 export interface SongCondition {
   status: WeatherStatus;
+  minTemperatureFahrenheit?: number;
+  maxTemperatureFahrenheit?: number;
+  minWindSpeedMph?: number;
   songs: Song[];
+}
+
+/**
+ * Numeric weather measurements passed to {@link pickSong} to enable
+ * condition-specific song matching beyond the categorical {@link WeatherStatus}.
+ *
+ * All fields are optional. When a field is absent, any catalog condition that
+ * specifies a bound on that axis is skipped because the constraint cannot be
+ * verified; matching falls through to the next entry.
+ *
+ * @param status - The current weather status derived from the WMO code.
+ * @param temperatureFahrenheit - Current temperature in degrees Fahrenheit.
+ * @param windSpeedMph - Current wind speed in mph.
+ */
+export interface SongContext {
+  status?: WeatherStatus;
+  temperatureFahrenheit?: number;
+  windSpeedMph?: number;
 }
 
 /**

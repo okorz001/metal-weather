@@ -2,6 +2,21 @@
   "conditions": [
     {
       "status": "Clear",
+      "minTemperatureFahrenheit": 90,
+      "songs": []
+    },
+    {
+      "status": "Clear",
+      "maxTemperatureFahrenheit": 40,
+      "songs": []
+    },
+    {
+      "status": "Clear",
+      "minWindSpeedMph": 25,
+      "songs": []
+    },
+    {
+      "status": "Clear",
       "songs": [
         {
           "title": "Power of the Sun",
