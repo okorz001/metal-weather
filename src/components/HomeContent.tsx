@@ -9,6 +9,7 @@ import {
   parseCoordinates,
   reverseGeocode,
 } from "@/lib/geocode";
+import { applyMockWeather } from "@/lib/mockWeather";
 import { pickErrorSong, pickSong } from "@/lib/songs";
 import type { Location, SongCatalog, WeatherResult } from "@/lib/types";
 import { fetchWeather } from "@/lib/weather";
@@ -18,6 +19,7 @@ import { useFavorites } from "./FavoritesContext";
 import HourlyForecast from "./HourlyForecast";
 import LocationBar from "./LocationBar";
 import LocationModal from "./LocationModal";
+import { useMockWeather } from "./MockWeatherContext";
 import SongCard from "./SongCard";
 import Spinner from "./Spinner";
 import WeatherCard from "./WeatherCard";
@@ -57,6 +59,8 @@ export default function HomeContent() {
 
   const { favorites, addFavorite, removeFavorite, renameFavorite, isFavorite } =
     useFavorites();
+
+  const mockWeather = useMockWeather();
 
   // Tracks the currently active search so stale responses are discarded.
   const searchIdRef = useRef(0);
@@ -291,13 +295,23 @@ export default function HomeContent() {
         onRenameFavorite={renameFavorite}
       />
       {loading && <Spinner />}
-      {!loading && result?.ok === true && (
-        <>
-          <WeatherCard weather={result.weather} />
-          <SongCard song={result.song} />
-          <HourlyForecast hourly={result.weather.hourly} />
-        </>
-      )}
+      {!loading &&
+        result?.ok === true &&
+        (() => {
+          // Mock overrides from the query string are merged on top of the real
+          // data here in the rendering layer; the song is re-derived so it
+          // reflects any mocked status. With no overrides this matches the
+          // real data and originally selected song.
+          const weather = applyMockWeather(result.weather, mockWeather);
+          const song = pickSong(typedCatalog, weather.status);
+          return (
+            <>
+              <WeatherCard weather={weather} />
+              <SongCard song={song} />
+              <HourlyForecast hourly={weather.hourly} />
+            </>
+          );
+        })()}
       {!loading && result?.ok === false && (
         <ErrorCard message={result.message} song={result.song} />
       )}

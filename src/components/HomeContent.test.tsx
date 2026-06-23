@@ -9,6 +9,7 @@ import * as weatherModule from "@/lib/weather";
 
 import { FavoritesProvider } from "./FavoritesContext";
 import HomeContent from "./HomeContent";
+import { MockWeatherProvider } from "./MockWeatherContext";
 
 vi.mock("next/navigation", () => ({
   useSearchParams: vi.fn(() => new URLSearchParams()),
@@ -265,6 +266,34 @@ describe("HomeContent", () => {
         expect(screen.getByText("Raining Blood")).toBeInTheDocument(),
       );
       expect(geocodeModule.geocodeLocation).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("mock weather injection", () => {
+    it("merges an underscore-prefixed status override onto the real data", async () => {
+      vi.mocked(useSearchParams).mockReturnValue(
+        new URLSearchParams(
+          "name=Seattle%2C+WA%2C+US&lat=47.6&lon=-122.3&_status=Thunderstorm",
+        ),
+      );
+      render(
+        <FavoritesProvider>
+          <MockWeatherProvider>
+            <HomeContent />
+          </MockWeatherProvider>
+        </FavoritesProvider>,
+      );
+      await waitFor(() =>
+        expect(screen.getByText("Thunderstorm")).toBeInTheDocument(),
+      );
+      // Real fetched status ("Rain") is shadowed by the override.
+      expect(screen.queryByText("Rain")).not.toBeInTheDocument();
+      // The override never reaches the data layer.
+      expect(weatherModule.fetchWeather).toHaveBeenCalledWith(
+        47.6,
+        -122.3,
+        "Seattle, WA, US",
+      );
     });
   });
 });
