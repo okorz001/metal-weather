@@ -77,13 +77,12 @@ export default function HomeContent() {
     try {
       const weather = await fetchWeather(lat, lon, displayName);
       if (searchIdRef.current !== id) return;
-      const song = pickSong(typedCatalog, weather.status);
-      setResult({ ok: true, weather, song });
+      setResult({ ok: true, weather });
       setCurrentLocation({ displayName, lat, lon });
     } catch (e) {
       if (searchIdRef.current !== id) return;
       const message = e instanceof Error ? e.message : "An error occurred";
-      setResult({ ok: false, message, song: pickErrorSong(typedCatalog) });
+      setResult({ ok: false, message });
     } finally {
       if (searchIdRef.current === id) setLoading(false);
     }
@@ -148,7 +147,7 @@ export default function HomeContent() {
     } catch (e) {
       if (searchIdRef.current !== id) return;
       const message = e instanceof Error ? e.message : "An error occurred";
-      setResult({ ok: false, message, song: pickErrorSong(typedCatalog) });
+      setResult({ ok: false, message });
       setLoading(false);
     }
   }
@@ -233,7 +232,7 @@ export default function HomeContent() {
     } catch (e) {
       if (searchIdRef.current !== id) return;
       const message = e instanceof Error ? e.message : "An error occurred";
-      setResult({ ok: false, message, song: pickErrorSong(typedCatalog) });
+      setResult({ ok: false, message });
       setLoading(false);
     }
   }
@@ -299,9 +298,9 @@ export default function HomeContent() {
         result?.ok === true &&
         (() => {
           // Mock overrides from the query string are merged on top of the real
-          // data here in the rendering layer; the song is re-derived so it
-          // reflects any mocked status. With no overrides this matches the
-          // real data and originally selected song.
+          // data here in the rendering layer, then the song is derived from the
+          // merged status so it reflects any mocked condition. With no overrides
+          // this matches the real data.
           const weather = applyMockWeather(result.weather, mockWeather);
           const song = pickSong(typedCatalog, weather.status);
           return (
@@ -313,7 +312,10 @@ export default function HomeContent() {
           );
         })()}
       {!loading && result?.ok === false && (
-        <ErrorCard message={result.message} song={result.song} />
+        <ErrorCard
+          message={result.message}
+          song={pickErrorSong(typedCatalog)}
+        />
       )}
     </div>
   );
