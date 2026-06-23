@@ -311,6 +311,51 @@ describe("geocodeLocation", () => {
     expect(result.lat).toBe(47.60621);
   });
 
+  it("throws when no result name shares a token with the query", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [
+        {
+          lat: "40.7831",
+          lon: "-73.9712",
+          name: "Manhattan",
+          address: {
+            city: "Manhattan",
+            state: "New York",
+            country: "United States",
+            country_code: "us",
+          },
+        },
+      ],
+    } as Response);
+
+    await expect(geocodeLocation("HMC.TP")).rejects.toThrow(
+      'Location not found: "HMC.TP"',
+    );
+  });
+
+  it("uses a fallback result when its name shares a token with the query", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [
+        {
+          lat: "40.7128",
+          lon: "-74.006",
+          name: "New York City",
+          address: {
+            city: "New York City",
+            state: "New York",
+            country: "United States",
+            country_code: "us",
+          },
+        },
+      ],
+    } as Response);
+
+    const result = await geocodeLocation("New York");
+    expect(result.displayName).toBe("New York City, NY");
+  });
+
   it("throws when results array is empty", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,

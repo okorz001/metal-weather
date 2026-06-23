@@ -191,7 +191,29 @@ export async function geocodeLocation(
   const nameMatches = data.filter(
     (r) => r.name && normalize(r.name) === normalize(cityName),
   );
-  const pool = nameMatches.length > 0 ? nameMatches : data;
+
+  let fallbackPool = data;
+  if (!isZip && nameMatches.length === 0) {
+    const queryTokens = cityName
+      .split(/[^a-zA-Z0-9]+/)
+      .map(normalize)
+      .filter(Boolean);
+    const relevant = data.filter((r) => {
+      if (!r.name) return false;
+      const nameTokens = normalize(r.name)
+        .split(/[^a-z0-9]+/)
+        .filter(Boolean);
+      return queryTokens.some((qt) =>
+        nameTokens.some((nt) => nt.startsWith(qt) || qt.startsWith(nt)),
+      );
+    });
+    if (relevant.length === 0) {
+      throw new Error(`Location not found: "${location}"`);
+    }
+    fallbackPool = relevant;
+  }
+
+  const pool = nameMatches.length > 0 ? nameMatches : fallbackPool;
 
   let result = pool[0];
 
