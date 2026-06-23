@@ -137,9 +137,10 @@ export interface Location {
 /**
  * Discriminated union representing a weather lookup result.
  *
- * When `ok` is `true`, `weather` and `song` are present.
- * When `ok` is `false`, `message` describes the error and `song` is the error song.
+ * When `ok` is `true`, `weather` holds the fetched data.
+ * When `ok` is `false`, `message` describes the error. The song is not stored;
+ * it is resolved from the weather status (or the error fallback) at render time.
  */
 export type WeatherResult =
-  | { ok: true; weather: WeatherData; song: Song }
-  | { ok: false; message: string; song: Song };
+  | { ok: true; weather: WeatherData }
+  | { ok: false; message: string };

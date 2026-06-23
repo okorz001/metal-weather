@@ -9,6 +9,7 @@ import {
   parseCoordinates,
   reverseGeocode,
 } from "@/lib/geocode";
+import { applyMockWeather } from "@/lib/mockWeather";
 import { pickErrorSong, pickSong } from "@/lib/songs";
 import type { Location, SongCatalog, WeatherResult } from "@/lib/types";
 import { fetchWeather } from "@/lib/weather";
@@ -18,6 +19,7 @@ import { useFavorites } from "./FavoritesContext";
 import HourlyForecast from "./HourlyForecast";
 import LocationBar from "./LocationBar";
 import LocationModal from "./LocationModal";
+import { useMockWeather } from "./MockWeatherContext";
 import SongCard from "./SongCard";
 import Spinner from "./Spinner";
 import WeatherCard from "./WeatherCard";
@@ -58,6 +60,8 @@ export default function HomeContent() {
   const { favorites, addFavorite, removeFavorite, renameFavorite, isFavorite } =
     useFavorites();
 
+  const mockWeather = useMockWeather();
+
   // Tracks the currently active search so stale responses are discarded.
   const searchIdRef = useRef(0);
   // Set before a handler-triggered router.push to prevent the useEffect from
@@ -73,13 +77,12 @@ export default function HomeContent() {
     try {
       const weather = await fetchWeather(lat, lon, displayName);
       if (searchIdRef.current !== id) return;
-      const song = pickSong(typedCatalog, weather.status);
-      setResult({ ok: true, weather, song });
+      setResult({ ok: true, weather });
       setCurrentLocation({ displayName, lat, lon });
     } catch (e) {
       if (searchIdRef.current !== id) return;
       const message = e instanceof Error ? e.message : "An error occurred";
-      setResult({ ok: false, message, song: pickErrorSong(typedCatalog) });
+      setResult({ ok: false, message });
     } finally {
       if (searchIdRef.current === id) setLoading(false);
     }
@@ -144,7 +147,7 @@ export default function HomeContent() {
     } catch (e) {
       if (searchIdRef.current !== id) return;
       const message = e instanceof Error ? e.message : "An error occurred";
-      setResult({ ok: false, message, song: pickErrorSong(typedCatalog) });
+      setResult({ ok: false, message });
       setLoading(false);
     }
   }
@@ -229,7 +232,7 @@ export default function HomeContent() {
     } catch (e) {
       if (searchIdRef.current !== id) return;
       const message = e instanceof Error ? e.message : "An error occurred";
-      setResult({ ok: false, message, song: pickErrorSong(typedCatalog) });
+      setResult({ ok: false, message });
       setLoading(false);
     }
   }
@@ -291,15 +294,28 @@ export default function HomeContent() {
         onRenameFavorite={renameFavorite}
       />
       {loading && <Spinner />}
-      {!loading && result?.ok === true && (
-        <>
-          <WeatherCard weather={result.weather} />
-          <SongCard song={result.song} />
-          <HourlyForecast hourly={result.weather.hourly} />
-        </>
-      )}
+      {!loading &&
+        result?.ok === true &&
+        (() => {
+          // Mock overrides from the query string are merged on top of the real
+          // data here in the rendering layer, then the song is derived from the
+          // merged status so it reflects any mocked condition. With no overrides
+          // this matches the real data.
+          const weather = applyMockWeather(result.weather, mockWeather);
+          const song = pickSong(typedCatalog, weather.status);
+          return (
+            <>
+              <WeatherCard weather={weather} />
+              <SongCard song={song} />
+              <HourlyForecast hourly={weather.hourly} />
+            </>
+          );
+        })()}
       {!loading && result?.ok === false && (
-        <ErrorCard message={result.message} song={result.song} />
+        <ErrorCard
+          message={result.message}
+          song={pickErrorSong(typedCatalog)}
+        />
       )}
     </div>
   );

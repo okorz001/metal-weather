@@ -78,6 +78,7 @@ the app.
 | `HomeContent`         | Orchestrates all search state and renders the above cards                                            |
 | `SettingsContext`     | React context for unit system (metric / imperial) and theme                                          |
 | `FavoritesContext`    | React context for saved locations, backed by `localStorage`                                          |
+| `MockWeatherContext`  | React context exposing mock weather overrides parsed from `_`-prefixed query params (dev/testing)    |
 
 ### External APIs (Free, No API Key)
 
@@ -97,6 +98,22 @@ all three parameters to the URL so the result is always bookmarkable and
 reloadable. If only some parameters are present on load, the missing ones are
 resolved and the URL is updated before fetching. With no parameters, the search
 modal opens.
+
+#### Mock Data Parameters (Development / Testing)
+
+To exercise rare weather conditions without hitting real data, any top-level
+property of `WeatherData` can be overridden with an underscore-prefixed query
+parameter, e.g. `?_status=Thunderstorm` or `?_temperatureCelsius=5`. The
+underscore prefix distinguishes development params from the canonical
+`name`/`lat`/`lon`.
+
+`MockWeatherProvider` parses these params into a partial `WeatherData` and
+`HomeContent` (the rendering layer) shallow-merges them on top of the real
+fetched data before display, re-deriving the song from the merged status. The
+overrides are never passed to the data layer (`fetchWeather`), and the merge is
+shallow, so an array/object property such as `hourly` would be replaced
+entirely if specified. Numeric values are coerced to numbers; all other values
+remain strings.
 
 #### URL Load Sequences
 
