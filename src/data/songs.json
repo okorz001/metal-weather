@@ -2,6 +2,23 @@
   "conditions": [
     {
       "status": "Clear",
+      "minWindSpeedMph": 25,
+      "songs": [
+        {
+          "title": "Riding on the Wind",
+          "artist": "Judas Priest",
+          "audioFile": "/assets/riding-on-the-wind.mp3",
+          "youtubeId": "aQBF3a9m8Fs",
+          "startTime": 36,
+          "endTime": 51,
+          "fadeIn": 2,
+          "fadeOut": 2,
+          "coverArt": "/assets/riding-on-the-wind.jpg"
+        }
+      ]
+    },
+    {
+      "status": "Clear",
       "minTemperatureFahrenheit": 90,
       "songs": [
         {
@@ -31,23 +48,6 @@
           "fadeIn": 2,
           "fadeOut": 2,
           "coverArt": "/assets/in-my-kingdom-cold.jpg"
-        }
-      ]
-    },
-    {
-      "status": "Clear",
-      "minWindSpeedMph": 25,
-      "songs": [
-        {
-          "title": "Riding on the Wind",
-          "artist": "Judas Priest",
-          "audioFile": "/assets/riding-on-the-wind.mp3",
-          "youtubeId": "aQBF3a9m8Fs",
-          "startTime": 36,
-          "endTime": 51,
-          "fadeIn": 2,
-          "fadeOut": 2,
-          "coverArt": "/assets/riding-on-the-wind.jpg"
         }
       ]
     },
