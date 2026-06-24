@@ -8,7 +8,19 @@
     {
       "status": "Clear",
       "maxTemperatureFahrenheit": 40,
-      "songs": []
+      "songs": [
+        {
+          "title": "In My Kingdom Cold",
+          "artist": "Immortal",
+          "audioFile": "/assets/in-my-kingdom-cold.mp3",
+          "youtubeId": "1xi0lODYJF8",
+          "startTime": 125,
+          "endTime": 145,
+          "fadeIn": 2,
+          "fadeOut": 2,
+          "coverArt": "/assets/in-my-kingdom-cold.jpg"
+        }
+      ]
     },
     {
       "status": "Clear",
