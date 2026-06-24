@@ -2,6 +2,57 @@
   "conditions": [
     {
       "status": "Clear",
+      "minWindSpeedMph": 25,
+      "songs": [
+        {
+          "title": "Riding on the Wind",
+          "artist": "Judas Priest",
+          "audioFile": "/assets/riding-on-the-wind.mp3",
+          "youtubeId": "aQBF3a9m8Fs",
+          "startTime": 36,
+          "endTime": 51,
+          "fadeIn": 2,
+          "fadeOut": 2,
+          "coverArt": "/assets/riding-on-the-wind.jpg"
+        }
+      ]
+    },
+    {
+      "status": "Clear",
+      "minTemperatureFahrenheit": 90,
+      "songs": [
+        {
+          "title": "When the Sun Burns Red",
+          "artist": "Kreator",
+          "audioFile": "/assets/when-the-sun-burns-red.mp3",
+          "youtubeId": "3yVvbNV6U5g",
+          "startTime": 87,
+          "endTime": 106,
+          "fadeIn": 1,
+          "fadeOut": 2,
+          "coverArt": "/assets/when-the-sun-burns-red.jpg"
+        }
+      ]
+    },
+    {
+      "status": "Clear",
+      "maxTemperatureFahrenheit": 40,
+      "songs": [
+        {
+          "title": "In My Kingdom Cold",
+          "artist": "Immortal",
+          "audioFile": "/assets/in-my-kingdom-cold.mp3",
+          "youtubeId": "1xi0lODYJF8",
+          "startTime": 121,
+          "endTime": 144,
+          "fadeIn": 2,
+          "fadeOut": 2,
+          "coverArt": "/assets/in-my-kingdom-cold.jpg"
+        }
+      ]
+    },
+    {
+      "status": "Clear",
       "songs": [
         {
           "title": "Power of the Sun",

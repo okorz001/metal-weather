@@ -302,7 +302,11 @@ export default function HomeContent() {
           // merged status so it reflects any mocked condition. With no overrides
           // this matches the real data.
           const weather = applyMockWeather(result.weather, mockWeather);
-          const song = pickSong(typedCatalog, weather.status);
+          const song = pickSong(typedCatalog, {
+            status: weather.status,
+            temperatureFahrenheit: weather.temperatureFahrenheit,
+            windSpeedMph: weather.windSpeedMph,
+          });
           return (
             <>
               <WeatherCard weather={weather} />
