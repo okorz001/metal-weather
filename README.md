@@ -24,7 +24,8 @@ or a howling winter night.
 - **Saved favorites** — bookmark locations for one-click access
 - **Units and theme** — toggle between metric and imperial, and between light
   and dark themes
-- **No account or API key required** — powered by free, open APIs
+- **Runs entirely in the browser** — no server, no account, and no API key
+  required; all data comes from free, open APIs
   ([Open-Meteo](https://open-meteo.com/) and
   [Nominatim](https://nominatim.org/))
 
