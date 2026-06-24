@@ -204,7 +204,7 @@ export async function geocodeLocation(
         .split(/[^a-z0-9]+/)
         .filter(Boolean);
       return queryTokens.some((qt) =>
-        nameTokens.some((nt) => nt.startsWith(qt) || qt.startsWith(nt)),
+        nameTokens.some((nt) => nt.startsWith(qt)),
       );
     });
     if (relevant.length === 0) {

@@ -311,6 +311,29 @@ describe("geocodeLocation", () => {
     expect(result.lat).toBe(47.60621);
   });
 
+  it("throws when result name tokens are prefixes of the query token", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [
+        {
+          lat: "53.958",
+          lon: "-1.082",
+          name: "Lam",
+          address: {
+            suburb: "Bishophill",
+            city: "York",
+            country: "United Kingdom",
+            country_code: "gb",
+          },
+        },
+      ],
+    } as Response);
+
+    await expect(geocodeLocation("Lamcaster")).rejects.toThrow(
+      'Location not found: "Lamcaster"',
+    );
+  });
+
   it("throws when no result name shares a token with the query", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
