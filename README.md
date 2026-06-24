@@ -1,6 +1,6 @@
 # metal-weather
 
-The weather forecast, now with heavy metal.
+Weather forecasts and heavy metal ⛈️🎸
 
 ## What It Does
 
