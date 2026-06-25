@@ -71,4 +71,28 @@ describe("WeatherCard", () => {
     renderImperial();
     expect(screen.getByText("64.4° / 50.0°")).toBeInTheDocument();
   });
+
+  it("renders wind speed in km/h with compass direction when metric", () => {
+    renderMetric();
+    expect(screen.getByText("Wind: 20.0 km/h W")).toBeInTheDocument();
+  });
+
+  it("renders wind speed in mph with compass direction when imperial", () => {
+    renderImperial();
+    expect(
+      screen.getByText(`Wind: ${(20 * 0.621371).toFixed(1)} mph W`),
+    ).toBeInTheDocument();
+  });
+
+  it("renders precipitation in mm when metric", () => {
+    renderMetric();
+    expect(screen.getByText("Precip: 1.2 mm")).toBeInTheDocument();
+  });
+
+  it("renders precipitation in inches when imperial", () => {
+    renderImperial();
+    expect(
+      screen.getByText(`Precip: ${(1.2 / 25.4).toFixed(2)} in`),
+    ).toBeInTheDocument();
+  });
 });

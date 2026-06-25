@@ -5,14 +5,19 @@ import { WEATHER_EMOJI } from "@/lib/weatherEmoji";
 
 import { useSettings } from "./SettingsContext";
 
+const COMPASS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"] as const;
+
+function windDegToCompass(deg: number): string {
+  return COMPASS[Math.round(deg / 45) % 8];
+}
+
 /**
- * Displays current weather conditions as a simplified card.
+ * Displays current weather conditions as a card.
  *
  * Shows the current temperature (in the unit system from {@link useSettings}),
- * a large condition emoji in the top-right corner, and today's high/low
- * temperatures below the emoji. The detail grid (wind, humidity,
- * precipitation), location name, and song section are shown in separate
- * dedicated components.
+ * a large condition emoji, today's high/low and status text, and a details
+ * row with current wind speed (with 8-point compass direction) and
+ * precipitation amount.
  *
  * @param weather - Normalized weather data to display.
  * @returns The rendered weather card element.
@@ -34,6 +39,15 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
 
   const emoji = weather.status != null ? WEATHER_EMOJI[weather.status] : null;
 
+  const compass = windDegToCompass(weather.windDirectionDeg);
+  const displayWind = isMetric
+    ? `${weather.windSpeedKmh.toFixed(1)} km/h ${compass}`
+    : `${weather.windSpeedMph.toFixed(1)} mph ${compass}`;
+
+  const displayPrecip = isMetric
+    ? `${weather.precipitationMm.toFixed(1)} mm`
+    : `${weather.precipitationIn.toFixed(2)} in`;
+
   return (
     <div className="rounded-lg bg-zinc-50 p-2 text-zinc-900 dark:bg-zinc-900 dark:text-white">
       <div className="grid grid-cols-[auto_auto] place-items-center justify-around gap-y-2">
@@ -50,6 +64,10 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
             {weather.status}
           </div>
         )}
+      </div>
+      <div className="mt-2 flex justify-around text-sm text-zinc-600 dark:text-zinc-400">
+        <span>Wind: {displayWind}</span>
+        <span>Precip: {displayPrecip}</span>
       </div>
     </div>
   );

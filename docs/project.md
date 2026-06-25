@@ -92,7 +92,7 @@ the app.
 | `LocationModal`       | Full-screen overlay with `LocationSearch` form and saved favorites list; opens `RenameFavoriteModal` |
 | `RenameFavoriteModal` | Centered modal for editing a favorite's display name                                                 |
 | `LocationSearch`      | Text input + Go button                                                                               |
-| `WeatherCard`         | Current temperature, condition emoji, hi/lo                                                          |
+| `WeatherCard`         | Current temperature, condition emoji, hi/lo, wind speed with compass direction, and precipitation    |
 | `SongCard`            | Cover art, song title/artist, `MusicPlayer` controls                                                 |
 | `HourlyForecast`      | Horizontally scrolling 12-hour strip (temp + emoji + hour)                                           |
 | `ErrorCard`           | Error message + fallback song                                                                        |
