@@ -16,8 +16,8 @@ function windDegToCompass(deg: number): string {
  *
  * Shows the current temperature (in the unit system from {@link useSettings}),
  * a large condition emoji, today's high/low and status text, and a details
- * row with current wind speed (with 8-point compass direction) and
- * precipitation amount.
+ * grid with current wind speed (with 8-point compass direction), precipitation
+ * amount, feels-like temperature, and relative humidity.
  *
  * @param weather - Normalized weather data to display.
  * @returns The rendered weather card element.
@@ -48,6 +48,10 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
     ? `${weather.precipitationMm.toFixed(1)} mm`
     : `${weather.precipitationIn.toFixed(2)} in`;
 
+  const displayFeelsLike = isMetric
+    ? `${weather.feelsLikeCelsius.toFixed(1)}°C`
+    : `${weather.feelsLikeFahrenheit.toFixed(1)}°F`;
+
   return (
     <div className="rounded-lg bg-zinc-50 p-2 text-zinc-900 dark:bg-zinc-900 dark:text-white">
       <div className="grid grid-cols-[auto_auto] place-items-center justify-around gap-y-2">
@@ -65,9 +69,11 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
           </div>
         )}
       </div>
-      <div className="mt-2 flex justify-around text-sm text-zinc-600 dark:text-zinc-400">
+      <div className="mt-2 grid grid-cols-2 gap-y-1 text-sm text-zinc-600 dark:text-zinc-400">
         <span>Wind: {displayWind}</span>
         <span>Precip: {displayPrecip}</span>
+        <span>Feels like: {displayFeelsLike}</span>
+        <span>Humidity: {weather.humidityPercent}%</span>
       </div>
     </div>
   );

@@ -10,6 +10,8 @@ const mockWeather: WeatherData = {
   displayName: "Seattle, WA, US",
   temperatureCelsius: 15,
   temperatureFahrenheit: 59,
+  feelsLikeCelsius: 12,
+  feelsLikeFahrenheit: (12 * 9) / 5 + 32,
   windSpeedKmh: 20,
   windSpeedMph: 20 * 0.621371,
   windDirectionDeg: 270,
@@ -94,5 +96,22 @@ describe("WeatherCard", () => {
     expect(
       screen.getByText(`Precip: ${(1.2 / 25.4).toFixed(2)} in`),
     ).toBeInTheDocument();
+  });
+
+  it("renders feels-like temperature in Celsius when metric", () => {
+    renderMetric();
+    expect(screen.getByText("Feels like: 12.0°C")).toBeInTheDocument();
+  });
+
+  it("renders feels-like temperature in Fahrenheit when imperial", () => {
+    renderImperial();
+    expect(
+      screen.getByText(`Feels like: ${((12 * 9) / 5 + 32).toFixed(1)}°F`),
+    ).toBeInTheDocument();
+  });
+
+  it("renders humidity", () => {
+    renderMetric();
+    expect(screen.getByText("Humidity: 80%")).toBeInTheDocument();
   });
 });

@@ -113,12 +113,16 @@ export interface WeatherDataHourly {
 /**
  * Normalized current weather data returned from the forecast API.
  *
- * Temperature, wind speed, and precipitation are provided in both metric and
- * imperial units so the rendering layer can select without conversion.
+ * Temperature, wind speed, precipitation, and feels-like temperature are
+ * provided in both metric and imperial units so the rendering layer can
+ * select without conversion.
  *
  * @param displayName - Human-readable location name (city, region, country).
  * @param temperatureCelsius - Current temperature in degrees Celsius.
  * @param temperatureFahrenheit - Current temperature in degrees Fahrenheit.
+ * @param feelsLikeCelsius - Apparent (feels-like) temperature in degrees Celsius,
+ *   combining wind chill and heat index effects.
+ * @param feelsLikeFahrenheit - Apparent (feels-like) temperature in degrees Fahrenheit.
  * @param windSpeedKmh - Current wind speed in km/h.
  * @param windSpeedMph - Current wind speed in mph.
  * @param windDirectionDeg - Wind direction in degrees (0–360).
@@ -137,6 +141,8 @@ export interface WeatherData {
   displayName: string;
   temperatureCelsius: number;
   temperatureFahrenheit: number;
+  feelsLikeCelsius: number;
+  feelsLikeFahrenheit: number;
   windSpeedKmh: number;
   windSpeedMph: number;
   windDirectionDeg: number;
