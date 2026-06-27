@@ -41,6 +41,23 @@ Start the metal-weather Next.js dev server and open it in a browser.
    there were any compilation warnings or errors worth noting, surface them briefly.
    Only open the browser if the user explicitly asks.
 
+## Mocking Weather Data
+
+The app supports query parameters to override any weather field for testing. If the
+user wants to test a specific condition, append the relevant `_`-prefixed params to
+the URL. For example:
+
+- Foggy: `http://$HOST:$PORT?_status=Foggy`
+- Thunderstorm with heavy rain: `http://$HOST:$PORT?_status=Thunderstorm&_precipitationMm=40`
+- Cold: `http://$HOST:$PORT?_temperatureFahrenheit=-10`
+
+Read `src/lib/mockWeather.ts` for the full list of mockable fields (`MOCK_WEATHER_KEYS`)
+and `src/lib/types.ts` for the valid `WeatherStatus` values.
+
+When the user describes weather conditions they want to test (e.g. "test with a
+blizzard", "try it with hot sunny weather"), construct an appropriate URL with the
+relevant params and report that instead of the bare URL.
+
 ## Notes
 
 - The server hot-reloads on file changes; no restart needed for most edits.
