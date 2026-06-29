@@ -87,6 +87,28 @@ describe("geocodeLocation", () => {
     });
   });
 
+  it("requests English-language names from the geocoding API", async () => {
+    const fetchSpy = vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [
+        {
+          lat: "21.4225",
+          lon: "39.8262",
+          name: "Mecca",
+          address: {
+            city: "Mecca",
+            country: "Saudi Arabia",
+            country_code: "sa",
+          },
+        },
+      ],
+    } as Response);
+
+    await geocodeLocation("Mecca");
+    const url = fetchSpy.mock.calls[0][0] as string;
+    expect(url).toContain("accept-language=en");
+  });
+
   it("omits missing state/country fields from displayName", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
@@ -640,6 +662,23 @@ describe("reverseGeocodeOsm", () => {
 
     const result = await reverseGeocodeOsm(48.8566, 2.3522);
     expect(result).toBe("Paris, France");
+  });
+
+  it("requests English-language names from the reverse geocoding API", async () => {
+    const fetchSpy = vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        address: {
+          city: "Mecca",
+          country: "Saudi Arabia",
+          country_code: "sa",
+        },
+      }),
+    } as Response);
+
+    await reverseGeocodeOsm(21.4225, 39.8262);
+    const url = fetchSpy.mock.calls[0][0] as string;
+    expect(url).toContain("accept-language=en");
   });
 
   it("falls back to country when US subdivision has no abbreviation", async () => {

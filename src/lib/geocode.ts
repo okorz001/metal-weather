@@ -139,8 +139,10 @@ interface OsmResult {
  * are treated as city names. For city name queries, accepts an optional
  * comma-separated qualifier (e.g. `"San Jose, CA"`) to disambiguate results
  * by matching the qualifier against the state, county, country, or country
- * code fields; falls back to the top result if no qualifier matches. Throws a
- * descriptive error if no results are found or the request fails.
+ * code fields; falls back to the top result if no qualifier matches. Requests
+ * English-language names so that the exact-name match works for places whose
+ * local name uses a non-Latin script (e.g. Mecca). Throws a descriptive error
+ * if no results are found or the request fails.
  *
  * @param location - The location to search for (e.g. `"Seattle"`, `"San Jose, CA"`, or `"95124"`).
  * @returns The latitude, longitude, and human-readable display name of the location.
@@ -155,7 +157,7 @@ export async function geocodeLocation(
   const query = isZip
     ? `postalcode=${encodeURIComponent(cityName)}&countrycodes=us&limit=1`
     : `q=${encodeURIComponent(cityName)}&limit=10`;
-  const url = `${OSM_URL}?${query}&format=json&addressdetails=1`;
+  const url = `${OSM_URL}?${query}&format=json&addressdetails=1&accept-language=en`;
 
   let response: Response;
   try {
@@ -344,7 +346,7 @@ export async function reverseGeocodeOsm(
   lat: number,
   lon: number,
 ): Promise<string> {
-  const url = `${OSM_REVERSE_URL}?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
+  const url = `${OSM_REVERSE_URL}?lat=${lat}&lon=${lon}&format=json&addressdetails=1&accept-language=en`;
 
   let response: Response;
   try {
