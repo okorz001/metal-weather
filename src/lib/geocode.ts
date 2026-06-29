@@ -162,7 +162,7 @@ export async function geocodeLocation(
   const isZip = /^\d{5}$/.test(cityName);
   const query = isZip
     ? `postalcode=${encodeURIComponent(cityName)}&countrycodes=us&limit=1`
-    : `q=${encodeURIComponent(cityName)}&limit=10`;
+    : `q=${encodeURIComponent(location)}&limit=10`;
   const url = `${OSM_URL}?${query}&format=json&addressdetails=1&accept-language=en`;
 
   let response: Response;
