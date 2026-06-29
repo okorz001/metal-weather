@@ -5,19 +5,12 @@ import { WEATHER_EMOJI } from "@/lib/weatherEmoji";
 
 import { useSettings } from "./SettingsContext";
 
-const COMPASS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"] as const;
-
-function windDegToCompass(deg: number): string {
-  return COMPASS[Math.round(deg / 45) % 8];
-}
-
 /**
  * Displays current weather conditions as a card.
  *
  * Shows the current temperature (in the unit system from {@link useSettings}),
  * a large condition emoji, today's high/low and status text, and a details
- * grid with current wind speed (with 8-point compass direction), precipitation
- * amount, feels-like temperature, and relative humidity.
+ * row with current wind speed and precipitation amount.
  *
  * @param weather - Normalized weather data to display.
  * @returns The rendered weather card element.
@@ -26,54 +19,45 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
   const { isMetric } = useSettings();
 
   const displayTemp = isMetric
-    ? `${weather.temperatureCelsius.toFixed(1)}°C`
-    : `${weather.temperatureFahrenheit.toFixed(1)}°F`;
+    ? `${Math.round(weather.temperatureCelsius)}°C`
+    : `${Math.round(weather.temperatureFahrenheit)}°F`;
 
   const displayHigh = isMetric
-    ? `${weather.highCelsius.toFixed(1)}°`
-    : `${weather.highFahrenheit.toFixed(1)}°`;
+    ? `${Math.round(weather.highCelsius)}°`
+    : `${Math.round(weather.highFahrenheit)}°`;
 
   const displayLow = isMetric
-    ? `${weather.lowCelsius.toFixed(1)}°`
-    : `${weather.lowFahrenheit.toFixed(1)}°`;
+    ? `${Math.round(weather.lowCelsius)}°`
+    : `${Math.round(weather.lowFahrenheit)}°`;
 
   const emoji = weather.status != null ? WEATHER_EMOJI[weather.status] : null;
 
-  const compass = windDegToCompass(weather.windDirectionDeg);
   const displayWind = isMetric
-    ? `${weather.windSpeedKmh.toFixed(1)} km/h ${compass}`
-    : `${weather.windSpeedMph.toFixed(1)} mph ${compass}`;
+    ? `${weather.windSpeedKmh.toFixed(1)} km/h`
+    : `${weather.windSpeedMph.toFixed(1)} mph`;
 
   const displayPrecip = isMetric
     ? `${weather.precipitationMm.toFixed(1)} mm`
     : `${weather.precipitationIn.toFixed(2)} in`;
 
-  const displayFeelsLike = isMetric
-    ? `${weather.feelsLikeCelsius.toFixed(1)}°C`
-    : `${weather.feelsLikeFahrenheit.toFixed(1)}°F`;
-
   return (
     <div className="rounded-lg bg-zinc-50 p-2 text-zinc-900 dark:bg-zinc-900 dark:text-white">
-      <div className="grid grid-cols-[auto_auto] place-items-center justify-around gap-y-2">
-        {/* -mb-8 compensates for extra whitespace below glyphs in the serif font */}
-        <div className="-mb-4 font-serif text-8xl leading-none">
+      <div className="grid grid-cols-2 place-items-center gap-1">
+        {/* -mb-4 compensates for extra whitespace below glyphs in the serif font */}
+        <div className="-mb-6 font-serif text-7xl leading-none">
           {displayTemp}
         </div>
-        {emoji && <div className="text-7xl leading-none">{emoji}</div>}
-        <div className="text-zinc-600 dark:text-zinc-400">
-          {displayHigh} / {displayLow}
+        {emoji ? <div className="text-7xl leading-none">{emoji}</div> : <div />}
+        <div>
+          <span className="mr-1 text-xl font-bold text-red-500">↑</span>
+          {displayHigh}{" "}
+          <span className="text-zinc-600 dark:text-zinc-400">/</span>{" "}
+          <span className="mr-1 text-xl font-bold text-blue-500">↓</span>
+          {displayLow}
         </div>
-        {weather.status && (
-          <div className="text-zinc-600 dark:text-zinc-400">
-            {weather.status}
-          </div>
-        )}
-      </div>
-      <div className="mt-2 grid grid-cols-2 gap-y-1 text-sm text-zinc-600 dark:text-zinc-400">
-        <span>Wind: {displayWind}</span>
-        <span>Precip: {displayPrecip}</span>
-        <span>Feels like: {displayFeelsLike}</span>
-        <span>Humidity: {weather.humidityPercent}%</span>
+        {weather.status ? <div>{weather.status}</div> : <div />}
+        <span>💨 {displayWind}</span>
+        <span>💧 {displayPrecip}</span>
       </div>
     </div>
   );
