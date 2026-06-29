@@ -11,6 +11,8 @@ const MOCK_WEATHER_KEYS = [
   "displayName",
   "temperatureCelsius",
   "temperatureFahrenheit",
+  "feelsLikeCelsius",
+  "feelsLikeFahrenheit",
   "windSpeedKmh",
   "windSpeedMph",
   "windDirectionDeg",

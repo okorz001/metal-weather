@@ -21,6 +21,7 @@ describe("fetchWeather", () => {
         current: {
           time: "2024-01-01T00:00",
           temperature_2m: 10.5,
+          apparent_temperature: 9.0,
           wind_speed_10m: 15.2,
           wind_direction_10m: 180,
           relative_humidity_2m: 75,
@@ -48,6 +49,8 @@ describe("fetchWeather", () => {
       displayName: "Seattle, Washington, United States",
       temperatureCelsius: 10.5,
       temperatureFahrenheit: (10.5 * 9) / 5 + 32,
+      feelsLikeCelsius: 9.0,
+      feelsLikeFahrenheit: (9.0 * 9) / 5 + 32,
       windSpeedKmh: 15.2,
       windSpeedMph: 15.2 * 0.621371,
       windDirectionDeg: 180,
@@ -75,6 +78,7 @@ describe("fetchWeather", () => {
         current: {
           time: "2024-01-01T05:37",
           temperature_2m: 10.5,
+          apparent_temperature: 9.0,
           wind_speed_10m: 15.2,
           wind_direction_10m: 180,
           relative_humidity_2m: 75,
@@ -105,6 +109,7 @@ describe("fetchWeather", () => {
         current: {
           time: "2024-01-01T00:00",
           temperature_2m: 10.5,
+          apparent_temperature: 9.0,
           wind_speed_10m: 15.2,
           wind_direction_10m: 180,
           relative_humidity_2m: 75,

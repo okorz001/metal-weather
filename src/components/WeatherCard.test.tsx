@@ -10,6 +10,8 @@ const mockWeather: WeatherData = {
   displayName: "Seattle, WA, US",
   temperatureCelsius: 15,
   temperatureFahrenheit: 59,
+  feelsLikeCelsius: 12,
+  feelsLikeFahrenheit: (12 * 9) / 5 + 32,
   windSpeedKmh: 20,
   windSpeedMph: 20 * 0.621371,
   windDirectionDeg: 270,
@@ -54,21 +56,49 @@ describe("WeatherCard", () => {
 
   it("renders temperature in Celsius when metric", () => {
     renderMetric();
-    expect(screen.getByText("15.0°C")).toBeInTheDocument();
+    expect(screen.getByText("15°C")).toBeInTheDocument();
   });
 
   it("renders temperature in Fahrenheit when imperial", () => {
     renderImperial();
-    expect(screen.getByText("59.0°F")).toBeInTheDocument();
+    expect(screen.getByText("59°F")).toBeInTheDocument();
   });
 
   it("renders high/low in Celsius when metric", () => {
     renderMetric();
-    expect(screen.getByText("18.0° / 10.0°")).toBeInTheDocument();
+    expect(
+      screen.getByText((_, el) => el?.textContent === "↑18° / ↓10°"),
+    ).toBeInTheDocument();
   });
 
   it("renders high/low in Fahrenheit when imperial", () => {
     renderImperial();
-    expect(screen.getByText("64.4° / 50.0°")).toBeInTheDocument();
+    expect(
+      screen.getByText((_, el) => el?.textContent === "↑64° / ↓50°"),
+    ).toBeInTheDocument();
+  });
+
+  it("renders wind speed in km/h with compass direction when metric", () => {
+    renderMetric();
+    expect(screen.getByText("💨 20.0 km/h")).toBeInTheDocument();
+  });
+
+  it("renders wind speed in mph with compass direction when imperial", () => {
+    renderImperial();
+    expect(
+      screen.getByText(`💨 ${(20 * 0.621371).toFixed(1)} mph`),
+    ).toBeInTheDocument();
+  });
+
+  it("renders precipitation in mm when metric", () => {
+    renderMetric();
+    expect(screen.getByText("💧 1.2 mm")).toBeInTheDocument();
+  });
+
+  it("renders precipitation in inches when imperial", () => {
+    renderImperial();
+    expect(
+      screen.getByText(`💧 ${(1.2 / 25.4).toFixed(2)} in`),
+    ).toBeInTheDocument();
   });
 });

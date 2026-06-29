@@ -24,6 +24,8 @@ const mockWeather: WeatherData = {
   displayName: "Seattle, WA, US",
   temperatureCelsius: 15,
   temperatureFahrenheit: 59,
+  feelsLikeCelsius: 12,
+  feelsLikeFahrenheit: 53.6,
   windSpeedKmh: 20,
   windSpeedMph: 12.4,
   windDirectionDeg: 270,

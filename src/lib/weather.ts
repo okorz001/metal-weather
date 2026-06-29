@@ -65,7 +65,7 @@ const WEATHER_CODE_STATUS: Partial<Record<WeatherCode, WeatherStatus>> = {
 
 const FORECAST_URL = "https://api.open-meteo.com/v1/forecast";
 const CURRENT_FIELDS =
-  "temperature_2m,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,weather_code";
+  "temperature_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,weather_code";
 const DAILY_FIELDS = "temperature_2m_max,temperature_2m_min";
 const HOURLY_FIELDS = "temperature_2m,weather_code";
 
@@ -104,6 +104,7 @@ export async function fetchWeather(
     current: {
       time: string;
       temperature_2m: number;
+      apparent_temperature: number;
       wind_speed_10m: number;
       wind_direction_10m: number;
       relative_humidity_2m: number;
@@ -123,6 +124,7 @@ export async function fetchWeather(
 
   const { current, daily } = data;
   const temperatureCelsius = current.temperature_2m;
+  const feelsLikeCelsius = current.apparent_temperature;
   const windSpeedKmh = current.wind_speed_10m;
   const precipitationMm = current.precipitation;
   const highCelsius = daily.temperature_2m_max[0];
@@ -149,6 +151,8 @@ export async function fetchWeather(
     displayName,
     temperatureCelsius,
     temperatureFahrenheit: (temperatureCelsius * 9) / 5 + 32,
+    feelsLikeCelsius,
+    feelsLikeFahrenheit: (feelsLikeCelsius * 9) / 5 + 32,
     windSpeedKmh,
     windSpeedMph: windSpeedKmh * 0.621371,
     windDirectionDeg: current.wind_direction_10m,
