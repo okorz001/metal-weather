@@ -333,6 +333,70 @@ describe("geocodeLocation", () => {
     expect(result.lat).toBe(47.60621);
   });
 
+  it("resolves qualifier against all results when name-matched pool lacks it", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [
+        {
+          place_rank: 20,
+          lat: "44.0",
+          lon: "7.0",
+          name: "Mecca",
+          address: {
+            city: "Mecca",
+            country: "Italy",
+            country_code: "it",
+          },
+        },
+        {
+          place_rank: 12,
+          lat: "21.4225",
+          lon: "39.8262",
+          name: "Makkah Al Mukarramah",
+          address: {
+            city: "Makkah Al Mukarramah",
+            country: "Saudi Arabia",
+            country_code: "sa",
+          },
+        },
+      ],
+    } as Response);
+
+    const result = await geocodeLocation("Mecca, Saudi Arabia");
+    expect(result.lat).toBeCloseTo(21.4225);
+    expect(result.lon).toBeCloseTo(39.8262);
+  });
+
+  it("prefers lower place_rank result when multiple name matches exist", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [
+        {
+          place_rank: 20,
+          lat: "44.0",
+          lon: "7.0",
+          name: "Mecca",
+          address: { city: "Mecca", country: "Italy", country_code: "it" },
+        },
+        {
+          place_rank: 16,
+          lat: "33.9",
+          lon: "-116.1",
+          name: "Mecca",
+          address: {
+            city: "Mecca",
+            state: "California",
+            country: "United States",
+            country_code: "us",
+          },
+        },
+      ],
+    } as Response);
+
+    const result = await geocodeLocation("Mecca");
+    expect(result.lat).toBeCloseTo(33.9);
+  });
+
   it("throws when result name tokens are prefixes of the query token", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,

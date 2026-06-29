@@ -118,6 +118,7 @@ interface OsmResult {
   name?: string;
   lat: string;
   lon: string;
+  place_rank?: number;
   address?: {
     suburb?: string;
     neighbourhood?: string;
@@ -139,10 +140,15 @@ interface OsmResult {
  * are treated as city names. For city name queries, accepts an optional
  * comma-separated qualifier (e.g. `"San Jose, CA"`) to disambiguate results
  * by matching the qualifier against the state, county, country, or country
- * code fields; falls back to the top result if no qualifier matches. Requests
+ * code fields. Results are sorted by `place_rank` so that city-level results
+ * rank above hamlets. Qualifier matching first searches name-matched results,
+ * then falls back to all results sorted by `place_rank` so that a qualifier
+ * like `"Saudi Arabia"` can still match a city whose local name differs from
+ * the query (e.g. `"mecca"` → Makkah Al Mukarramah). Falls back to the
+ * top-ranked name-matched result when no qualifier matches. Requests
  * English-language names so that the exact-name match works for places whose
- * local name uses a non-Latin script (e.g. Mecca). Throws a descriptive error
- * if no results are found or the request fails.
+ * local name uses a non-Latin script. Throws a descriptive error if no
+ * results are found or the request fails.
  *
  * @param location - The location to search for (e.g. `"Seattle"`, `"San Jose, CA"`, or `"95124"`).
  * @returns The latitude, longitude, and human-readable display name of the location.
@@ -180,6 +186,10 @@ export async function geocodeLocation(
     throw new Error(`Location not found: "${location}"`);
   }
 
+  const sorted = [...data].sort(
+    (a, b) => (a.place_rank ?? 30) - (b.place_rank ?? 30),
+  );
+
   const matches = (field: string, q: string) => {
     const expanded = US_STATE_ABBREVS[q.toUpperCase()];
     const candidates = expanded ? [expanded, q] : [q];
@@ -190,17 +200,17 @@ export async function geocodeLocation(
     });
   };
 
-  const nameMatches = data.filter(
+  const nameMatches = sorted.filter(
     (r) => r.name && normalize(r.name) === normalize(cityName),
   );
 
-  let fallbackPool = data;
+  let fallbackPool = sorted;
   if (!isZip && nameMatches.length === 0) {
     const queryTokens = cityName
       .split(/[^a-zA-Z0-9]+/)
       .map(normalize)
       .filter(Boolean);
-    const relevant = data.filter((r) => {
+    const relevant = sorted.filter((r) => {
       if (!r.name) return false;
       const nameTokens = normalize(r.name)
         .split(/[^a-z0-9]+/)
@@ -220,7 +230,7 @@ export async function geocodeLocation(
   let result = pool[0];
 
   if (qualifiers.length > 0) {
-    const match = pool.find((r) =>
+    const qualifierPredicate = (r: OsmResult) =>
       qualifiers.some((q) =>
         [
           r.address?.state,
@@ -230,8 +240,9 @@ export async function geocodeLocation(
         ]
           .filter(Boolean)
           .some((field) => matches(field!, q)),
-      ),
-    );
+      );
+    const match =
+      pool.find(qualifierPredicate) ?? sorted.find(qualifierPredicate);
     if (match) result = match;
   }
 
