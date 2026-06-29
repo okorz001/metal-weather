@@ -140,15 +140,13 @@ interface OsmResult {
  * are treated as city names. For city name queries, accepts an optional
  * comma-separated qualifier (e.g. `"San Jose, CA"`) to disambiguate results
  * by matching the qualifier against the state, county, country, or country
- * code fields. Results are sorted by `place_rank` so that city-level results
- * rank above hamlets. Qualifier matching first searches name-matched results,
- * then falls back to all results sorted by `place_rank` so that a qualifier
- * like `"Saudi Arabia"` can still match a city whose local name differs from
- * the query (e.g. `"mecca"` → Makkah Al Mukarramah). Falls back to the
- * top-ranked name-matched result when no qualifier matches. Requests
- * English-language names so that the exact-name match works for places whose
- * local name uses a non-Latin script. Throws a descriptive error if no
- * results are found or the request fails.
+ * code fields. The full location string (including qualifier) is sent to
+ * Nominatim so that it can rank results appropriately; when a qualifier is
+ * present the name-match filter is skipped and the qualifier is applied
+ * directly to all results sorted by `place_rank`. For unqualified queries,
+ * results are filtered to those whose name matches the query token, falling
+ * back to token-prefix matching. Throws a descriptive error if no results
+ * are found or the request fails.
  *
  * @param location - The location to search for (e.g. `"Seattle"`, `"San Jose, CA"`, or `"95124"`).
  * @returns The latitude, longitude, and human-readable display name of the location.
@@ -200,32 +198,35 @@ export async function geocodeLocation(
     });
   };
 
-  const nameMatches = sorted.filter(
-    (r) => r.name && normalize(r.name) === normalize(cityName),
-  );
-
-  let fallbackPool = sorted;
-  if (!isZip && nameMatches.length === 0) {
-    const queryTokens = cityName
-      .split(/[^a-zA-Z0-9]+/)
-      .map(normalize)
-      .filter(Boolean);
-    const relevant = sorted.filter((r) => {
-      if (!r.name) return false;
-      const nameTokens = normalize(r.name)
-        .split(/[^a-z0-9]+/)
+  let pool: OsmResult[];
+  if (isZip || qualifiers.length > 0) {
+    pool = sorted;
+  } else {
+    const nameMatches = sorted.filter(
+      (r) => r.name && normalize(r.name) === normalize(cityName),
+    );
+    if (nameMatches.length > 0) {
+      pool = nameMatches;
+    } else {
+      const queryTokens = cityName
+        .split(/[^a-zA-Z0-9]+/)
+        .map(normalize)
         .filter(Boolean);
-      return queryTokens.some((qt) =>
-        nameTokens.some((nt) => nt.startsWith(qt)),
-      );
-    });
-    if (relevant.length === 0) {
-      throw new Error(`Location not found: "${location}"`);
+      const relevant = sorted.filter((r) => {
+        if (!r.name) return false;
+        const nameTokens = normalize(r.name)
+          .split(/[^a-z0-9]+/)
+          .filter(Boolean);
+        return queryTokens.some((qt) =>
+          nameTokens.some((nt) => nt.startsWith(qt)),
+        );
+      });
+      if (relevant.length === 0) {
+        throw new Error(`Location not found: "${location}"`);
+      }
+      pool = relevant;
     }
-    fallbackPool = relevant;
   }
-
-  const pool = nameMatches.length > 0 ? nameMatches : fallbackPool;
 
   let result = pool[0];
 
@@ -241,8 +242,7 @@ export async function geocodeLocation(
           .filter(Boolean)
           .some((field) => matches(field!, q)),
       );
-    const match =
-      pool.find(qualifierPredicate) ?? sorted.find(qualifierPredicate);
+    const match = pool.find(qualifierPredicate);
     if (match) result = match;
   }
 
