@@ -118,7 +118,7 @@ interface OsmResult {
   name?: string;
   lat: string;
   lon: string;
-  place_rank?: number;
+  importance?: number;
   address?: {
     suburb?: string;
     neighbourhood?: string;
@@ -143,7 +143,7 @@ interface OsmResult {
  * code fields. The full location string (including qualifier) is sent to
  * Nominatim so that it can rank results appropriately; when a qualifier is
  * present the name-match filter is skipped and the qualifier is applied
- * directly to all results sorted by `place_rank`. For unqualified queries,
+ * directly to all results sorted by `importance`. For unqualified queries,
  * results are filtered to those whose name matches the query token, falling
  * back to token-prefix matching. Throws a descriptive error if no results
  * are found or the request fails.
@@ -185,7 +185,7 @@ export async function geocodeLocation(
   }
 
   const sorted = [...data].sort(
-    (a, b) => (a.place_rank ?? 30) - (b.place_rank ?? 30),
+    (a, b) => (b.importance ?? 0) - (a.importance ?? 0),
   );
 
   const matches = (field: string, q: string) => {

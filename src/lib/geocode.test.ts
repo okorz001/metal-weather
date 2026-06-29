@@ -338,7 +338,7 @@ describe("geocodeLocation", () => {
       ok: true,
       json: async () => [
         {
-          place_rank: 20,
+          importance: 0.3,
           lat: "44.0",
           lon: "7.0",
           name: "Mecca",
@@ -349,7 +349,7 @@ describe("geocodeLocation", () => {
           },
         },
         {
-          place_rank: 12,
+          importance: 0.6,
           lat: "21.4225",
           lon: "39.8262",
           name: "Makkah Al Mukarramah",
@@ -367,19 +367,19 @@ describe("geocodeLocation", () => {
     expect(result.lon).toBeCloseTo(39.8262);
   });
 
-  it("prefers lower place_rank result when multiple name matches exist", async () => {
+  it("prefers higher importance result when multiple name matches exist", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => [
         {
-          place_rank: 20,
+          importance: 0.3,
           lat: "44.0",
           lon: "7.0",
           name: "Mecca",
           address: { city: "Mecca", country: "Italy", country_code: "it" },
         },
         {
-          place_rank: 16,
+          importance: 0.6,
           lat: "33.9",
           lon: "-116.1",
           name: "Mecca",
