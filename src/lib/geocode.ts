@@ -56,10 +56,6 @@ const US_STATES: Record<string, string> = {
   Wyoming: "WY",
 };
 
-const US_STATE_ABBREVS: Record<string, string> = Object.fromEntries(
-  Object.entries(US_STATES).map(([name, abbrev]) => [abbrev, name]),
-);
-
 /**
  * Normalizes a string for case- and accent-insensitive comparison.
  *
@@ -140,11 +136,10 @@ interface OsmResult {
  * are treated as city names. For city name queries, accepts an optional
  * comma-separated qualifier (e.g. `"San Jose, CA"`) to disambiguate results
  * by matching the qualifier against the state, county, country, or country
- * code fields. The full location string (including qualifier) is sent to
- * Nominatim so that it can rank results appropriately. Results are sorted
- * by `importance` (Nominatim's Wikipedia-derived score) and the top result
- * is used; when a qualifier is present the top qualifier-matching result is
- * preferred. Throws a descriptive error if no results are found or the
+ * code fields. The full location string is sent to Nominatim so that it
+ * can apply qualifier disambiguation natively. Results are sorted by
+ * `importance` (Nominatim's Wikipedia-derived score) and the top result is
+ * returned. Throws a descriptive error if no results are found or the
  * request fails.
  *
  * @param location - The location to search for (e.g. `"Seattle"`, `"San Jose, CA"`, or `"95124"`).
@@ -153,8 +148,7 @@ interface OsmResult {
 export async function geocodeLocation(
   location: string,
 ): Promise<{ lat: number; lon: number; displayName: string }> {
-  const [cityName, ...rest] = location.split(",").map((s) => s.trim());
-  const qualifiers = rest.filter(Boolean);
+  const [cityName] = location.split(",").map((s) => s.trim());
 
   const isZip = /^\d{5}$/.test(cityName);
   const query = isZip
@@ -187,33 +181,7 @@ export async function geocodeLocation(
     (a, b) => (b.importance ?? 0) - (a.importance ?? 0),
   );
 
-  const matches = (field: string, q: string) => {
-    const expanded = US_STATE_ABBREVS[q.toUpperCase()];
-    const candidates = expanded ? [expanded, q] : [q];
-    return candidates.some((candidate) => {
-      const f = normalize(field);
-      const lq = normalize(candidate);
-      return f === lq || f.split(/\s+/).some((word) => word.startsWith(lq));
-    });
-  };
-
-  let result = sorted[0];
-
-  if (qualifiers.length > 0) {
-    const qualifierPredicate = (r: OsmResult) =>
-      qualifiers.some((q) =>
-        [
-          r.address?.state,
-          r.address?.county,
-          r.address?.country,
-          r.address?.country_code?.toUpperCase(),
-        ]
-          .filter(Boolean)
-          .some((field) => matches(field!, q)),
-      );
-    const match = sorted.find(qualifierPredicate);
-    if (match) result = match;
-  }
+  const result = sorted[0];
 
   const area =
     result.address?.suburb ??
