@@ -56,23 +56,6 @@ const US_STATES: Record<string, string> = {
   Wyoming: "WY",
 };
 
-/**
- * Normalizes a string for case- and accent-insensitive comparison.
- *
- * Lowercases the input and strips combining diacritical marks (e.g. accents)
- * so that values like `"San José"` and `"San Jose"` compare as equal. This
- * lets name and qualifier matching succeed regardless of accent usage.
- *
- * @param value - The string to normalize.
- * @returns The lowercased, accent-stripped form of the input.
- */
-function normalize(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase();
-}
-
 function formatDisplayName(
   city: string | undefined,
   subdivision: string | undefined,
@@ -133,14 +116,11 @@ interface OsmResult {
  *
  * Calls the Nominatim (OpenStreetMap) Geocoding API and returns the best
  * match. A 5-digit input is treated as a US postal code; all other inputs
- * are treated as city names. For city name queries, accepts an optional
- * comma-separated qualifier (e.g. `"San Jose, CA"`) to disambiguate results
- * by matching the qualifier against the state, county, country, or country
- * code fields. The full location string is sent to Nominatim so that it
- * can apply qualifier disambiguation natively. Results are sorted by
- * `importance` (Nominatim's Wikipedia-derived score) and the top result is
- * returned. Throws a descriptive error if no results are found or the
- * request fails.
+ * are treated as city names and passed in full to Nominatim (e.g.
+ * `"San Jose, CA"` is sent as-is so Nominatim can apply qualifier
+ * disambiguation natively). Results are sorted by `importance`
+ * (Nominatim's Wikipedia-derived score) and the top result is returned.
+ * Throws a descriptive error if no results are found or the request fails.
  *
  * @param location - The location to search for (e.g. `"Seattle"`, `"San Jose, CA"`, or `"95124"`).
  * @returns The latitude, longitude, and human-readable display name of the location.
