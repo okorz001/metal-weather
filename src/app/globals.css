@@ -2,5 +2,6 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  --font-sans: var(--font-noto-sans), var(--font-noto-color-emoji), sans-serif;
   --font-serif: var(--font-jim-nightshade), serif;
 }
