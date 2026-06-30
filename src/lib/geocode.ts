@@ -56,27 +56,6 @@ const US_STATES: Record<string, string> = {
   Wyoming: "WY",
 };
 
-const US_STATE_ABBREVS: Record<string, string> = Object.fromEntries(
-  Object.entries(US_STATES).map(([name, abbrev]) => [abbrev, name]),
-);
-
-/**
- * Normalizes a string for case- and accent-insensitive comparison.
- *
- * Lowercases the input and strips combining diacritical marks (e.g. accents)
- * so that values like `"San José"` and `"San Jose"` compare as equal. This
- * lets name and qualifier matching succeed regardless of accent usage.
- *
- * @param value - The string to normalize.
- * @returns The lowercased, accent-stripped form of the input.
- */
-function normalize(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase();
-}
-
 function formatDisplayName(
   city: string | undefined,
   subdivision: string | undefined,
@@ -118,6 +97,7 @@ interface OsmResult {
   name?: string;
   lat: string;
   lon: string;
+  importance?: number;
   address?: {
     suburb?: string;
     neighbourhood?: string;
@@ -136,11 +116,11 @@ interface OsmResult {
  *
  * Calls the Nominatim (OpenStreetMap) Geocoding API and returns the best
  * match. A 5-digit input is treated as a US postal code; all other inputs
- * are treated as city names. For city name queries, accepts an optional
- * comma-separated qualifier (e.g. `"San Jose, CA"`) to disambiguate results
- * by matching the qualifier against the state, county, country, or country
- * code fields; falls back to the top result if no qualifier matches. Throws a
- * descriptive error if no results are found or the request fails.
+ * are treated as city names and passed in full to Nominatim (e.g.
+ * `"San Jose, CA"` is sent as-is so Nominatim can apply qualifier
+ * disambiguation natively). Results are sorted by `importance`
+ * (Nominatim's Wikipedia-derived score) and the top result is returned.
+ * Throws a descriptive error if no results are found or the request fails.
  *
  * @param location - The location to search for (e.g. `"Seattle"`, `"San Jose, CA"`, or `"95124"`).
  * @returns The latitude, longitude, and human-readable display name of the location.
@@ -148,14 +128,13 @@ interface OsmResult {
 export async function geocodeLocation(
   location: string,
 ): Promise<{ lat: number; lon: number; displayName: string }> {
-  const [cityName, ...rest] = location.split(",").map((s) => s.trim());
-  const qualifiers = rest.filter(Boolean);
+  const [cityName] = location.split(",").map((s) => s.trim());
 
   const isZip = /^\d{5}$/.test(cityName);
   const query = isZip
     ? `postalcode=${encodeURIComponent(cityName)}&countrycodes=us&limit=1`
-    : `q=${encodeURIComponent(cityName)}&limit=10`;
-  const url = `${OSM_URL}?${query}&format=json&addressdetails=1`;
+    : `q=${encodeURIComponent(location)}&limit=10`;
+  const url = `${OSM_URL}?${query}&format=json&addressdetails=1&accept-language=en`;
 
   let response: Response;
   try {
@@ -178,60 +157,11 @@ export async function geocodeLocation(
     throw new Error(`Location not found: "${location}"`);
   }
 
-  const matches = (field: string, q: string) => {
-    const expanded = US_STATE_ABBREVS[q.toUpperCase()];
-    const candidates = expanded ? [expanded, q] : [q];
-    return candidates.some((candidate) => {
-      const f = normalize(field);
-      const lq = normalize(candidate);
-      return f === lq || f.split(/\s+/).some((word) => word.startsWith(lq));
-    });
-  };
-
-  const nameMatches = data.filter(
-    (r) => r.name && normalize(r.name) === normalize(cityName),
+  const sorted = [...data].sort(
+    (a, b) => (b.importance ?? 0) - (a.importance ?? 0),
   );
 
-  let fallbackPool = data;
-  if (!isZip && nameMatches.length === 0) {
-    const queryTokens = cityName
-      .split(/[^a-zA-Z0-9]+/)
-      .map(normalize)
-      .filter(Boolean);
-    const relevant = data.filter((r) => {
-      if (!r.name) return false;
-      const nameTokens = normalize(r.name)
-        .split(/[^a-z0-9]+/)
-        .filter(Boolean);
-      return queryTokens.some((qt) =>
-        nameTokens.some((nt) => nt.startsWith(qt)),
-      );
-    });
-    if (relevant.length === 0) {
-      throw new Error(`Location not found: "${location}"`);
-    }
-    fallbackPool = relevant;
-  }
-
-  const pool = nameMatches.length > 0 ? nameMatches : fallbackPool;
-
-  let result = pool[0];
-
-  if (qualifiers.length > 0) {
-    const match = pool.find((r) =>
-      qualifiers.some((q) =>
-        [
-          r.address?.state,
-          r.address?.county,
-          r.address?.country,
-          r.address?.country_code?.toUpperCase(),
-        ]
-          .filter(Boolean)
-          .some((field) => matches(field!, q)),
-      ),
-    );
-    if (match) result = match;
-  }
+  const result = sorted[0];
 
   const area =
     result.address?.suburb ??
@@ -344,7 +274,7 @@ export async function reverseGeocodeOsm(
   lat: number,
   lon: number,
 ): Promise<string> {
-  const url = `${OSM_REVERSE_URL}?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
+  const url = `${OSM_REVERSE_URL}?lat=${lat}&lon=${lon}&format=json&addressdetails=1&accept-language=en`;
 
   let response: Response;
   try {
