@@ -200,44 +200,7 @@ describe("geocodeLocation", () => {
     });
   });
 
-  it("prefers exact name match over higher-ranked result with different name", async () => {
-    vi.spyOn(global, "fetch").mockResolvedValue({
-      ok: true,
-      json: async () => [
-        {
-          lat: "39.9",
-          lon: "-84.2",
-          name: "Venice Township",
-          address: {
-            city: "Venice Township",
-            state: "Ohio",
-            country: "United States",
-            country_code: "us",
-          },
-        },
-        {
-          lat: "45.4375",
-          lon: "12.3358",
-          name: "Venice",
-          address: {
-            city: "Venice",
-            state: "Veneto",
-            country: "Italy",
-            country_code: "it",
-          },
-        },
-      ],
-    } as Response);
-
-    const result = await geocodeLocation("Venice");
-    expect(result).toEqual({
-      lat: 45.4375,
-      lon: 12.3358,
-      displayName: "Venice, Italy",
-    });
-  });
-
-  it("applies qualifier filtering within exact name matches", async () => {
+  it("applies qualifier filtering within results", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => [
@@ -333,7 +296,7 @@ describe("geocodeLocation", () => {
     expect(result.lat).toBe(47.60621);
   });
 
-  it("resolves qualifier against all results when name-matched pool lacks it", async () => {
+  it("resolves qualifier when top result name does not match query", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => [
@@ -367,7 +330,7 @@ describe("geocodeLocation", () => {
     expect(result.lon).toBeCloseTo(39.8262);
   });
 
-  it("prefers higher importance result when multiple name matches exist", async () => {
+  it("prefers higher importance result when multiple results exist", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => [
@@ -397,53 +360,7 @@ describe("geocodeLocation", () => {
     expect(result.lat).toBeCloseTo(33.9);
   });
 
-  it("throws when result name tokens are prefixes of the query token", async () => {
-    vi.spyOn(global, "fetch").mockResolvedValue({
-      ok: true,
-      json: async () => [
-        {
-          lat: "53.958",
-          lon: "-1.082",
-          name: "Lam",
-          address: {
-            suburb: "Bishophill",
-            city: "York",
-            country: "United Kingdom",
-            country_code: "gb",
-          },
-        },
-      ],
-    } as Response);
-
-    await expect(geocodeLocation("Lamcaster")).rejects.toThrow(
-      'Location not found: "Lamcaster"',
-    );
-  });
-
-  it("throws when no result name shares a token with the query", async () => {
-    vi.spyOn(global, "fetch").mockResolvedValue({
-      ok: true,
-      json: async () => [
-        {
-          lat: "40.7831",
-          lon: "-73.9712",
-          name: "Manhattan",
-          address: {
-            city: "Manhattan",
-            state: "New York",
-            country: "United States",
-            country_code: "us",
-          },
-        },
-      ],
-    } as Response);
-
-    await expect(geocodeLocation("HMC.TP")).rejects.toThrow(
-      'Location not found: "HMC.TP"',
-    );
-  });
-
-  it("uses a fallback result when its name shares a token with the query", async () => {
+  it("returns the top result when result name differs from query", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
       json: async () => [
