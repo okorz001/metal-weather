@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Jim_Nightshade } from "next/font/google";
+import { Jim_Nightshade, Noto_Color_Emoji, Noto_Sans } from "next/font/google";
 
 import AppBar from "@/components/AppBar";
 import { FavoritesProvider } from "@/components/FavoritesContext";
@@ -13,6 +13,18 @@ const jimNightshade = Jim_Nightshade({
   variable: "--font-jim-nightshade",
 });
 
+const notoSans = Noto_Sans({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  variable: "--font-noto-sans",
+});
+
+const notoColorEmoji = Noto_Color_Emoji({
+  weight: "400",
+  subsets: ["emoji"],
+  variable: "--font-noto-color-emoji",
+});
+
 export const metadata: Metadata = {
   title: "Metal Weather",
   description: "Weather forecasts, heavy metal approved.",
@@ -24,7 +36,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={jimNightshade.variable}>
+    <html
+      lang="en"
+      className={`${jimNightshade.variable} ${notoSans.variable} ${notoColorEmoji.variable}`}
+    >
       <body className="min-h-screen w-screen min-w-80">
         <SettingsProvider>
           <FavoritesProvider>
