@@ -1,9 +1,9 @@
 "use client";
 
 import type { WeatherDataHourly } from "@/lib/types";
-import { WEATHER_EMOJI } from "@/lib/weatherEmoji";
 
 import { useSettings } from "./SettingsContext";
+import WeatherIcon from "./WeatherIcon";
 
 function formatHour(time: string): string {
   // time format from Open-Meteo: "2024-01-01T14:00"
@@ -17,7 +17,7 @@ function formatHour(time: string): string {
 /**
  * Horizontally scrollable 12-hour forecast strip.
  *
- * Each column shows the forecast temperature (top), a weather condition emoji
+ * Each column shows the forecast temperature (top), a weather condition icon
  * (middle), and a formatted hour label (bottom). Unit system (metric vs
  * imperial) is read from {@link useSettings}.
  *
@@ -39,14 +39,15 @@ export default function HourlyForecast({
             const temp = isMetric
               ? `${temperatureCelsius.toFixed(0)}°`
               : `${temperatureFahrenheit.toFixed(0)}°`;
-            const emoji = status != null ? WEATHER_EMOJI[status] : "—";
             return (
               <div
                 key={time}
                 className="flex min-w-[3.5rem] flex-col items-center gap-1 text-zinc-900 dark:text-white"
               >
                 <div className="text-sm font-semibold">{temp}</div>
-                <div className="text-2xl leading-none">{emoji}</div>
+                <div className="text-2xl leading-none">
+                  {status != null ? <WeatherIcon status={status} /> : "—"}
+                </div>
                 <div className="text-xs text-zinc-600 dark:text-zinc-400">
                   {formatHour(time)}
                 </div>

@@ -1,15 +1,15 @@
 "use client";
 
 import type { WeatherData } from "@/lib/types";
-import { WEATHER_EMOJI } from "@/lib/weatherEmoji";
 
 import { useSettings } from "./SettingsContext";
+import WeatherIcon from "./WeatherIcon";
 
 /**
  * Displays current weather conditions as a card.
  *
  * Shows the current temperature (in the unit system from {@link useSettings}),
- * a large condition emoji, today's high/low and status text, and a details
+ * a large condition icon, today's high/low and status text, and a details
  * row with current wind speed and precipitation amount.
  *
  * @param weather - Normalized weather data to display.
@@ -30,8 +30,6 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
     ? `${Math.round(weather.lowCelsius)}°`
     : `${Math.round(weather.lowFahrenheit)}°`;
 
-  const emoji = weather.status != null ? WEATHER_EMOJI[weather.status] : null;
-
   const displayWind = isMetric
     ? `${weather.windSpeedKmh.toFixed(1)} km/h`
     : `${weather.windSpeedMph.toFixed(1)} mph`;
@@ -47,7 +45,14 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
         <div className="-mb-6 font-serif text-7xl leading-none">
           {displayTemp}
         </div>
-        {emoji ? <div className="text-7xl leading-none">{emoji}</div> : <div />}
+        {weather.status != null ? (
+          <WeatherIcon
+            status={weather.status}
+            className="text-7xl leading-none"
+          />
+        ) : (
+          <div />
+        )}
         <div>
           <span className="mr-1 text-xl font-bold text-red-500">↑</span>
           {displayHigh}{" "}

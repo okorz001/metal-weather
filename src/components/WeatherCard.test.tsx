@@ -49,9 +49,9 @@ describe("WeatherCard", () => {
     localStorage.clear();
   });
 
-  it("renders the condition emoji", () => {
+  it("renders the condition icon", () => {
     renderMetric();
-    expect(screen.getByText("🌧️")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Rain" })).toBeInTheDocument();
   });
 
   it("renders temperature in Celsius when metric", () => {
