@@ -139,6 +139,12 @@ shallow, so an array/object property such as `hourly` would be replaced
 entirely if specified. Numeric values are coerced to numbers; all other values
 remain strings.
 
+Because these parameters live in the same URL as `name`/`lat`/`lon`, they are
+preserved whenever `HomeContent` rewrites the URL after resolving a location
+(search, coordinate input, GPS, selecting a favorite, or geocoding on load),
+so a shareable mock URL such as `/?_status=Thunderstorm` keeps its override
+across those actions.
+
 #### URL Load Sequences
 
 **All three parameters present** — weather is fetched directly, no geocoding:

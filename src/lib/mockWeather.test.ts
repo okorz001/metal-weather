@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { applyMockWeather, parseMockWeather } from "./mockWeather";
+import {
+  applyMockWeather,
+  parseMockWeather,
+  serializeMockWeatherParams,
+} from "./mockWeather";
 import type { WeatherData } from "./types";
 
 const baseWeather: WeatherData = {
@@ -57,6 +61,40 @@ describe("parseMockWeather", () => {
 
   it("returns an empty object when there are no overrides", () => {
     expect(parseMockWeather(new URLSearchParams())).toEqual({});
+  });
+});
+
+describe("serializeMockWeatherParams", () => {
+  it("returns an empty string when there are no underscore params", () => {
+    expect(serializeMockWeatherParams(new URLSearchParams())).toBe("");
+  });
+
+  it("serializes a single underscore-prefixed param", () => {
+    const result = serializeMockWeatherParams(
+      new URLSearchParams("_status=Thunderstorm"),
+    );
+    expect(result).toBe("&_status=Thunderstorm");
+  });
+
+  it("serializes multiple underscore-prefixed params in order", () => {
+    const result = serializeMockWeatherParams(
+      new URLSearchParams("_status=Thunderstorm&_temperatureCelsius=5"),
+    );
+    expect(result).toBe("&_status=Thunderstorm&_temperatureCelsius=5");
+  });
+
+  it("ignores non-underscore params", () => {
+    const result = serializeMockWeatherParams(
+      new URLSearchParams("name=Seattle&lat=47.6&lon=-122.3&_status=Snow"),
+    );
+    expect(result).toBe("&_status=Snow");
+  });
+
+  it("URL-encodes underscore param values", () => {
+    const result = serializeMockWeatherParams(
+      new URLSearchParams("_status=Thunder Storm"),
+    );
+    expect(result).toBe("&_status=Thunder%20Storm");
   });
 });
 

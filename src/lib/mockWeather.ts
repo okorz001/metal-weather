@@ -58,6 +58,35 @@ export function parseMockWeather(
 }
 
 /**
+ * Serializes the underscore-prefixed mock weather overrides in `params` back
+ * into a query string fragment, so callers can append it when rewriting the
+ * URL.
+ *
+ * `HomeContent` rewrites the URL with `router.push`/`router.replace`
+ * whenever it resolves a location (search, coordinate input, GPS, selecting
+ * a favorite, or geocoding on load). Building the new query string from only
+ * `name`/`lat`/`lon` would silently drop any `_`-prefixed dev/testing
+ * override (see {@link parseMockWeather}) present in the old URL, breaking
+ * shareable mock links such as `/?_status=Thunderstorm`. This function
+ * extracts every `_`-prefixed key in `params`, in their original order, and
+ * returns them as a leading-`&`-joined fragment ready to concatenate onto an
+ * existing query string.
+ *
+ * @param params - The current URL's query string parameters; only its
+ *   `_`-prefixed entries are included in the result.
+ * @returns A query string fragment such as `&_status=Thunderstorm`, or an
+ *   empty string when `params` has no `_`-prefixed entries.
+ */
+export function serializeMockWeatherParams(params: URLSearchParams): string {
+  let fragment = "";
+  for (const [key, value] of params) {
+    if (!key.startsWith("_")) continue;
+    fragment += `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+  }
+  return fragment;
+}
+
+/**
  * Merges mock weather overrides on top of real weather data.
  *
  * Performs a shallow merge of the top-level properties, so any overridden
