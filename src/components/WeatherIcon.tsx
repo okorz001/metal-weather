@@ -52,9 +52,8 @@ const ICONS: Record<WeatherStatus, ReactNode> = {
     <>
       {cloud}
       <g stroke={RAIN}>
-        <line x1="8" y1="19" x2="8" y2="21" />
-        <line x1="12" y1="19" x2="12" y2="21" />
-        <line x1="16" y1="19" x2="16" y2="21" />
+        <line x1="9" y1="19" x2="9" y2="21" />
+        <line x1="15" y1="19" x2="15" y2="21" />
       </g>
     </>
   ),
@@ -62,9 +61,9 @@ const ICONS: Record<WeatherStatus, ReactNode> = {
     <>
       {cloud}
       <g stroke={RAIN}>
-        <line x1="8" y1="19" x2="8" y2="23" />
-        <line x1="12" y1="19" x2="12" y2="23" />
-        <line x1="16" y1="19" x2="16" y2="23" />
+        <line x1="8" y1="18" x2="8" y2="23" />
+        <line x1="12" y1="18" x2="12" y2="23" />
+        <line x1="16" y1="18" x2="16" y2="23" />
       </g>
     </>
   ),
