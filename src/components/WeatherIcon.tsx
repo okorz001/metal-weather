@@ -16,6 +16,22 @@ const cloud = (
   <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25" stroke={CLOUD} />
 );
 
+// A six-pointed snowflake (three lines crossed at 60 degrees) centered at
+// (cx, cy) with the given arm radius. One arm is vertical; the other two sit
+// at +/-30 degrees from horizontal, so their horizontal reach (ax) is large
+// and their vertical reach (ay) is small.
+function flake(cx: number, cy: number, r: number) {
+  const ax = (r * Math.sqrt(3)) / 2;
+  const ay = r / 2;
+  return (
+    <g key={`${cx}-${cy}`}>
+      <line x1={cx} y1={cy - r} x2={cx} y2={cy + r} />
+      <line x1={cx - ax} y1={cy + ay} x2={cx + ax} y2={cy - ay} />
+      <line x1={cx + ax} y1={cy + ay} x2={cx - ax} y2={cy - ay} />
+    </g>
+  );
+}
+
 /**
  * Inline SVG glyph for each {@link WeatherStatus}.
  *
@@ -70,10 +86,9 @@ const ICONS: Record<WeatherStatus, ReactNode> = {
   Snow: (
     <>
       {cloud}
-      <g stroke={SNOW}>
-        <line x1="8" y1="20" x2="8.01" y2="20" />
-        <line x1="12" y1="22" x2="12.01" y2="22" />
-        <line x1="16" y1="20" x2="16.01" y2="20" />
+      <g stroke={SNOW} strokeWidth={1}>
+        {flake(9, 20, 1.9)}
+        {flake(15, 22, 1.9)}
       </g>
     </>
   ),
