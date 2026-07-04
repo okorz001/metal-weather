@@ -86,24 +86,24 @@ the app.
 
 ### Components
 
-| Component             | Role                                                                                                                               |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `AppBar`              | Top navigation bar with settings (units toggle, dark/light theme)                                                                  |
-| `LocationBar`         | Persistent bar showing current location; GPS, open-modal, and bookmark buttons                                                     |
-| `LocationModal`       | Full-screen overlay with `LocationSearch` form and saved favorites list; opens `RenameFavoriteModal`                               |
-| `RenameFavoriteModal` | Centered modal for editing a favorite's display name                                                                               |
-| `LocationSearch`      | Text input + Go button                                                                                                             |
-| `WeatherCard`         | Current temperature, condition icon, hi/lo, wind speed with compass direction, precipitation, feels-like temperature, and humidity |
-| `SongCard`            | Cover art, song title/artist, `MusicPlayer` controls                                                                               |
-| `HourlyForecast`      | Horizontally scrolling 12-hour strip (temp + icon + hour)                                                                          |
-| `WeatherIcon`         | Inline SVG condition icon (one per `WeatherStatus`), sized at `1em` to scale with the surrounding font                             |
-| `ErrorCard`           | Error message + fallback song                                                                                                      |
-| `MusicPlayer`         | HTML5 audio player with play/pause, seek, and time display                                                                         |
-| `Spinner`             | Centered animated loading indicator shown during weather fetches                                                                   |
-| `HomeContent`         | Orchestrates all search state and renders the above cards                                                                          |
-| `SettingsContext`     | React context for unit system (metric / imperial) and theme                                                                        |
-| `FavoritesContext`    | React context for saved locations, backed by `localStorage`                                                                        |
-| `MockWeatherContext`  | React context exposing mock weather overrides parsed from `_`-prefixed query params (dev/testing)                                  |
+| Component             | Role                                                                                                                                         |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AppBar`              | Top navigation bar with settings (units toggle, dark/light theme)                                                                            |
+| `LocationBar`         | Persistent bar showing current location; GPS, open-modal, and bookmark buttons                                                               |
+| `LocationModal`       | Full-screen overlay with `LocationSearch` form and saved favorites list; opens `RenameFavoriteModal`                                         |
+| `RenameFavoriteModal` | Centered modal for editing a favorite's display name                                                                                         |
+| `LocationSearch`      | Text input + Go button                                                                                                                       |
+| `WeatherCard`         | Current temperature, condition icon, hi/lo, wind speed with compass direction, precipitation, feels-like temperature, and humidity           |
+| `SongCard`            | Cover art, song title/artist, `MusicPlayer` controls                                                                                         |
+| `HourlyForecast`      | Horizontally scrolling 12-hour strip (temp + icon + hour)                                                                                    |
+| `WeatherIcon`         | Inline SVG weather glyphs sized at `1em`: one condition icon per `WeatherStatus`, plus `WindIcon` and `PrecipitationIcon` for the detail row |
+| `ErrorCard`           | Error message + fallback song                                                                                                                |
+| `MusicPlayer`         | HTML5 audio player with play/pause, seek, and time display                                                                                   |
+| `Spinner`             | Centered animated loading indicator shown during weather fetches                                                                             |
+| `HomeContent`         | Orchestrates all search state and renders the above cards                                                                                    |
+| `SettingsContext`     | React context for unit system (metric / imperial) and theme                                                                                  |
+| `FavoritesContext`    | React context for saved locations, backed by `localStorage`                                                                                  |
+| `MockWeatherContext`  | React context exposing mock weather overrides parsed from `_`-prefixed query params (dev/testing)                                            |
 
 ### External APIs (Free, No API Key)
 

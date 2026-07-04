@@ -3,7 +3,7 @@
 import type { WeatherData } from "@/lib/types";
 
 import { useSettings } from "./SettingsContext";
-import WeatherIcon from "./WeatherIcon";
+import WeatherIcon, { PrecipitationIcon, WindIcon } from "./WeatherIcon";
 
 /**
  * Displays current weather conditions as a card.
@@ -61,8 +61,14 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
           {displayLow}
         </div>
         {weather.status ? <div>{weather.status}</div> : <div />}
-        <span>💨 {displayWind}</span>
-        <span>💧 {displayPrecip}</span>
+        <span className="inline-flex items-center gap-1">
+          <WindIcon />
+          {displayWind}
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <PrecipitationIcon />
+          {displayPrecip}
+        </span>
       </div>
     </div>
   );

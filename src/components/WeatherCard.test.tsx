@@ -80,25 +80,25 @@ describe("WeatherCard", () => {
 
   it("renders wind speed in km/h with compass direction when metric", () => {
     renderMetric();
-    expect(screen.getByText("💨 20.0 km/h")).toBeInTheDocument();
+    expect(screen.getByText("20.0 km/h")).toBeInTheDocument();
   });
 
   it("renders wind speed in mph with compass direction when imperial", () => {
     renderImperial();
     expect(
-      screen.getByText(`💨 ${(20 * 0.621371).toFixed(1)} mph`),
+      screen.getByText(`${(20 * 0.621371).toFixed(1)} mph`),
     ).toBeInTheDocument();
   });
 
   it("renders precipitation in mm when metric", () => {
     renderMetric();
-    expect(screen.getByText("💧 1.2 mm")).toBeInTheDocument();
+    expect(screen.getByText("1.2 mm")).toBeInTheDocument();
   });
 
   it("renders precipitation in inches when imperial", () => {
     renderImperial();
     expect(
-      screen.getByText(`💧 ${(1.2 / 25.4).toFixed(2)} in`),
+      screen.getByText(`${(1.2 / 25.4).toFixed(2)} in`),
     ).toBeInTheDocument();
   });
 });

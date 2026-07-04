@@ -105,6 +105,45 @@ const ICONS: Record<WeatherStatus, ReactNode> = {
 };
 
 /**
+ * Shared inline-SVG frame for the weather glyphs.
+ *
+ * Sizes the icon at `1em` (so it scales with the surrounding font size),
+ * establishes the shared 24x24 viewBox and stroke defaults, and exposes an
+ * accessible name via `role="img"` and `aria-label`.
+ *
+ * @param label - Accessible name announced by assistive technology.
+ * @param className - Optional additional CSS classes applied to the `<svg>`.
+ * @param children - The shapes drawn inside the viewBox.
+ * @returns The rendered `<svg>` element.
+ */
+function Glyph({
+  label,
+  className,
+  children,
+}: {
+  label: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <svg
+      role="img"
+      aria-label={label}
+      className={className}
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="none"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {children}
+    </svg>
+  );
+}
+
+/**
  * Renders a weather condition as an inline SVG icon.
  *
  * The icon is drawn at `1em`, so it scales with the surrounding font size
@@ -124,19 +163,49 @@ export default function WeatherIcon({
   className?: string;
 }) {
   return (
-    <svg
-      role="img"
-      aria-label={status}
-      className={className}
-      width="1em"
-      height="1em"
-      viewBox="0 0 24 24"
-      fill="none"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <Glyph label={status} className={className}>
       {ICONS[status]}
-    </svg>
+    </Glyph>
+  );
+}
+
+/**
+ * Renders a wind icon: two curling airflow streams.
+ *
+ * Deliberately simpler than the busy "gust" emoji. Drawn at `1em` in the
+ * neutral cloud gray so it reads on both light and dark card backgrounds.
+ *
+ * @param className - Optional additional CSS classes applied to the `<svg>`.
+ * @returns The rendered wind icon element.
+ */
+export function WindIcon({ className }: { className?: string }) {
+  return (
+    <Glyph label="Wind" className={className}>
+      <g stroke={CLOUD}>
+        <path d="M3 9h9a2.5 2.5 0 1 0 -2.5 -2.5" />
+        <path d="M3 15h13a2.5 2.5 0 1 1 -2.5 2.5" />
+      </g>
+    </Glyph>
+  );
+}
+
+/**
+ * Renders a precipitation icon: a single filled water drop.
+ *
+ * Drawn at `1em` in the rain blue so it reads on both light and dark card
+ * backgrounds.
+ *
+ * @param className - Optional additional CSS classes applied to the `<svg>`.
+ * @returns The rendered precipitation icon element.
+ */
+export function PrecipitationIcon({ className }: { className?: string }) {
+  return (
+    <Glyph label="Precipitation" className={className}>
+      <path
+        d="M12 3.5C12 3.5 6.5 10 6.5 14a5.5 5.5 0 1 0 11 0C17.5 10 12 3.5 12 3.5Z"
+        fill={RAIN}
+        stroke={RAIN}
+      />
+    </Glyph>
   );
 }
