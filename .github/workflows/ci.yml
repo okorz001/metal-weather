@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: lts/*
           cache: npm
-      - run: npm install -g npm@^11.11.0
+      - run: npm install -g npm@'>=11.11.0'
       - run: npm ci
       - run: npm run verify
       - if: github.event_name == 'push'

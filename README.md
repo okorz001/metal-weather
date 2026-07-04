@@ -29,8 +29,8 @@ Enjoy metal classics such as: _Raining Blood_, _Riding on the Wind_, and _In My 
 
 ## Development
 
-Requires npm ^11.11.0 (11.11.0 or later, staying on npm 11.x) — `npm --version` to check;
-`npm install -g npm@^11.11.0` to upgrade if needed.
+Requires npm >=11.11.0 — `npm --version` to check;
+`npm install -g npm@'>=11.11.0'` to upgrade if needed.
 
 ```bash
 npm install
