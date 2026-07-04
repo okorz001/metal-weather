@@ -29,8 +29,10 @@ Enjoy metal classics such as: _Raining Blood_, _Riding on the Wind_, and _In My 
 
 ## Development
 
-Requires npm >=11.11.0, matching CI. Recommended: use [nvm](https://github.com/nvm-sh/nvm)
-with the repo's `.nvmrc` to get the right Node/npm automatically:
+Requires npm >=11.11.0 (Node >=24.15.0 is the earliest version bundling it).
+
+Recommended: use [nvm](https://github.com/nvm-sh/nvm) with the repo's `.nvmrc`
+to get the right Node/npm automatically:
 
 ```bash
 nvm install
