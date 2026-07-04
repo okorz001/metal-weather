@@ -49,9 +49,9 @@ describe("WeatherCard", () => {
     localStorage.clear();
   });
 
-  it("renders the condition emoji", () => {
+  it("renders the condition icon", () => {
     renderMetric();
-    expect(screen.getByText("🌧️")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Rain" })).toBeInTheDocument();
   });
 
   it("renders temperature in Celsius when metric", () => {
@@ -67,38 +67,38 @@ describe("WeatherCard", () => {
   it("renders high/low in Celsius when metric", () => {
     renderMetric();
     expect(
-      screen.getByText((_, el) => el?.textContent === "↑18° / ↓10°"),
+      screen.getByText((_, el) => el?.textContent === "18° / 10°"),
     ).toBeInTheDocument();
   });
 
   it("renders high/low in Fahrenheit when imperial", () => {
     renderImperial();
     expect(
-      screen.getByText((_, el) => el?.textContent === "↑64° / ↓50°"),
+      screen.getByText((_, el) => el?.textContent === "64° / 50°"),
     ).toBeInTheDocument();
   });
 
   it("renders wind speed in km/h with compass direction when metric", () => {
     renderMetric();
-    expect(screen.getByText("💨 20.0 km/h")).toBeInTheDocument();
+    expect(screen.getByText("20.0 km/h")).toBeInTheDocument();
   });
 
   it("renders wind speed in mph with compass direction when imperial", () => {
     renderImperial();
     expect(
-      screen.getByText(`💨 ${(20 * 0.621371).toFixed(1)} mph`),
+      screen.getByText(`${(20 * 0.621371).toFixed(1)} mph`),
     ).toBeInTheDocument();
   });
 
   it("renders precipitation in mm when metric", () => {
     renderMetric();
-    expect(screen.getByText("💧 1.2 mm")).toBeInTheDocument();
+    expect(screen.getByText("1.2 mm")).toBeInTheDocument();
   });
 
   it("renders precipitation in inches when imperial", () => {
     renderImperial();
     expect(
-      screen.getByText(`💧 ${(1.2 / 25.4).toFixed(2)} in`),
+      screen.getByText(`${(1.2 / 25.4).toFixed(2)} in`),
     ).toBeInTheDocument();
   });
 });
