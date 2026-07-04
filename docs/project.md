@@ -28,8 +28,8 @@ rain).
 6. The user can bookmark the current location via the star icon in `LocationBar`.
    Favorites are persisted to `localStorage` and listed in the search modal for
    one-click access. The bookmark icon reflects the saved state and toggles
-   add/remove. Each favorite can be renamed via the ✏️ button next to its name,
-   which opens a modal pre-filled with the current name.
+   add/remove. Each favorite can be renamed via the pencil button next to its
+   name, which opens a modal pre-filled with the current name.
 
 ### Technology
 
