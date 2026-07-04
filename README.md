@@ -29,10 +29,11 @@ Enjoy metal classics such as: _Raining Blood_, _Riding on the Wind_, and _In My 
 
 ## Development
 
-Requires npm >=11.11.0 — `npm --version` to check;
-`npm install -g npm@'>=11.11.0'` to upgrade if needed.
+Requires npm >=11.11.0, matching CI. Recommended: use [nvm](https://github.com/nvm-sh/nvm)
+with the repo's `.nvmrc` to get the right Node/npm automatically:
 
 ```bash
+nvm install
 npm install
 npm run dev
 ```
