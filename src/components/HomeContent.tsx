@@ -9,7 +9,10 @@ import {
   parseCoordinates,
   reverseGeocode,
 } from "@/lib/geocode";
-import { applyMockWeather } from "@/lib/mockWeather";
+import {
+  applyMockWeather,
+  serializeMockWeatherParams,
+} from "@/lib/mockWeather";
 import { pickErrorSong, pickSong } from "@/lib/songs";
 import type { Location, SongCatalog, WeatherResult } from "@/lib/types";
 import { fetchWeather } from "@/lib/weather";
@@ -105,7 +108,7 @@ export default function HomeContent() {
       if (searchIdRef.current !== id) return;
       skipUrlEffect.current = true;
       router.replace(
-        `/?name=${encodeURIComponent(resolvedName)}&lat=${lat}&lon=${lon}`,
+        `/?name=${encodeURIComponent(resolvedName)}&lat=${lat}&lon=${lon}${serializeMockWeatherParams(searchParams)}`,
       );
     }
     await runSearch(lat, lon, resolvedName, id);
@@ -130,7 +133,7 @@ export default function HomeContent() {
       if (searchIdRef.current !== id) return;
       skipUrlEffect.current = true;
       router.push(
-        `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}`,
+        `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}${serializeMockWeatherParams(searchParams)}`,
       );
       await runSearch(lat, lon, displayName, id);
       return;
@@ -141,7 +144,7 @@ export default function HomeContent() {
       if (searchIdRef.current !== id) return;
       skipUrlEffect.current = true;
       router.push(
-        `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}`,
+        `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}${serializeMockWeatherParams(searchParams)}`,
       );
       await runSearch(lat, lon, displayName, id);
     } catch (e) {
@@ -163,7 +166,7 @@ export default function HomeContent() {
     if (searchIdRef.current !== id) return;
     skipUrlEffect.current = true;
     router.push(
-      `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}`,
+      `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}${serializeMockWeatherParams(searchParams)}`,
     );
     await runSearch(lat, lon, displayName, id);
   }
@@ -196,7 +199,7 @@ export default function HomeContent() {
     setCurrentLocation(loc);
     skipUrlEffect.current = true;
     router.push(
-      `/?name=${encodeURIComponent(loc.displayName)}&lat=${loc.lat}&lon=${loc.lon}`,
+      `/?name=${encodeURIComponent(loc.displayName)}&lat=${loc.lat}&lon=${loc.lon}${serializeMockWeatherParams(searchParams)}`,
     );
     void runSearch(loc.lat, loc.lon, loc.displayName, id);
   }
@@ -215,7 +218,7 @@ export default function HomeContent() {
       if (searchIdRef.current !== id) return;
       skipUrlEffect.current = true;
       router.replace(
-        `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}`,
+        `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}${serializeMockWeatherParams(searchParams)}`,
       );
       await runSearch(lat, lon, displayName, id);
       return;
@@ -226,7 +229,7 @@ export default function HomeContent() {
       if (searchIdRef.current !== id) return;
       skipUrlEffect.current = true;
       router.replace(
-        `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}`,
+        `/?name=${encodeURIComponent(displayName)}&lat=${lat}&lon=${lon}${serializeMockWeatherParams(searchParams)}`,
       );
       await runSearch(lat, lon, displayName, id);
     } catch (e) {

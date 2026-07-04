@@ -297,5 +297,54 @@ describe("HomeContent", () => {
         "Seattle, WA, US",
       );
     });
+
+    it("preserves an underscore-prefixed override in the URL after a manual search", async () => {
+      const push = vi.fn();
+      vi.mocked(useRouter).mockReturnValue({
+        push,
+        replace: vi.fn(),
+      } as ReturnType<typeof useRouter>);
+      vi.mocked(useSearchParams).mockReturnValue(
+        new URLSearchParams("_status=Thunderstorm"),
+      );
+      renderHome();
+      fireEvent.change(screen.getByPlaceholderText("City name"), {
+        target: { value: "Seattle" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: "Search" }));
+      await waitFor(() => expect(push).toHaveBeenCalled());
+      expect(push).toHaveBeenCalledWith(
+        "/?name=Seattle%2C%20WA%2C%20US&lat=47.6&lon=-122.3&_status=Thunderstorm",
+      );
+    });
+
+    it("preserves an underscore-prefixed override in the URL when selecting a favorite", async () => {
+      const push = vi.fn();
+      vi.mocked(useRouter).mockReturnValue({
+        push,
+        replace: vi.fn(),
+      } as ReturnType<typeof useRouter>);
+      vi.mocked(useSearchParams).mockReturnValue(
+        new URLSearchParams("_status=Thunderstorm"),
+      );
+      localStorage.setItem(
+        "favorites",
+        JSON.stringify([
+          { displayName: "Seattle, WA, US", lat: 47.6, lon: -122.3 },
+        ]),
+      );
+      renderHome();
+      fireEvent.click(
+        screen.getByRole("button", { name: "Enter a location…" }),
+      );
+      await waitFor(() =>
+        expect(screen.getByText("Seattle, WA, US")).toBeInTheDocument(),
+      );
+      fireEvent.click(screen.getByRole("button", { name: /^Seattle, WA, US/ }));
+      await waitFor(() => expect(push).toHaveBeenCalled());
+      expect(push).toHaveBeenCalledWith(
+        "/?name=Seattle%2C%20WA%2C%20US&lat=47.6&lon=-122.3&_status=Thunderstorm",
+      );
+    });
   });
 });
