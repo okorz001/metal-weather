@@ -67,14 +67,14 @@ describe("WeatherCard", () => {
   it("renders high/low in Celsius when metric", () => {
     renderMetric();
     expect(
-      screen.getByText((_, el) => el?.textContent === "↑18° / ↓10°"),
+      screen.getByText((_, el) => el?.textContent === "18° / 10°"),
     ).toBeInTheDocument();
   });
 
   it("renders high/low in Fahrenheit when imperial", () => {
     renderImperial();
     expect(
-      screen.getByText((_, el) => el?.textContent === "↑64° / ↓50°"),
+      screen.getByText((_, el) => el?.textContent === "64° / 50°"),
     ).toBeInTheDocument();
   });
 

@@ -209,3 +209,42 @@ export function PrecipitationIcon({ className }: { className?: string }) {
     </Glyph>
   );
 }
+
+/**
+ * Renders a directional arrow icon (used to mark the daily high and low).
+ *
+ * Drawn at `1em` in `currentColor`, so the caller controls both size and
+ * color via CSS (e.g. Tailwind `text-red-500` / `text-blue-500`).
+ *
+ * @param direction - Which way the arrow points.
+ * @param label - Accessible name announced by assistive technology.
+ * @param className - Optional additional CSS classes applied to the `<svg>`.
+ * @returns The rendered arrow icon element.
+ */
+export function ArrowIcon({
+  direction,
+  label,
+  className,
+}: {
+  direction: "up" | "down";
+  label: string;
+  className?: string;
+}) {
+  return (
+    <Glyph label={label} className={className}>
+      <g stroke="currentColor">
+        {direction === "up" ? (
+          <>
+            <line x1="12" y1="20" x2="12" y2="5" />
+            <polyline points="6 11 12 5 18 11" />
+          </>
+        ) : (
+          <>
+            <line x1="12" y1="4" x2="12" y2="19" />
+            <polyline points="6 13 12 19 18 13" />
+          </>
+        )}
+      </g>
+    </Glyph>
+  );
+}

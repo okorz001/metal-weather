@@ -3,7 +3,11 @@
 import type { WeatherData } from "@/lib/types";
 
 import { useSettings } from "./SettingsContext";
-import WeatherIcon, { PrecipitationIcon, WindIcon } from "./WeatherIcon";
+import WeatherIcon, {
+  ArrowIcon,
+  PrecipitationIcon,
+  WindIcon,
+} from "./WeatherIcon";
 
 /**
  * Displays current weather conditions as a card.
@@ -53,11 +57,19 @@ export default function WeatherCard({ weather }: { weather: WeatherData }) {
         ) : (
           <div />
         )}
-        <div>
-          <span className="mr-1 text-xl font-bold text-red-500">↑</span>
+        <div className="flex items-center">
+          <ArrowIcon
+            direction="up"
+            label="High"
+            className="mr-1 text-xl text-red-500"
+          />
           {displayHigh}{" "}
-          <span className="text-zinc-600 dark:text-zinc-400">/</span>{" "}
-          <span className="mr-1 text-xl font-bold text-blue-500">↓</span>
+          <span className="mx-1 text-zinc-600 dark:text-zinc-400">/</span>{" "}
+          <ArrowIcon
+            direction="down"
+            label="Low"
+            className="mr-1 text-xl text-blue-500"
+          />
           {displayLow}
         </div>
         {weather.status ? <div>{weather.status}</div> : <div />}
