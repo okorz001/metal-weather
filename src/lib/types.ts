@@ -5,13 +5,7 @@
  * song matching and display.
  */
 export type WeatherStatus =
-  | "Clear"
-  | "Cloudy"
-  | "Foggy"
-  | "Drizzle"
-  | "Rain"
-  | "Snow"
-  | "Thunderstorm";
+  "Clear" | "Cloudy" | "Foggy" | "Drizzle" | "Rain" | "Snow" | "Thunderstorm";
 
 /**
  * A single song entry in the catalog.
@@ -181,5 +175,4 @@ export interface Location {
  * it is resolved from the weather status (or the error fallback) at render time.
  */
 export type WeatherResult =
-  | { ok: true; weather: WeatherData }
-  | { ok: false; message: string };
+  { ok: true; weather: WeatherData } | { ok: false; message: string };
