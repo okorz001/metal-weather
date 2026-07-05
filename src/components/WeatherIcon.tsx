@@ -62,9 +62,14 @@ const ICONS: Record<WeatherStatus, ReactNode> = {
     <>
       <g stroke={SUN}>
         <circle cx="16" cy="8" r="3.5" />
-        <line x1="16" y1="0.5" x2="16" y2="2" />
-        <line x1="20.5" y1="2" x2="19.2" y2="3.3" />
-        <line x1="23.5" y1="8" x2="22" y2="8" />
+        <line x1="16" y1="0.3" x2="16" y2="1.7" />
+        <line x1="16" y1="14.3" x2="16" y2="15.7" />
+        <line x1="10.55" y1="2.55" x2="11.55" y2="3.55" />
+        <line x1="20.45" y1="12.45" x2="21.45" y2="13.45" />
+        <line x1="8.3" y1="8" x2="9.7" y2="8" />
+        <line x1="22.3" y1="8" x2="23.7" y2="8" />
+        <line x1="10.55" y1="13.45" x2="11.55" y2="12.45" />
+        <line x1="20.45" y1="3.55" x2="21.45" y2="2.55" />
       </g>
       <g transform={`translate(3.84, 6.8) scale(${PARTLY_CLOUD_SCALE})`}>
         <path
