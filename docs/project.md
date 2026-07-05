@@ -15,7 +15,7 @@ rain).
 2. Forward and reverse geocoding (city name / US zip code → lat/lon and GPS
    coordinates → display name) both use Nominatim (OpenStreetMap).
 3. Weather is fetched from Open-Meteo Forecast. The WMO weather code is mapped
-   to one of seven `WeatherStatus` values; a matching song is selected from the
+   to one of eight `WeatherStatus` values; a matching song is selected from the
    JSON catalog. Catalog conditions may additionally specify numeric bounds
    (temperature, wind speed) to enable finer-grained matching within a status
    (e.g. separate songs for hot, cold, or windy clear weather). The first

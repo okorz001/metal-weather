@@ -35,8 +35,8 @@ enum WeatherCode {
 const WEATHER_CODE_STATUS: Partial<Record<WeatherCode, WeatherStatus>> = {
   [WeatherCode.ClearSky]: "Clear",
   [WeatherCode.MainlyClear]: "Clear",
-  [WeatherCode.PartlyCloudy]: "Cloudy",
-  [WeatherCode.Overcast]: "Cloudy",
+  [WeatherCode.PartlyCloudy]: "Partly Cloudy",
+  [WeatherCode.Overcast]: "Overcast",
   [WeatherCode.Fog]: "Foggy",
   [WeatherCode.DepositingRimeFog]: "Foggy",
   [WeatherCode.DrizzleLight]: "Drizzle",
