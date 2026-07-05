@@ -16,6 +16,11 @@ const cloud = (
   <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25" stroke={CLOUD} />
 );
 
+// Closed cloud silhouette used by Overcast at full size, and scaled down for
+// Partly Cloudy so both statuses render the exact same cloud shape.
+const CLOUD_SHAPE = "M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z";
+const PARTLY_CLOUD_SCALE = 0.62;
+
 // A six-pointed snowflake (three lines crossed at 60 degrees) centered at
 // (cx, cy) with the given arm radius. One arm is vertical; the other two sit
 // at +/-30 degrees from horizontal, so their horizontal reach (ax) is large
@@ -53,9 +58,29 @@ const ICONS: Record<WeatherStatus, ReactNode> = {
       <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
     </g>
   ),
-  Cloudy: (
-    <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" stroke={CLOUD} />
+  "Partly Cloudy": (
+    <>
+      <g stroke={SUN}>
+        <circle cx="16" cy="8" r="3.5" />
+        <line x1="16" y1="0.3" x2="16" y2="1.7" />
+        <line x1="16" y1="14.3" x2="16" y2="15.7" />
+        <line x1="10.55" y1="2.55" x2="11.55" y2="3.55" />
+        <line x1="20.45" y1="12.45" x2="21.45" y2="13.45" />
+        <line x1="8.3" y1="8" x2="9.7" y2="8" />
+        <line x1="22.3" y1="8" x2="23.7" y2="8" />
+        <line x1="10.55" y1="13.45" x2="11.55" y2="12.45" />
+        <line x1="20.45" y1="3.55" x2="21.45" y2="2.55" />
+      </g>
+      <g transform={`translate(3.84, 6.8) scale(${PARTLY_CLOUD_SCALE})`}>
+        <path
+          d={CLOUD_SHAPE}
+          stroke={CLOUD}
+          strokeWidth={2 / PARTLY_CLOUD_SCALE}
+        />
+      </g>
+    </>
   ),
+  Overcast: <path d={CLOUD_SHAPE} stroke={CLOUD} />,
   Foggy: (
     <g stroke={CLOUD}>
       <line x1="3" y1="7" x2="21" y2="7" />

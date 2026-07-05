@@ -57,7 +57,7 @@ describe("fetchWeather", () => {
       humidityPercent: 75,
       precipitationMm: 0.0,
       precipitationIn: 0.0 / 25.4,
-      status: "Cloudy",
+      status: "Overcast",
       highCelsius: 14.0,
       highFahrenheit: (14.0 * 9) / 5 + 32,
       lowCelsius: 7.0,
@@ -66,7 +66,7 @@ describe("fetchWeather", () => {
         time,
         temperatureCelsius: hourlyTemps[i + 1],
         temperatureFahrenheit: (hourlyTemps[i + 1] * 9) / 5 + 32,
-        status: "Cloudy",
+        status: "Overcast",
       })),
     });
   });

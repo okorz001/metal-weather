@@ -5,7 +5,14 @@
  * song matching and display.
  */
 export type WeatherStatus =
-  "Clear" | "Cloudy" | "Foggy" | "Drizzle" | "Rain" | "Snow" | "Thunderstorm";
+  | "Clear"
+  | "Partly Cloudy"
+  | "Overcast"
+  | "Foggy"
+  | "Drizzle"
+  | "Rain"
+  | "Snow"
+  | "Thunderstorm";
 
 /**
  * A single song entry in the catalog.
