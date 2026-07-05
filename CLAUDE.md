@@ -30,6 +30,10 @@ Never rebase or force push a branch that currently has an open PR.
 
 Keep `docs/project.md` up to date whenever a feature is added, removed, or significantly changed. Update the relevant sections (What the App Does, Components table, External APIs, data types) as part of the same change that implements the feature.
 
+## Visual Style
+
+Follow `docs/style.md` for all colors, typography, spacing, and icon conventions in UI changes. Keep it up to date whenever a visual pattern is introduced, changed, or retired, as part of the same change.
+
 ## Docs Style
 
 All Markdown section headers and table headers must use title case.
