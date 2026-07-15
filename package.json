@@ -19,7 +19,7 @@
     "tools:download": "docker run --rm -u $(id -u):$(id -g) -v $(pwd):/app metal-weather-tools"
   },
   "dependencies": {
-    "next": "^16.2.9",
+    "next": "^16.2.10",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
@@ -27,17 +27,17 @@
     "@tailwindcss/postcss": "^4.3.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
-    "@types/node": "^26.1.0",
+    "@types/node": "^26.1.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.0.3",
-    "eslint": "^9.39.4",
-    "eslint-config-next": "^16.2.9",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.2.10",
     "jsdom": "^29.1.1",
-    "prettier": "^3.9.4",
-    "prettier-plugin-tailwindcss": "^0.8.0",
+    "prettier": "^3.9.5",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.3.0",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.9"
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
   }
 }
